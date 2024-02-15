@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\src\starterbot\main.cpp" />
+    <ClCompile Include="..\..\src\starterbot\MapTools.cpp" />
+    <ClCompile Include="..\..\src\starterbot\ReplayParser.cpp" />
+    <ClCompile Include="..\..\src\starterbot\StarterBot.cpp" />
+    <ClCompile Include="..\..\src\starterbot\Tools.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_LEAF.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_NODE.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_SELECTOR.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_SEQUENCER.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECORATOR.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_CONDITION.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_INVERTER.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_REPEATER.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_UNTIL_FAILURE.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_UNTIL_SUCCESS.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_RETURN_FAILURE.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_RETURN_SUCCESS.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_IDLE.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_WAIT.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_PARALLEL_SEQUENCER.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_PARALLEL_SELECTOR.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_TRAIN_WORKER.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_BUILD_SUPPLY_PROVIDER.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_COND_GREATER_THAN.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_DECO_COND_LESSER_THAN.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_LOG.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_CONDITION.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_COND_GREATER_THAN.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_COND_LESSER_THAN.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
+    <ClInclude Include="..\..\src\starterbot\MapTools.h" />
+    <ClInclude Include="..\..\src\starterbot\ReplayParser.h" />
+    <ClInclude Include="..\..\src\starterbot\StarterBot.h" />
+    <ClInclude Include="..\..\src\starterbot\Tools.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_LEAF.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_NODE.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_SELECTOR.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_SEQUENCER.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\Data.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECORATOR.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_CONDITION.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_INVERTER.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_REPEATER.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_UNTIL_FAILURE.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_UNTIL_SUCCESS.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_RETURN_FAILURE.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_RETURN_SUCCESS.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION_IDLE.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION_WAIT.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_PARALLEL_SEQUENCER.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_PARALLEL_SELECTOR.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_TRAIN_WORKER.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_BUILD_SUPPLY_PROVIDER.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_COND_GREATER_THAN.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_DECO_COND_LESSER_THAN.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION_LOG.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_CONDITION.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_COND_GREATER_THAN.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_COND_LESSER_THAN.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="BT">
+      <UniqueIdentifier>{9e93f9f9-4795-47a9-a520-25d6276733ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BT\BT_STARCRAFT">
+      <UniqueIdentifier>{f7d3a676-4252-4269-9d78-432aabc0f416}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
