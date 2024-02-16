@@ -101,7 +101,7 @@ void StarterBot::onFrame()
         pBtTest = nullptr;
     }
 
-    /*
+    
     // Send our idle workers to mine minerals so they don't just stand there
     sendIdleWorkersToMinerals();
 
@@ -110,7 +110,9 @@ void StarterBot::onFrame()
 
     // Build more supply if we are going to run out soon
     buildAdditionalSupply();
-    */
+
+    // Send a worker scouting
+    sendScout();
 
     // Draw unit health bars, which brood war unfortunately does not do
     Tools::DrawUnitHealthBars();
@@ -172,6 +174,30 @@ void StarterBot::buildAdditionalSupply()
     if (startedBuilding)
     {
         BWAPI::Broodwar->printf("Started Building %s", supplyProviderType.getName().c_str());
+    }
+}
+
+// Choose a worker and send it scouting neighboring bases
+void StarterBot::sendScout() {
+    const int TotalSupply = Tools::GetTotalSupply(true);
+
+    if (TotalSupply < 5) { return; }
+
+    const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+
+    // iterate over my units and find a random worker
+    for (auto& unit : myUnits)
+    {
+        // Check the unit type, if it is an idle worker, then we want to send it somewhere
+        if (unit->getType().isWorker())
+        {
+            // Find a base on the map
+            BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
+
+            // Send the unit scouting
+            unit->move((BWAPI::Position) StartLocations[0]);
+            break;
+        }
     }
 }
 

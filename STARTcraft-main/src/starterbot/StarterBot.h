@@ -22,6 +22,7 @@ public:
     void sendIdleWorkersToMinerals();
     void trainAdditionalWorkers();
     void buildAdditionalSupply();
+	void sendScout();
     void drawDebugInformation();
 
     // functions that are triggered by various BWAPI events from main.cpp
