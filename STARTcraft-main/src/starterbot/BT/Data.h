@@ -14,6 +14,7 @@ public:
 	int thresholdMinerals;
 	int currSupply;
 	int thresholdSupply;
+	int locationsScouted;
 
 	int nWantedWorkersTotal;
 	int nWantedWorkersFarmingMinerals;

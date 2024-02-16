@@ -13,6 +13,7 @@ StarterBot::StarterBot()
     pData->thresholdMinerals = THRESHOLD1_MINERALS;
     pData->currSupply = 0;
     pData->thresholdSupply = THRESHOLD1_UNUSED_SUPPLY;
+    pData->locationsScouted = 0;
 
     pData->nWantedWorkersTotal = NWANTED_WORKERS_TOTAL;
     pData->nWantedWorkersFarmingMinerals = NWANTED_WORKERS_FARMING_MINERALS;
@@ -102,6 +103,10 @@ void StarterBot::onFrame()
     }
 
     
+    // Send a worker scouting, it'll find an idle worker so it needs 
+    // to be called before sendIdleWorkersToMinerals()
+    sendScout();
+
     // Send our idle workers to mine minerals so they don't just stand there
     sendIdleWorkersToMinerals();
 
@@ -110,9 +115,6 @@ void StarterBot::onFrame()
 
     // Build more supply if we are going to run out soon
     buildAdditionalSupply();
-
-    // Send a worker scouting
-    sendScout();
 
     // Draw unit health bars, which brood war unfortunately does not do
     Tools::DrawUnitHealthBars();
@@ -179,26 +181,35 @@ void StarterBot::buildAdditionalSupply()
 
 // Choose a worker and send it scouting neighboring bases
 void StarterBot::sendScout() {
-    const int TotalSupply = Tools::GetTotalSupply(true);
+    const int SupplyUsed = BWAPI::Broodwar->self()->supplyUsed();
+    BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
+    BWAPI::TilePosition HomeLocation = BWAPI::Broodwar->self()->getStartLocation();
 
-    if (TotalSupply < 5) { return; }
+    if (pData->locationsScouted >= StartLocations.size()) { return; }
 
+    std::cout << "LocationsScouted " << pData->locationsScouted << std::endl;
+    std::cout << "total locations " << StartLocations.size() << std::endl;
+
+    // get a worker
     const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+    const BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+    const BWAPI::Unit scout = Tools::GetUnitOfType(workerType);
 
-    // iterate over my units and find a random worker
-    for (auto& unit : myUnits)
-    {
-        // Check the unit type, if it is an idle worker, then we want to send it somewhere
-        if (unit->getType().isWorker())
-        {
-            // Find a base on the map
-            BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
-
-            // Send the unit scouting
-            unit->move((BWAPI::Position) StartLocations[0]);
-            break;
-        }
-    }
+    if (scout == nullptr) { return; }
+    
+     // send it scounting in a new location and update the locations
+     if (StartLocations[pData->locationsScouted] != HomeLocation) {
+         scout->move((BWAPI::Position)StartLocations[pData->locationsScouted]);
+         scout->move((BWAPI::Position)HomeLocation, true);
+         pData->locationsScouted += 1;
+     }
+     else {
+         if (pData->locationsScouted < StartLocations.size() - 1) {
+             scout->move((BWAPI::Position)StartLocations[pData->locationsScouted + 1]);
+             scout->move((BWAPI::Position)HomeLocation, true);
+         }
+         pData->locationsScouted += 2;
+     }
 }
 
 // Draw some relevent information to the screen to help us debug the bot
