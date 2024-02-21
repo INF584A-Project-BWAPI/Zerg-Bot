@@ -4,8 +4,39 @@
     "build_order": [
         {
             "name": "pylon",
-            "minProductionLevel": 9,
-            "maxProductionLevel":  10
+            "minProductionLevel": 0,
+            "maxProductionLevel": 9
+        },
+        {
+            "name": "probe",
+            "minProductionLevel": 10,
+            "maxProductionLevel": 10
+        },
+        {
+            "name": "probe",
+            "minProductionLevel": 10,
+            "maxProductionLevel": 10
+        },
+        {
+            "name": "gateway",
+            "minProductionLevel": 0,
+            "maxProductionLevel": 12
+        },
+        {
+            "name": "probe",
+            "minProductionLevel": 12,
+            "maxProductionLevel": 12
+        },
+        {
+            "name": "probe",
+            "minProductionLevel": 12,
+            "maxProductionLevel": 12
+        },
+        {
+            "name": "assimilator",
+            "minProductionLevel": 13,
+            "maxProductionLevel": 13
         }
+
     ]
 }
