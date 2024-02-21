@@ -4,6 +4,7 @@
 #include "BT.h"
 #include <BWAPI.h>
 #include "Data.h"
+#include "GameFileParser.hpp";
 //#include "map.h"
 
 class StarterBot
@@ -13,6 +14,7 @@ private:
 	BT_NODE* pBT;
 	BT_NODE* pBtTest;
 	Data *pData;
+	GameFileParser gameParser;
 
 public:
 
