@@ -8,14 +8,13 @@
 #include "..\starterbot\BT\BT.h"
 #include "GameFileParser.hpp";
 
-=======
 
 
 #include "..\starterbot\BT\Data.h"
 #include <format>
 #include "..\starterbot\BT\BT.h"
 #include "GameFileParser.hpp";
->>>>>>> Stashed changes
+
 
 StarterBot::StarterBot()
 {
@@ -216,9 +215,49 @@ void StarterBot::sendScout() {
 }
 
 // attack: neutralize and destroy logic
-void StarterBot::sendAttack(){
-    const int TotalSupply = Tools::GetTotalSupply(true);
+void StarterBot::sendAttack()
+{
+    // Get all of our combat units
+    BWAPI::Unitset myCombatUnits;
+    for (auto& unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        if (unit->getType().canAttack() && !unit->getType().isWorker() && unit->isCompleted())
+        {
+            myCombatUnits.insert(unit);
+        }
+    }
+
+    // Find an enemy unit to attack
+    BWAPI::Position enemyPosition;
+    bool foundEnemy = false;
+    for (auto& unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        // Ignore the unit if it is a flying building (e.g., Terran Command Center)
+        if (unit->getType().isBuilding() && unit->isFlying())
+            continue;
+
+        enemyPosition = unit->getPosition();
+        foundEnemy = true;
+        break;
+    }
+
+    // If we haven't found an enemy, we could either wait or scout for enemies
+    if (!foundEnemy)
+    {
+        // For now, let's just wait
+        return;
+    }
+
+    // Command all of our combat units to attack the found enemy position
+    for (auto& unit : myCombatUnits)
+    {
+        if (unit->isIdle() || !unit->isAttacking())
+        {
+            unit->attack(enemyPosition);
+        }
+    }
 }
+
 // Draw some relevent information to the screen to help us debug the bot
 void StarterBot::drawDebugInformation()
 {
