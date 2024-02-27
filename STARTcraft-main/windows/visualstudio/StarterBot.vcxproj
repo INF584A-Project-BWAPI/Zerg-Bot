@@ -50,7 +50,9 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.h" />
     <ClInclude Include="..\..\src\starterbot\BT\Data.h" />
+    <ClInclude Include="..\..\src\starterbot\GameFileParser.hpp" />
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
+    <ClInclude Include="..\..\src\starterbot\json.hpp" />
     <ClInclude Include="..\..\src\starterbot\MapTools.h" />
     <ClInclude Include="..\..\src\starterbot\ReplayParser.h" />
     <ClInclude Include="..\..\src\starterbot\StarterBot.h" />
@@ -86,11 +88,15 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.cpp" />
+    <ClCompile Include="..\..\src\starterbot\GameFileParser.cpp" />
     <ClCompile Include="..\..\src\starterbot\main.cpp" />
     <ClCompile Include="..\..\src\starterbot\MapTools.cpp" />
     <ClCompile Include="..\..\src\starterbot\ReplayParser.cpp" />
     <ClCompile Include="..\..\src\starterbot\StarterBot.cpp" />
     <ClCompile Include="..\..\src\starterbot\Tools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\starterbot\BotParameters\GameFile.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>StarterBot</ProjectName>
@@ -221,7 +227,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Users\justi\Documents\SCHOOL\X2\INF584A\STARTcraft-main_2023_02_21\STARTcraft-main\src\starterbot\BT\BT_STARCRAFT;C:\Users\justi\Documents\SCHOOL\X2\INF584A\STARTcraft-main_2023_02_21\STARTcraft-main\src\starterbot\BT;C:\Users\justi\Documents\SCHOOL\X2\INF584A\STARTcraft-main_2023_02_21\STARTcraft-main\src\starterbot;../../src/bwapi/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot\BT\BT_STARCRAFT;C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot\BT;C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot;../../src/bwapi/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

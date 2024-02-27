@@ -1,10 +1,12 @@
 #include "StarterBot.h"
 #include "Tools.h"
 #include "MapTools.h"
-#include <Data.h>
+#include "..\starterbot\BT\Data.h"
 #include <format>
 
-#include "BT.h"
+#include "..\starterbot\BT\BT.h"
+#include "GameFileParser.hpp";
+
 
 StarterBot::StarterBot()
 {
@@ -36,7 +38,7 @@ StarterBot::StarterBot()
     //BT_COND_GREATER_THAN<int> *pGreaterThan = new BT_COND_GREATER_THAN<int>("MineralsGreaterThanThreshold1",pSequencer,100, pData->currMinerals, false);
     //BT_ACTION_LOG* pLog = new BT_ACTION_LOG("LogMSG", pSequencer, std::format("current minerals greater than {}", 100));
     BT_COND_LESSER_THAN<int>* pLesserThan = new BT_COND_LESSER_THAN<int>("MineralsLesserThanThreshold1", pSequencer, 100, pData->currMinerals, false);
-    BT_ACTION_LOG* pLog = new BT_ACTION_LOG("LogMSG", pSequencer, std::format("current minerals lesser than {}", 100));
+    //BT_ACTION_LOG* pLog = new BT_ACTION_LOG("LogMSG", pSequencer, std::format("current minerals lesser than {}", 100));
 
 
 
@@ -59,6 +61,12 @@ StarterBot::StarterBot()
     BT_DECO_REPEATER* pBuildSupplyProviderForeverRepeater = new BT_DECO_REPEATER("RepeatForeverBuildSupplyProvider", pParallelSeq, 0, true, false,false);
     BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY* pNotEnoughSupply = new BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY("NotEnoughSupply", pBuildSupplyProviderForeverRepeater);
     BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
+
+    // Parses the parameters passed for the bot
+    GameFileParser gameParser;
+
+    gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
+    gameParser.print_build_order();
 }
 
 // Called when the bot starts!
@@ -76,7 +84,6 @@ void StarterBot::onStart()
 
     //Bwem
     //BWEM::Map::Instance().Initialize(BWAPI::BroodwarPtr);
-    
 }
 
 // Called on each frame of the game

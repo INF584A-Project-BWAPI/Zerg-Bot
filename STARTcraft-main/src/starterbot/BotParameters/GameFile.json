@@ -1,0 +1,11 @@
+{
+    "name": "ProtosBot",
+    "version": "v0.0.1",
+    "build_order": [
+        {
+            "name": "pylon",
+            "minProductionLevel": 9,
+            "maxProductionLevel":  10
+        }
+    ]
+}

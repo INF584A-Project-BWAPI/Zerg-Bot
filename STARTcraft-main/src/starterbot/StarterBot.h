@@ -1,9 +1,10 @@
 #pragma once
 
 #include "MapTools.h"
-#include "BT.h"
+#include "..\starterbot\BT\BT.h"
 #include <BWAPI.h>
-#include "Data.h"
+#include "..\starterbot\BT\Data.h"
+#include "GameFileParser.hpp";
 //#include "map.h"
 
 class StarterBot
@@ -13,6 +14,7 @@ private:
 	BT_NODE* pBT;
 	BT_NODE* pBtTest;
 	Data *pData;
+	GameFileParser gameParser;
 
 public:
 

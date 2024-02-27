@@ -93,6 +93,7 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_COND_LESSER_THAN.cpp">
       <Filter>BT</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\GameFileParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -193,6 +194,8 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_COND_LESSER_THAN.h">
       <Filter>BT</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\GameFileParser.hpp" />
+    <ClInclude Include="..\..\src\starterbot\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BT">
@@ -201,5 +204,8 @@
     <Filter Include="BT\BT_STARCRAFT">
       <UniqueIdentifier>{f7d3a676-4252-4269-9d78-432aabc0f416}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\starterbot\BotParameters\GameFile.json" />
   </ItemGroup>
 </Project>
