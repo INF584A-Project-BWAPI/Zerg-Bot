@@ -63,6 +63,7 @@
     <ClCompile Include="..\..\src\bwapi\shared\PlayerShared.cpp" />
     <ClCompile Include="..\..\src\bwapi\shared\RegionShared.cpp" />
     <ClCompile Include="..\..\src\bwapi\shared\UnitShared.cpp" />
+    <ClCompile Include="UnitClassBehavior.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\bwapi\BWAPIClient\Command.h" />

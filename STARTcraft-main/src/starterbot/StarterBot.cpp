@@ -1,12 +1,21 @@
 #include "StarterBot.h"
 #include "Tools.h"
 #include "MapTools.h"
+
 #include "..\starterbot\BT\Data.h"
 #include <format>
 
 #include "..\starterbot\BT\BT.h"
 #include "GameFileParser.hpp";
 
+=======
+
+
+#include "..\starterbot\BT\Data.h"
+#include <format>
+#include "..\starterbot\BT\BT.h"
+#include "GameFileParser.hpp";
+>>>>>>> Stashed changes
 
 StarterBot::StarterBot()
 {
@@ -16,7 +25,6 @@ StarterBot::StarterBot()
     pData->currSupply = 0;
     pData->thresholdSupply = THRESHOLD1_UNUSED_SUPPLY;
     pData->locationsScouted = 0;
-
     pData->nWantedWorkersTotal = NWANTED_WORKERS_TOTAL;
     pData->nWantedWorkersFarmingMinerals = NWANTED_WORKERS_FARMING_MINERALS;
 
@@ -110,10 +118,6 @@ void StarterBot::onFrame()
     }
 
     
-    // Send a worker scouting, it'll find an idle worker so it needs 
-    // to be called before sendIdleWorkersToMinerals()
-    sendScout();
-
     // Send our idle workers to mine minerals so they don't just stand there
     sendIdleWorkersToMinerals();
 
@@ -122,7 +126,9 @@ void StarterBot::onFrame()
 
     // Build more supply if we are going to run out soon
     buildAdditionalSupply();
-
+    // Send a worker scouting
+    sendScout();
+    sendAttack();
     // Draw unit health bars, which brood war unfortunately does not do
     Tools::DrawUnitHealthBars();
 
@@ -186,39 +192,33 @@ void StarterBot::buildAdditionalSupply()
     }
 }
 
-// Choose a worker and send it scouting neighboring bases
 void StarterBot::sendScout() {
-    const int SupplyUsed = BWAPI::Broodwar->self()->supplyUsed();
-    BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
-    BWAPI::TilePosition HomeLocation = BWAPI::Broodwar->self()->getStartLocation();
+    const int TotalSupply = Tools::GetTotalSupply(true);
 
-    if (pData->locationsScouted >= StartLocations.size()) { return; }
+    if (TotalSupply < 5) { return; }
 
-    std::cout << "LocationsScouted " << pData->locationsScouted << std::endl;
-    std::cout << "total locations " << StartLocations.size() << std::endl;
-
-    // get a worker
     const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
-    const BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    const BWAPI::Unit scout = Tools::GetUnitOfType(workerType);
 
-    if (scout == nullptr) { return; }
-    
-     // send it scounting in a new location and update the locations
-     if (StartLocations[pData->locationsScouted] != HomeLocation) {
-         scout->move((BWAPI::Position)StartLocations[pData->locationsScouted]);
-         scout->move((BWAPI::Position)HomeLocation, true);
-         pData->locationsScouted += 1;
-     }
-     else {
-         if (pData->locationsScouted < StartLocations.size() - 1) {
-             scout->move((BWAPI::Position)StartLocations[pData->locationsScouted + 1]);
-             scout->move((BWAPI::Position)HomeLocation, true);
-         }
-         pData->locationsScouted += 2;
-     }
+    // iterate over my units and find a random worker
+    for (auto& unit : myUnits)
+    {
+        // Check the unit type, if it is an idle worker, then we want to send it somewhere
+        if (unit->getType().isWorker())
+        {
+            // Find a base on the map
+            BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
+
+            // Send the unit scouting
+            unit->move((BWAPI::Position)StartLocations[0]);
+            break;
+        }
+    }
 }
 
+// attack: neutralize and destroy logic
+void StarterBot::sendAttack(){
+    const int TotalSupply = Tools::GetTotalSupply(true);
+}
 // Draw some relevent information to the screen to help us debug the bot
 void StarterBot::drawDebugInformation()
 {
@@ -232,7 +232,7 @@ void StarterBot::onEnd(bool isWinner)
 {
     std::cout << "We " << (isWinner ? "won!" : "lost!") << "\n";
 }
-
+// complete these unit class behaviors
 // Called whenever a unit is destroyed, with a pointer to the unit
 void StarterBot::onUnitDestroy(BWAPI::Unit unit)
 {
@@ -244,7 +244,14 @@ void StarterBot::onUnitDestroy(BWAPI::Unit unit)
 // Zerg units morph when they turn into other units
 void StarterBot::onUnitMorph(BWAPI::Unit unit)
 {
-	
+    if (unit->getPlayer() == BWAPI::Broodwar->self()) {
+        // If the unit belongs to the AI player, you might want to manage it.
+        // For example, if it's a Drone morphing into a building, remove it from the worker count.
+        if (unit->getType().isBuilding() && pData->unitsFarmingMinerals.contains(unit)) {
+            pData->unitsFarmingMinerals.erase(unit);
+            // maybe insert
+        }//keep track of it; keep track of the existence the units.
+    }
 }
 
 // Called whenever a text is sent to the game by a user
@@ -254,6 +261,7 @@ void StarterBot::onSendText(std::string text)
     {
         m_mapTools.toggleDraw();
     }
+
 }
 
 // Called whenever a unit is created, with a pointer to the destroyed unit
@@ -261,32 +269,69 @@ void StarterBot::onSendText(std::string text)
 // so this will trigger when you issue the build command for most units
 void StarterBot::onUnitCreate(BWAPI::Unit unit)
 { 
-	
+    //const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+    if (unit->getType().isWorker() && unit->getPlayer() == BWAPI::Broodwar->self()) {
+        // Do something when your bot creates a unit. For example, add it to a list of units.
+        pData->unitsFarmingMinerals.insert(unit);
+        BWAPI::Broodwar->sendText("Created a %s", unit->getType().c_str());
+    }
 }
 
 // Called whenever a unit finished construction, with a pointer to the unit
 void StarterBot::onUnitComplete(BWAPI::Unit unit)
 {
-	
+    if (unit->getType().supplyProvided() && unit->getPlayer() == BWAPI::Broodwar->self())
+    {
+        pData->currSupply += unit->getType().supplyProvided();
+    }
 }
 
 // Called whenever a unit appears, with a pointer to the destroyed unit
 // This is usually triggered when units appear from fog of war and become visible
 void StarterBot::onUnitShow(BWAPI::Unit unit)
 { 
-	
+    // If the unit belongs to us, add it to our set of units
+    if (unit->getPlayer() == BWAPI::Broodwar->self())
+    {
+        myUnits.insert(unit);
+    }
+    // Otherwise, if it's an enemy unit, add it to the enemy units set
+    else if (unit->getPlayer()->isEnemy(BWAPI::Broodwar->self()))
+    {
+        enemyUnits.insert(unit);
+    }
 }
 
 // Called whenever a unit gets hidden, with a pointer to the destroyed unit
 // This is usually triggered when units enter the fog of war and are no longer visible
 void StarterBot::onUnitHide(BWAPI::Unit unit)
 { 
-	
+    // If the unit belongs to us, remove it from our set of units
+    if (unit->getPlayer() == BWAPI::Broodwar->self())
+    {
+        myUnits.erase(unit);
+    }
+    // Otherwise, if it's an enemy unit, remove it from the enemy units set
+    else if (unit->getPlayer()->isEnemy(BWAPI::Broodwar->self()))
+    {
+        enemyUnits.erase(unit);
+    }
 }
 
 // Called whenever a unit switches player control
 // This usually happens when a dark archon takes control of a unit
 void StarterBot::onUnitRenegade(BWAPI::Unit unit)
 { 
-	
+    myUnits.erase(unit);
+    enemyUnits.erase(unit);
+
+    // Now, add it back to the appropriate set based on its new allegiance
+    if (unit->getPlayer() == BWAPI::Broodwar->self())
+    {
+        myUnits.insert(unit);
+    }
+    else if (unit->getPlayer()->isEnemy(BWAPI::Broodwar->self()))
+    {
+        enemyUnits.insert(unit);
+    }
 }

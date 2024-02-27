@@ -1,6 +1,7 @@
 #include "BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS.h"
-#include "Tools.h"
-#include "Data.h"
+#include <BWAPI.h>
+#include "../../Tools.h"
+#include "..\Data.h"
 
 BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS::BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS(std::string name,BT_NODE* parent)
     :  BT_ACTION(name,parent) {}
@@ -19,6 +20,7 @@ std::string BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS::GetDescription()
 BT_NODE::State BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS::SendIdleWorkerToMinerals(void* data)
 {
     Data* pData = (Data*)data;
+
 
     const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
     for (auto& unit : myUnits)

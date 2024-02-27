@@ -1,10 +1,16 @@
 #pragma once
 
 #include "MapTools.h"
+<<<<<<< Updated upstream
 #include "..\starterbot\BT\BT.h"
 #include <BWAPI.h>
 #include "..\starterbot\BT\Data.h"
 #include "GameFileParser.hpp";
+=======
+#include "../starterbot/BT/BT.h"
+#include <BWAPI.h>
+#include "../starterbot/BT/Data.h"
+>>>>>>> Stashed changes
 //#include "map.h"
 
 class StarterBot
@@ -14,7 +20,12 @@ private:
 	BT_NODE* pBT;
 	BT_NODE* pBtTest;
 	Data *pData;
+<<<<<<< Updated upstream
 	GameFileParser gameParser;
+=======
+	BWAPI::Unitset myUnits;
+	BWAPI::Unitset enemyUnits;
+>>>>>>> Stashed changes
 
 public:
 
@@ -25,6 +36,7 @@ public:
     void trainAdditionalWorkers();
     void buildAdditionalSupply();
 	void sendScout();
+	void sendAttack();
     void drawDebugInformation();
 
     // functions that are triggered by various BWAPI events from main.cpp

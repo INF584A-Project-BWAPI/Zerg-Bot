@@ -6,7 +6,7 @@
 #include <thread>
 #include <chrono>
 
-#include "BT.h"
+#include "../starterbot/BT/BT.h"
 
 void PlayGame();
 void ParseReplay();

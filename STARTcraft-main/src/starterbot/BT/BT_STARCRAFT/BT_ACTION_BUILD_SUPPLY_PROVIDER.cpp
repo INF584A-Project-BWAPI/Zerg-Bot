@@ -1,6 +1,7 @@
 #include "BT_ACTION_BUILD_SUPPLY_PROVIDER.h"
-#include "Tools.h"
-#include "Data.h"
+//#include "Tools.h"
+#include "../../Tools.h"
+#include "..\Data.h"
 
 BT_ACTION_BUILD_SUPPLY_PROVIDER::BT_ACTION_BUILD_SUPPLY_PROVIDER(std::string name,BT_NODE* parent)
     :  BT_ACTION(name,parent) {}
