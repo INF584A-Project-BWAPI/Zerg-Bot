@@ -1,6 +1,7 @@
 #include "StarterBot.h"
 #include "Tools.h"
 #include "MapTools.h"
+#include "ScoutManager.h"
 #include <Data.h>
 #include <format>
 
@@ -74,6 +75,8 @@ void StarterBot::onStart()
     // Call MapTools OnStart
     m_mapTools.onStart();
 
+    ScoutManager.onStart();
+
     //Bwem
     //BWEM::Map::Instance().Initialize(BWAPI::BroodwarPtr);
     
@@ -106,6 +109,7 @@ void StarterBot::onFrame()
     // Send a worker scouting, it'll find an idle worker so it needs 
     // to be called before sendIdleWorkersToMinerals()
     sendScout();
+    ScoutManager.updateScouts();
 
     // Send our idle workers to mine minerals so they don't just stand there
     sendIdleWorkersToMinerals();
@@ -183,6 +187,7 @@ void StarterBot::buildAdditionalSupply()
 void StarterBot::sendScout() {
     const int SupplyUsed = BWAPI::Broodwar->self()->supplyUsed();
     BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
+    BWAPI::Unitset Minerals = BWAPI::Broodwar->getMinerals();
     BWAPI::TilePosition HomeLocation = BWAPI::Broodwar->self()->getStartLocation();
 
     if (pData->locationsScouted >= StartLocations.size()) { return; }
@@ -201,15 +206,16 @@ void StarterBot::sendScout() {
      if (StartLocations[pData->locationsScouted] != HomeLocation) {
          scout->move((BWAPI::Position)StartLocations[pData->locationsScouted]);
          scout->move((BWAPI::Position)HomeLocation, true);
-         pData->locationsScouted += 1;
      }
      else {
          if (pData->locationsScouted < StartLocations.size() - 1) {
              scout->move((BWAPI::Position)StartLocations[pData->locationsScouted + 1]);
              scout->move((BWAPI::Position)HomeLocation, true);
          }
-         pData->locationsScouted += 2;
+         pData->locationsScouted += 1;
      }
+
+     pData->locationsScouted += 1;
 }
 
 // Draw some relevent information to the screen to help us debug the bot
