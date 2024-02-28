@@ -1,10 +1,12 @@
 #pragma once
 
+#include <vector>
 #include "MapTools.h"
 #include "BT.h"
 #include <BWAPI.h>
 #include "Data.h"
 #include "GameFileParser.hpp";
+#include "Managers/BaseSupervisor.h"
 //#include "map.h"
 
 class StarterBot
@@ -14,7 +16,9 @@ private:
 	BT_NODE* pBT;
 	BT_NODE* pBtTest;
 	Data *pData;
+	
 	GameFileParser gameParser;
+	BaseSupervisor gameCommander;
 
 public:
 

@@ -5,6 +5,8 @@
 #include <format>
 
 #include "BT.h"
+#include "Managers/Data/BuildJob.h"
+#include "Managers/BaseSupervisor.h"
 #include "GameFileParser.hpp";
 
 
@@ -52,9 +54,9 @@ StarterBot::StarterBot()
     BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS* pSendWorkerToMinerals = new BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS("SendWorkerToMinerals", pNotEnoughWorkersFarmingMinerals);
 
     //Training Workers
-    BT_DECO_REPEATER* pTrainingWorkersForeverRepeater = new BT_DECO_REPEATER("RepeatForeverTrainingWorkers", pParallelSeq, 0, true, false,false);
-    BT_DECO_CONDITION_NOT_ENOUGH_WORKERS* pNotEnoughWorkers = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS("NotEnoughWorkers", pTrainingWorkersForeverRepeater);
-    BT_ACTION_TRAIN_WORKER* pTrainWorker = new BT_ACTION_TRAIN_WORKER("TrainWorker", pNotEnoughWorkers);
+    //BT_DECO_REPEATER* pTrainingWorkersForeverRepeater = new BT_DECO_REPEATER("RepeatForeverTrainingWorkers", pParallelSeq, 0, true, false,false);
+    //BT_DECO_CONDITION_NOT_ENOUGH_WORKERS* pNotEnoughWorkers = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS("NotEnoughWorkers", pTrainingWorkersForeverRepeater);
+    //BT_ACTION_TRAIN_WORKER* pTrainWorker = new BT_ACTION_TRAIN_WORKER("TrainWorker", pNotEnoughWorkers);
 
     //Build Additional Supply Provider
     BT_DECO_REPEATER* pBuildSupplyProviderForeverRepeater = new BT_DECO_REPEATER("RepeatForeverBuildSupplyProvider", pParallelSeq, 0, true, false,false);
@@ -62,10 +64,29 @@ StarterBot::StarterBot()
     BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
 
     // Parses the parameters passed for the bot
-    GameFileParser gameParser;
-
     gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
     gameParser.print_build_order();
+    std::vector<BuildingRecipe> buildOrder = gameParser.buildorder;
+
+    for (int i = 0; i < buildOrder.size(); i ++) {
+        const BuildingRecipe order = buildOrder.at(i);
+
+        if (order.getProducer() == ProducerType::Worker) {
+            const BWAPI::UnitType building = order.getName();
+            const int gas = building.gasPrice();
+            const int crystal = building.mineralPrice();
+
+            const BuildJob job(i, ManagerType::BaseSupervisor, gas, crystal, building);
+            gameCommander.postJob(job);
+        }
+
+        if (order.getProducer() == ProducerType::Base) {
+            const BWAPI::UnitType unitType = order.getName();
+
+            const UnitProduceJob job(i, ManagerType::BaseSupervisor, unitType);
+            gameCommander.postJob(job);
+        }
+    }
 }
 
 // Called when the bot starts!
@@ -93,6 +114,8 @@ void StarterBot::onFrame()
 
     pData->currMinerals = BWAPI::Broodwar->self()->minerals();
     pData->currSupply = Tools::GetUnusedSupply(true);
+
+    gameCommander.onFrame();
     
     // AI BT
     if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)

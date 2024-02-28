@@ -58,10 +58,37 @@ int GameFileParser::parse_build_order()
         BWAPI::UnitType name = unit_type_map[building["name"]];
         int minProductionLevel = building["minProductionLevel"];
         int maxProductionLevel = building["maxProductionLevel"];
-        buildings.emplace_back(name, minProductionLevel, maxProductionLevel);
+        BuildType buildType = parse_buildtype_enum(building["buildType"]);
+        ProducerType producerType = parse_producertype_enum(building["producerType"]);
+
+        buildings.emplace_back(name, buildType, producerType, minProductionLevel, maxProductionLevel);
     }
 
     buildorder = buildings;
 
     return 1;
+}
+
+BuildType GameFileParser::parse_buildtype_enum(const string& type)
+{
+    auto it = buildTypeStrToEnum.find(type);
+    if (it != buildTypeStrToEnum.end()) {
+        return it->second;
+    }
+    else {
+        // Handle error case when string doesn't match any enum value
+        throw std::invalid_argument("Invalid BuildType string: " + type);
+    }
+}
+
+ProducerType GameFileParser::parse_producertype_enum(const string& type)
+{
+    auto it = producerTypeStrToEnum.find(type);
+    if (it != producerTypeStrToEnum.end()) {
+        return it->second;
+    }
+    else {
+        // Handle error case when string doesn't match any enum value
+        throw std::invalid_argument("Invalid ProducerType string: " + type);
+    }
 }

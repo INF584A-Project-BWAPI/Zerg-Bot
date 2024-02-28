@@ -18,19 +18,45 @@ using namespace std;
 ==============================
 */
 
+enum class ProducerType {
+    Base,
+    Worker,
+};
+
+static const std::map<std::string, ProducerType> producerTypeStrToEnum = {
+    {"Base", ProducerType::Base},
+    {"Worker", ProducerType::Worker},
+};
+
+enum class BuildType {
+    Unit,
+    Building,
+};
+
+static const std::map<std::string, BuildType> buildTypeStrToEnum = {
+    {"Unit", BuildType::Unit},
+    {"Building", BuildType::Building},
+};
+
 class BuildingRecipe {
 public:
     // Constructor
-    BuildingRecipe(const BWAPI::UnitType& name, int minProductionLevel, int maxProductionLevel)
-        : name(name), minProductionLevel(minProductionLevel), maxProductionLevel(maxProductionLevel) {}
+    BuildingRecipe(const BWAPI::UnitType& name, const BuildType& type, ProducerType producer,
+        int minProductionLevel, int maxProductionLevel)
+        : name(name), type(type), producer(producer),
+        minProductionLevel(minProductionLevel), maxProductionLevel(maxProductionLevel) {}
 
     // Accessors
     BWAPI::UnitType getName() const { return name; }
+    BuildType getType() const { return type; }
+    ProducerType getProducer() const { return producer; }
     int getMinProductionLevel() const { return minProductionLevel; }
     int getMaxProductionLevel() const { return maxProductionLevel; }
 
 private:
     BWAPI::UnitType name;
+    BuildType type;
+    ProducerType producer;
     int minProductionLevel;
     int maxProductionLevel;
 };
@@ -58,8 +84,9 @@ private:
     bool json_loaded;
     std::unordered_map<std::string, BWAPI::UnitType> unit_type_map;
 
-
     int parse_build_order();
+    BuildType parse_buildtype_enum(const string& type);
+    ProducerType parse_producertype_enum(const string& type);
 };
 
 #endif // GAME_FILE_PARSER_H
