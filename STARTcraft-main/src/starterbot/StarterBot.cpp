@@ -218,6 +218,10 @@ void StarterBot::sendScout() {
 void StarterBot::sendAttack()
 {
     // Get all of our combat units
+    const int TotalSupply = Tools::GetTotalSupply(true);
+
+    if (TotalSupply < 5) { return; }
+
     BWAPI::Unitset myCombatUnits;
     for (auto& unit : BWAPI::Broodwar->self()->getUnits())
     {
@@ -227,35 +231,60 @@ void StarterBot::sendAttack()
         }
     }
 
-    // Find an enemy unit to attack
-    BWAPI::Position enemyPosition;
-    bool foundEnemy = false;
-    for (auto& unit : BWAPI::Broodwar->enemy()->getUnits())
+    // Find the closest and weakest enemy unit to attack
+    BWAPI::Unit targetEnemy = nullptr;
+    int minHp = std::numeric_limits<int>::max();
+    double closestDistance = std::numeric_limits<double>::max();
+    const BWAPI::Unitset& EnemyUnits = BWAPI::Broodwar->enemy()->getUnits();
+    for (auto& unit : EnemyUnits)
     {
         // Ignore the unit if it is a flying building (e.g., Terran Command Center)
         if (unit->getType().isBuilding() && unit->isFlying())
             continue;
 
-        enemyPosition = unit->getPosition();
-        foundEnemy = true;
-        break;
-    }
+    //    // Calculate the distance and hitpoints
+        double distance = unit->getPosition().getDistance(myCombatUnits.getPosition());// why units
+        int hp = unit->getHitPoints();
 
-    // If we haven't found an enemy, we could either wait or scout for enemies
-    if (!foundEnemy)
-    {
-        // For now, let's just wait
-        return;
-    }
-
-    // Command all of our combat units to attack the found enemy position
-    for (auto& unit : myCombatUnits)
-    {
-        if (unit->isIdle() || !unit->isAttacking())
+    //    // Check if this unit is the closest and weakest
+        if (hp < minHp || distance < closestDistance)
         {
-            unit->attack(enemyPosition);
+            targetEnemy = unit;
+            minHp = hp;
+            closestDistance = distance;
         }
     }
+
+    //// If we haven't found an enemy, we could either wait or scout for enemies
+    //if (!targetEnemy)
+    //{
+    //    // For now, let's just wait
+    //    sendScout();
+    //    return;
+    //}
+    //
+    if (targetEnemy) { 
+        std::cout << "Enemy found:"<< targetEnemy<<std::endl;
+        for (auto& unit : myCombatUnits)
+        {
+            if (unit->isIdle() || !unit->isAttacking())
+            {
+                unit->attack(targetEnemy);
+            }
+        }
+    }
+    //// Command all of our combat units to attack the found enemy position
+    //const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+    //for (auto& unit : myUnits)
+    //{
+    //    if (unit->getType().canAttack() && !unit->getType().isWorker() && unit->isCompleted())
+    //    {
+    //        if (unit->isIdle() || !unit->isAttacking())
+    //        {
+    //            unit->attack(targetEnemy);
+    //        }
+    //    }
+    //}
 }
 
 // Draw some relevent information to the screen to help us debug the bot

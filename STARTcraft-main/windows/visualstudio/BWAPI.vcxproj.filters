@@ -144,9 +144,6 @@
     <ClCompile Include="..\..\src\bwapi\shared\UnitShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="UnitClassBehavior.cpp">
-      <Filter>BWAPILIB</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\bwapi\BWAPIClient\Command.h">
