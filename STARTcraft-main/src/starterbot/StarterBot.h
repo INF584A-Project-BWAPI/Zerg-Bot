@@ -6,7 +6,10 @@
 #include <BWAPI.h>
 #include "Data.h"
 #include "GameFileParser.hpp";
-#include "Managers/BaseSupervisor.h"
+#include "Managers/BasesManager.h";
+#include "Managers/GameCommander.h";
+#include "Managers/ScoutManager.h";
+#include "Managers/ArmyManager.h";
 //#include "map.h"
 
 class StarterBot
@@ -18,7 +21,14 @@ private:
 	Data *pData;
 	
 	GameFileParser gameParser;
-	BaseSupervisor gameCommander;
+	
+	// Managers
+	GameCommander gameCommander;
+	BasesManager basesManager;
+	BaseSupervisor mainBaseSupervisor;
+	ScoutManager scoutManager;
+	ArmyManager armyManager;
+	
 
 public:
 

@@ -93,13 +93,30 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_COND_LESSER_THAN.cpp">
       <Filter>BT</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\starterbot\GameFileParser.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\ManagerBase.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\Data\JobBase.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\BuildManager.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\Data\BuildJob.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\BaseSupervisor.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\Data\UnitProduceJob.cpp" />
+    <ClCompile Include="..\..\src\starterbot\Managers\BaseSupervisor.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\Data\JobBase.cpp">
+      <Filter>Managers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\ManagerBase.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\GameFileParser.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\BasesManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\GameCommander.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\ScoutManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\ArmyManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -200,14 +217,31 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_COND_LESSER_THAN.h">
       <Filter>BT</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\starterbot\GameFileParser.hpp" />
     <ClInclude Include="..\..\src\starterbot\json.hpp" />
-    <ClInclude Include="..\..\src\starterbot\Managers\ManagerBase.h" />
-    <ClInclude Include="..\..\src\starterbot\Managers\Data\JobBase.h" />
-    <ClInclude Include="..\..\src\starterbot\Managers\BuildManager.h" />
-    <ClInclude Include="..\..\src\starterbot\Managers\Data\BuildJob.h" />
-    <ClInclude Include="..\..\src\starterbot\Managers\BaseSupervisor.h" />
-    <ClInclude Include="..\..\src\starterbot\Managers\Data\UnitProduceJob.h" />
+    <ClInclude Include="..\..\src\starterbot\Managers\BaseSupervisor.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\Data\JobBase.h">
+      <Filter>Managers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\ManagerBase.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\GameFileParser.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\BasesManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\GameCommander.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\ScoutManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\ArmyManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BT">
@@ -216,8 +250,22 @@
     <Filter Include="BT\BT_STARCRAFT">
       <UniqueIdentifier>{f7d3a676-4252-4269-9d78-432aabc0f416}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{13104615-47ad-4fcc-8f5c-4fb5406f1d11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Managers\Data">
+      <UniqueIdentifier>{db2dcf58-3234-4b61-b729-bc42d09c24a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{637a6ed4-7406-42a4-a3d3-515745fa3450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BotParameters">
+      <UniqueIdentifier>{a99c619b-cc14-4925-8165-f62b497e1fa8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\starterbot\BotParameters\GameFile.json" />
+    <None Include="..\..\src\starterbot\BotParameters\GameFile.json">
+      <Filter>BotParameters</Filter>
+    </None>
   </ItemGroup>
 </Project>
