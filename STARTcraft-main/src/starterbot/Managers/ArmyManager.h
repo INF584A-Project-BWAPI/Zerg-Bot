@@ -5,11 +5,11 @@
 #include "Data.h"
 #include "ManagerBase.h"
 
-class BaseSupervisor : virtual ManagerBase {
+class ArmyManager : virtual ManagerBase {
 public:
     // Constructor
-    BaseSupervisor() noexcept : ManagerBase(ManagerType::BaseSupervisor) {};
-    
+    ArmyManager() noexcept : ManagerBase(ManagerType::ScoutManager) {};
+
     // Functions
     void onFrame();
 
@@ -32,18 +32,10 @@ public:
 
 private:
     // Fields
-    std::vector<BWAPI::Unit> workers;
-    float defence_dps = 0; // Damage Per Second our defence can provide
-    std::vector<BWAPI::UnitType> buildings;
+    std::vector<BWAPI::Unit> squads; // Change this to be a list of class Squad when you've implemented it
 
     JobPriorityQueue queuedJobs;
-    std::vector<JobBase> activeJobs; // TODO :: change to buildings
+    std::vector<JobBase> activeJobs;
 
-    int allocated_minerals = 0;
-    int allocated_gas = 0;
-
-    // Functions
-    bool buildBuilding(JobBase job);
-    bool produceUnit(JobBase job);
-    //void verifyActiveBuilds();
 };
+

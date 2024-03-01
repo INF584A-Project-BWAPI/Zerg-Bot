@@ -1,15 +1,17 @@
 #pragma once
 
+#include "ManagerBase.h"
 #include <optional>
 #include "iostream"
 #include "Data.h"
 #include "ManagerBase.h"
 
-class BaseSupervisor : virtual ManagerBase {
+
+class ScoutManager : virtual ManagerBase {
 public:
     // Constructor
-    BaseSupervisor() noexcept : ManagerBase(ManagerType::BaseSupervisor) {};
-    
+    ScoutManager() noexcept : ManagerBase(ManagerType::ScoutManager) {};
+
     // Functions
     void onFrame();
 
@@ -32,18 +34,11 @@ public:
 
 private:
     // Fields
-    std::vector<BWAPI::Unit> workers;
-    float defence_dps = 0; // Damage Per Second our defence can provide
-    std::vector<BWAPI::UnitType> buildings;
+    std::vector<BWAPI::Unit> scouts;
 
     JobPriorityQueue queuedJobs;
-    std::vector<JobBase> activeJobs; // TODO :: change to buildings
+    std::vector<JobBase> activeJobs;
 
-    int allocated_minerals = 0;
-    int allocated_gas = 0;
-
-    // Functions
-    bool buildBuilding(JobBase job);
-    bool produceUnit(JobBase job);
-    //void verifyActiveBuilds();
 };
+
+
