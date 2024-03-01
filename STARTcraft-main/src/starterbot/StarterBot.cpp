@@ -60,19 +60,27 @@ StarterBot::StarterBot()
     BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS* pSendWorkerToMinerals = new BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS("SendWorkerToMinerals", pNotEnoughWorkersFarmingMinerals);
 
     //Training Workers
-    BT_DECO_REPEATER* pTrainingWorkersForeverRepeater = new BT_DECO_REPEATER("RepeatForeverTrainingWorkers", pParallelSeq, 0, true, false,false);
-    BT_DECO_CONDITION_NOT_ENOUGH_WORKERS* pNotEnoughWorkers = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS("NotEnoughWorkers", pTrainingWorkersForeverRepeater);
-    BT_ACTION_TRAIN_WORKER* pTrainWorker = new BT_ACTION_TRAIN_WORKER("TrainWorker", pNotEnoughWorkers);
+    //BT_DECO_REPEATER* pTrainingWorkersForeverRepeater = new BT_DECO_REPEATER("RepeatForeverTrainingWorkers", pParallelSeq, 0, true, false,false);
+    //BT_DECO_CONDITION_NOT_ENOUGH_WORKERS* pNotEnoughWorkers = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS("NotEnoughWorkers", pTrainingWorkersForeverRepeater);
+    //BT_ACTION_TRAIN_WORKER* pTrainWorker = new BT_ACTION_TRAIN_WORKER("TrainWorker", pNotEnoughWorkers);
 
     //Build Additional Supply Provider
     BT_DECO_REPEATER* pBuildSupplyProviderForeverRepeater = new BT_DECO_REPEATER("RepeatForeverBuildSupplyProvider", pParallelSeq, 0, true, false,false);
     BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY* pNotEnoughSupply = new BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY("NotEnoughSupply", pBuildSupplyProviderForeverRepeater);
     BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
 
-    // Parses the parameters passed for the bot
-    GameFileParser gameParser;
+    // Bases Manager
+    basesManager.setChild(&mainBaseSupervisor);
 
+    // Game Commander
+    gameCommander.setManagerBases(&basesManager);
+    gameCommander.setManagerScout(&scoutManager);
+    gameCommander.setManagerArmy(&armyManager);
+
+    // Set early game build order into game commander
     gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
+    gameCommander.setBuildOrder(gameParser.buildorder);
+
     gameParser.print_build_order();
 }
 
@@ -101,6 +109,8 @@ void StarterBot::onFrame()
 
     pData->currMinerals = BWAPI::Broodwar->self()->minerals();
     pData->currSupply = Tools::GetUnusedSupply(true);
+
+    gameCommander.onFrame();
     
     // AI BT
     if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)

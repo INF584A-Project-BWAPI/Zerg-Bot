@@ -4,8 +4,53 @@
     "build_order": [
         {
             "name": "pylon",
-            "minProductionLevel": 9,
-            "maxProductionLevel":  10
+            "buildType": "Building",
+            "producerType": "Worker",
+            "minProductionLevel": 0,
+            "maxProductionLevel": 9
+        },
+        {
+            "name": "probe",
+            "buildType": "Unit",
+            "producerType": "Base",
+            "minProductionLevel": 10,
+            "maxProductionLevel": 10
+        },
+        {
+            "name": "probe",
+            "buildType": "Unit",
+            "producerType": "Base",
+            "minProductionLevel": 10,
+            "maxProductionLevel": 10
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker",
+            "minProductionLevel": 0,
+            "maxProductionLevel": 12
+        },
+        {
+            "name": "probe",
+            "buildType": "Unit",
+            "producerType": "Base",
+            "minProductionLevel": 12,
+            "maxProductionLevel": 12
+        },
+        {
+            "name": "probe",
+            "buildType": "Unit",
+            "producerType": "Base",
+            "minProductionLevel": 12,
+            "maxProductionLevel": 12
+        },
+        {
+            "name": "assimilator",
+            "buildType": "Building",
+            "producerType": "Worker",
+            "minProductionLevel": 13,
+            "maxProductionLevel": 13
         }
+
     ]
 }
