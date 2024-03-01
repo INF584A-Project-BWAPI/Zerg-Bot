@@ -60,3 +60,7 @@ For the descriptions of the PRs please just add a very basic bullet-point list o
 ## Code Consistency
 
 No need to go full anal about code consistency but keep it more or less the same as the rest of the code in terms of formatting and style, since there are points to be gained from the coursework in terms of readability.
+
+## Notes
+
+For inspiration we can have a look at the following bot made by Dave Churchill: https://github.com/davechurchill/commandcenter which details how the he has managed to implement different strategies for the different races.
