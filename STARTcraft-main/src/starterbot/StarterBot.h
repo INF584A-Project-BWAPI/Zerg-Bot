@@ -25,6 +25,8 @@ private:
 
 	BWAPI::Unitset myUnits;
 	BWAPI::Unitset enemyUnits;
+	BWAPI::Unit enemyBase;
+	BWAPI::Position enemyBaseLocation; // Added to store the enemy base location
 
 
 public:
@@ -38,8 +40,18 @@ public:
 	void sendScout();
 	void sendAttack();
     void drawDebugInformation();
-
+	double calculatePriorityScore(BWAPI::Unit enemyUnit);
     // functions that are triggered by various BWAPI events from main.cpp
+	void executeAttackStrategy();
+	int determineGamePhase();
+	bool shouldHarass();
+	void executeZealotRush();
+	BWAPI::Position findEnemyBasePosition();
+
+	void attackWithZealots();
+	void buildZealotForce(int desiredCount);
+	void harassmentStrategy();
+
 	void onStart();
 	void onFrame();
 	void onEnd(bool isWinner);

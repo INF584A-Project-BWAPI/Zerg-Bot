@@ -172,6 +172,60 @@ int Tools::GetTotalSupply(bool inProgress)
 
     return totalSupply;
 }
+//Tools::CountUnitsOfType(BWAPI::Broodwar->enemy()->getUnits(), );
+int Tools::CountEnemyUnitsOfType(BWAPI::UnitType type)
+{
+    BWAPI::UnitType workerType;
+
+    // Determine the enemy's race and set the worker type accordingly
+    BWAPI::Race enemyRace = BWAPI::Broodwar->enemy()->getRace();
+    if (enemyRace == BWAPI::Races::Protoss) {
+        workerType = BWAPI::UnitTypes::Protoss_Probe;
+    }
+    else if (enemyRace == BWAPI::Races::Terran) {
+        workerType = BWAPI::UnitTypes::Terran_SCV;
+    }
+    else if (enemyRace == BWAPI::Races::Zerg) {
+        workerType = BWAPI::UnitTypes::Zerg_Drone;
+    }
+    else {
+        // If the race is unknown or not one of the standard races, return nullptr
+        return 0;
+    }
+
+    // Use the previously defined GetClosestUnitOfType function
+    return CountUnitsOfType(workerType, BWAPI::Broodwar->enemy()->getUnits());
+    //int count = 0;
+    //const BWAPI::Unitset& enemyUnits = BWAPI::Broodwar->enemy()->getUnits();
+    //for (const auto& unit : enemyUnits)
+    //{
+    //    if (unit->getType() == type)
+    //    {
+    //        count++;
+    //    }
+    //}
+    //return count;
+}
+BWAPI::Unit Tools::GetClosestUnitOfType(BWAPI::Player player, BWAPI::UnitType type)
+{
+    BWAPI::Unit closestUnit = nullptr;
+    double closestDistance = std::numeric_limits<double>::infinity();
+
+    for (auto& unit : player->getUnits())
+    {
+        if (unit->getType() == type)
+        {
+            double distance = BWAPI::Broodwar->self()->getStartLocation().getDistance(unit->getTilePosition());
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestUnit = unit;
+            }
+        }
+    }
+
+    return closestUnit;
+}
 
 void Tools::DrawUnitHealthBars()
 {
