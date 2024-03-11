@@ -5,13 +5,10 @@
 
 void BaseSupervisor::onFrame() {
     // Build queued buildings
-    std::optional<JobBase> jobOptional = peekTopQueuedJob();
+    if (!queuedJobs.isEmpty()) {
+        const JobBase& job = queuedJobs.getTop();
 
-    if (jobOptional.has_value()) {
-        const JobBase job = *jobOptional;
-
-        switch (job.getJobType())
-        {
+        switch (job.getJobType()) {
             case JobType::Building:
                 buildBuilding(job);
                 break;
@@ -22,29 +19,35 @@ void BaseSupervisor::onFrame() {
                 break;
         }
     }
+
+    verifyActiveBuilds();
+    verifyFinishedBuilds();
 }
 
-void BaseSupervisor::postJob(JobBase job) {
-    const BWAPI::UnitType unit = job.getUnit();
-
-    queuedJobs.push(job);
-}
-
-bool BaseSupervisor::buildBuilding(JobBase job) {
-    const BWAPI::UnitType building = job.getUnit();
+bool BaseSupervisor::buildBuilding(const JobBase& job) {
+    const BWAPI::UnitType b = job.getUnit();
     const int excess_mineral = BWAPI::Broodwar->self()->minerals() - allocated_minerals;
     const int excess_gass = BWAPI::Broodwar->self()->gas() - allocated_gas;
 
-    const int unit_mineral = building.mineralPrice();
-    const int unit_gas = building.gasPrice();
+    const int unit_mineral = b.mineralPrice();
+    const int unit_gas = b.gasPrice();
 
     if (unit_mineral <= excess_mineral && unit_gas <= excess_gass) {
-        const bool startedBuilding = Tools::BuildBuilding(building);
+        const auto startedBuilding = buildBuilding(b);
+        const BWAPI::TilePosition p = std::get<1>(startedBuilding);
+        const int started = std::get<0>(startedBuilding);
 
-        if (startedBuilding) {
-            BWAPI::Broodwar->printf("Started Building %s", building.getName().c_str());
-            popTopJob();
-            postActiveJob(job);
+        if (started == 1) {
+            BWAPI::Broodwar->printf("Moving to Construct Building %s", b.getName().c_str());
+            queuedJobs.removeTop();
+
+            Building building(p, b);
+            building.status = BuildingStatus::OrderGiven;
+
+            buildings.push_back(building);
+
+            allocated_gas += b.gasPrice();
+            allocated_minerals += b.mineralPrice();
 
             return true;
         }
@@ -53,9 +56,16 @@ bool BaseSupervisor::buildBuilding(JobBase job) {
     return false;
 }
 
-bool BaseSupervisor::produceUnit(JobBase job) {
+bool BaseSupervisor::produceUnit(const JobBase& job) {
     const BWAPI::UnitType unitType = job.getUnit();
-    const BWAPI::Unit myDepot = Tools::GetDepot();
+    const int buildingIdx = getProductionBuilding(unitType);
+
+    if (buildingIdx == -1) {
+        BWAPI::Broodwar->printf("Could Not Find a Building to Produce %s", unitType.getName().c_str());
+        return false;
+    }
+
+    const BWAPI::Unit building = buildings.at(buildingIdx).unit;
 
     const int excess_mineral = BWAPI::Broodwar->self()->minerals() - allocated_minerals;
     const int excess_gas = BWAPI::Broodwar->self()->gas() - allocated_gas;
@@ -63,15 +73,93 @@ bool BaseSupervisor::produceUnit(JobBase job) {
     const int unit_mineral = unitType.mineralPrice();
     const int unit_gas = unitType.gasPrice();
     
-    if (myDepot && !myDepot->isTraining() && unit_mineral <= excess_mineral && unit_gas <= excess_gas) {
+    if (building && !building->isTraining() && unit_mineral <= excess_mineral && unit_gas <= excess_gas) {
         BWAPI::Broodwar->printf("Started Training Unit %s", unitType.getName().c_str());
 
-        myDepot->train(unitType);
-        popTopJob();
-        postActiveJob(job);
+        building->train(unitType);
+        queuedJobs.removeTop();
 
         return true;
     }
 
     return false;
 }
+
+void BaseSupervisor::verifyActiveBuilds() {
+    for (const BWAPI::Unit& buildingStarted : BWAPI::Broodwar->getAllUnits()) {
+        if (!buildingStarted->getType().isBuilding() || !buildingStarted->isBeingConstructed()) {
+            continue;
+        }
+
+        for (Building& building : buildings) {
+            if (building.status == BuildingStatus::OrderGiven) {
+                const float dx = building.position.x - buildingStarted->getTilePosition().x;
+                const float dy = building.position.y - buildingStarted->getTilePosition().y;
+
+                if (dx * dx + dy * dy == 0.0) {
+                    allocated_gas -= building.unitType.gasPrice();
+                    allocated_minerals -= building.unitType.mineralPrice();
+
+                    BWAPI::Broodwar->printf("Started Constructing: %s", building.unitType.getName().c_str());
+                    //buildings.erase(std::remove(buildings.begin(), buildings.end(), building), buildings.end());
+                    building.status = BuildingStatus::UnderConstruction;
+
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void BaseSupervisor::verifyFinishedBuilds() {
+    for (const BWAPI::Unit& buildingInstance : BWAPI::Broodwar->getAllUnits()) {
+        if (!buildingInstance->getType().isBuilding() || buildingInstance->isBeingConstructed()) {
+            continue;
+        }
+
+        for (Building& building : buildings) {
+            if (building.status == BuildingStatus::UnderConstruction || building.status == BuildingStatus::OrderGiven) {
+                building.status = BuildingStatus::Constructed;
+                building.unit = buildingInstance;
+            }
+        }
+    }
+}
+
+// Helper methods
+
+std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitType b)
+{
+    BWAPI::TilePosition desiredPos = BWAPI::Broodwar->self()->getStartLocation();
+    const BWAPI::UnitType builderType = b.whatBuilds().first;
+
+    BWAPI::Unit builder = Tools::GetUnitOfType(builderType);
+    if (!builder) { return std::make_tuple(-1, desiredPos); }
+
+    // Ask BWAPI for a building location near the desired position for the type
+    constexpr int maxBuildRange = 64;
+    const bool buildingOnCreep = b.requiresCreep();
+    BWAPI::TilePosition buildPos = BWAPI::Broodwar->getBuildLocation(b, desiredPos, maxBuildRange, buildingOnCreep);
+    
+    const bool orderGiven = builder->build(b, buildPos);
+
+    if (orderGiven) {
+        return std::make_tuple(1, buildPos);
+    }
+    else {
+        return std::make_tuple(0, buildPos);
+    }
+}
+
+int BaseSupervisor::getProductionBuilding(BWAPI::UnitType u) {
+    for (int i = 0; i < buildings.size(); i++) {
+        BWAPI::UnitType::set canProduce = buildings.at(i).unitType.buildsWhat();
+
+        if (canProduce.contains(u)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+

@@ -20,8 +20,11 @@ enum class ManagerType {
 
 class JobBase {
 public:
-    JobBase(int priority, ManagerType assignedManager, JobType jobType)
-        : priority(priority), assignedManager(assignedManager), jobType(jobType) {};
+    JobBase(int priority, ManagerType assignedManager, JobType jobType, bool blocking)
+        : priority(priority), assignedManager(assignedManager), jobType(jobType), blocking(blocking){};
+
+    // Fields 
+    bool blocking;
 
     // Setters
     void setPriority(int level) noexcept { priority = level; };
@@ -38,14 +41,9 @@ public:
     int getMineralCost() const noexcept { return mineralCost; };
     BWAPI::UnitType getUnit() const noexcept { return unit; };
 
-
-    // Operator functions used by Heap
-    bool operator()(const JobBase& job1, const JobBase& job2) const {
-        // Compare based on priority
-        if (job1.getPriority() != job2.getPriority()) {
-            return job1.getPriority() > job2.getPriority(); // Higher priority should come first
-        }
-        return job1.getUnit().getID() < job2.getUnit().getID();
+    // Used to compare jobs in the job priority queue
+    bool operator < (const JobBase& j) const noexcept {
+        return priority < j.getPriority();
     }
 
 
@@ -60,16 +58,3 @@ private:
     int supplyCost = 0;
     BWAPI::UnitType unit;
 };
-
-struct JobComparator {
-    bool operator()(const JobBase& job1, const JobBase& job2) const noexcept {
-        // Compare based on priority
-        if (job1.getPriority() != job2.getPriority()) {
-            return job1.getPriority() > job2.getPriority(); // Higher priority should come first
-        }
-        // If priorities are equal, compare by assigned manager
-        return job1.getAssignedManager() > job2.getAssignedManager();
-    }
-};
-
-using JobPriorityQueue = std::priority_queue<JobBase, std::vector<JobBase>, JobComparator>;

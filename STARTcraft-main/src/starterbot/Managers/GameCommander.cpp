@@ -13,7 +13,7 @@ void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
 
 		const BWAPI::UnitType unit = order.getName();
 
-		JobBase job(i, ManagerType::BaseSupervisor, jobType);
+		JobBase job(i, ManagerType::BaseSupervisor, jobType, false);
 		job.setUnitType(unit);
 		job.setGasCost(unit.gasPrice());
 		job.setMineralCost(unit.mineralPrice());

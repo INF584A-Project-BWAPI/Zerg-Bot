@@ -4,46 +4,55 @@
 #include "iostream"
 #include "Data.h"
 #include "ManagerBase.h"
+#include "Data/Building.h"
+#include "Data/ListBuilding.h"
+#include "Data/JobPriorityList.h"
+#include <tuple>
+#include "Tools.h"
 
 class BaseSupervisor : virtual ManagerBase {
 public:
     // Constructor
-    BaseSupervisor() noexcept : ManagerBase(ManagerType::BaseSupervisor) {};
+    BaseSupervisor() noexcept : ManagerBase(ManagerType::BaseSupervisor) {
+        const BWAPI::Unit nexus = Tools::GetDepot();
+        const BWAPI::TilePosition p = nexus->getTilePosition();
+        const BWAPI::UnitType unit = nexus->getType();
+
+        Building building(p, unit);
+        building.unit = nexus;
+        building.status = BuildingStatus::Constructed;
+
+        buildings.push_back(building);
+    };
     
     // Functions
     void onFrame();
 
-    // Getters
-    const JobPriorityQueue& getQueuedJobs() const noexcept { return queuedJobs; };
-    const std::vector<JobBase>& getActiveJobs() const noexcept { return activeJobs; };
-
-    std::optional<JobBase> peekTopQueuedJob() noexcept {
-        if (queuedJobs.empty())
-            return std::nullopt; // Return an empty optional to indicate an empty state
-
-        return queuedJobs.top();
-    }
-
-    // Setters
-    void postJob(JobBase job);
-    void postActiveJob(JobBase job) { activeJobs.push_back(job); };
-
-    void popTopJob() { queuedJobs.pop(); };
+    // Used by parent managers to give this manager a new job
+    void postJob(JobBase& job) { 
+        std::cout << "Got new job: " << job.getUnit().getName().c_str() << std::endl;
+        queuedJobs.queueBottom(job);
+    };
 
 private:
     // Fields
     std::vector<BWAPI::Unit> workers;
     float defence_dps = 0; // Damage Per Second our defence can provide
-    std::vector<BWAPI::UnitType> buildings;
+    std::vector<Building> buildings;
 
-    JobPriorityQueue queuedJobs;
-    std::vector<JobBase> activeJobs; // TODO :: change to buildings
+    JobPriorityList queuedJobs;
 
     int allocated_minerals = 0;
     int allocated_gas = 0;
 
     // Functions
-    bool buildBuilding(JobBase job);
-    bool produceUnit(JobBase job);
-    //void verifyActiveBuilds();
+    bool buildBuilding(const JobBase& job);
+    bool produceUnit(const JobBase& job);
+    void verifyActiveBuilds();
+    void verifyFinishedBuilds();
+
+    // Helper methods
+    std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b);
+    int getProductionBuilding(BWAPI::UnitType u);
+    //void expandSupply();
 };

@@ -5,6 +5,7 @@
 #include "BT.h"
 #include <BWAPI.h>
 #include "Data.h"
+#include "Tools.h"
 #include "GameFileParser.hpp";
 #include "Managers/BasesManager.h";
 #include "Managers/GameCommander.h";

@@ -13,7 +13,6 @@ public:
 
     ReplayParser();
 
-
     // functions that are triggered by various BWAPI events from main.cpp
 	void onStart();
 	void onFrame();
