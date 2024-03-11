@@ -28,8 +28,6 @@ GameFileParser::GameFileParser() {
     // Unit mapping
     unit_type_map["probe"] = BWAPI::UnitTypes::Protoss_Probe;
     unit_type_map["zealot"] = BWAPI::UnitTypes::Protoss_Zealot;
-
-    cout << unit_type_map.size() << endl;
 };
 
 int GameFileParser::parse_game_file(string const path)

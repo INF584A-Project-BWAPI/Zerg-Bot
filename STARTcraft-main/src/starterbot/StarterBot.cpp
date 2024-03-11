@@ -191,7 +191,7 @@ void StarterBot::buildAdditionalSupply()
 
     const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
 
-    JobBase job(0, ManagerType::BaseSupervisor, JobType::Building, false);
+    JobBase job(0, ManagerType::BaseSupervisor, JobType::Building, false, Importance::High);
     job.setUnitType(supplyProviderType);
     job.setGasCost(supplyProviderType.gasPrice());
     job.setMineralCost(supplyProviderType.mineralPrice());

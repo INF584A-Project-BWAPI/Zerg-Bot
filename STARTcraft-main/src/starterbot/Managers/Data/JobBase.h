@@ -4,6 +4,11 @@
 
 #pragma once
 
+enum class Importance {
+    High,
+    Low
+};
+
 enum class JobType {
     Building,
     UnitProduction
@@ -20,11 +25,17 @@ enum class ManagerType {
 
 class JobBase {
 public:
-    JobBase(int priority, ManagerType assignedManager, JobType jobType, bool blocking)
-        : priority(priority), assignedManager(assignedManager), jobType(jobType), blocking(blocking){};
+    JobBase(int priority, ManagerType assignedManager, JobType jobType, bool blocking, Importance importance)
+        : priority(priority)
+        , assignedManager(assignedManager)
+        , jobType(jobType)
+        , blocking(blocking)
+        , importance(importance) {};
 
     // Fields 
     bool blocking;
+    Importance importance;
+
 
     // Setters
     void setPriority(int level) noexcept { priority = level; };

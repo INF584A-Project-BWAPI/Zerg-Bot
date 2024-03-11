@@ -30,8 +30,20 @@ public:
 
     // Used by parent managers to give this manager a new job
     void postJob(JobBase& job) { 
-        std::cout << "Got new job: " << job.getUnit().getName().c_str() << std::endl;
-        queuedJobs.queueBottom(job);
+        if (job.importance == Importance::High) {
+            std::cout
+                << "BaseSupervisor | Prority HIGH | Got new job: "
+                << job.getUnit().getName().c_str()
+                << std::endl;
+            queuedJobs.queueTop(job);
+        }
+        else if (job.importance == Importance::Low) {
+            std::cout
+                << "BaseSupervisor | Prority LOW | Got new job: "
+                << job.getUnit().getName().c_str()
+                << std::endl;
+            queuedJobs.queueBottom(job);
+        }
     };
 
 private:
@@ -55,4 +67,5 @@ private:
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b);
     int getProductionBuilding(BWAPI::UnitType u);
     //void expandSupply();
+    
 };

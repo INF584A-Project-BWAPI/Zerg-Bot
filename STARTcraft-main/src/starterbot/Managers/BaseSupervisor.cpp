@@ -6,18 +6,21 @@
 void BaseSupervisor::onFrame() {
     // Build queued buildings
     if (!queuedJobs.isEmpty()) {
+        
         const JobBase& job = queuedJobs.getTop();
+        bool doNotSkip = true;
 
         switch (job.getJobType()) {
             case JobType::Building:
-                buildBuilding(job);
+                doNotSkip = buildBuilding(job);
                 break;
             case JobType::UnitProduction:
-                produceUnit(job);
+                doNotSkip = produceUnit(job);
                 break;
             default:
                 break;
         }
+
     }
 
     verifyActiveBuilds();
@@ -53,7 +56,7 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
         }
     }
 
-    return false;
+    return true;
 }
 
 bool BaseSupervisor::produceUnit(const JobBase& job) {
@@ -69,20 +72,27 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
 
     const int excess_mineral = BWAPI::Broodwar->self()->minerals() - allocated_minerals;
     const int excess_gas = BWAPI::Broodwar->self()->gas() - allocated_gas;
+    const int supplyAvailable = Tools::GetTotalSupply(true) - BWAPI::Broodwar->self()->supplyUsed();
 
     const int unit_mineral = unitType.mineralPrice();
     const int unit_gas = unitType.gasPrice();
+    const int supply = unitType.supplyRequired();
+
+    //if (supply <= supplyAvailable) {
+    //    return false;
+    //}
     
     if (building && !building->isTraining() && unit_mineral <= excess_mineral && unit_gas <= excess_gas) {
-        BWAPI::Broodwar->printf("Started Training Unit %s", unitType.getName().c_str());
+        BWAPI::Broodwar->printf(
+            "BaseSupervisor | Building %s | Started Training Unit %s"
+            , building->getType().getName().c_str()
+            , unitType.getName().c_str());
 
         building->train(unitType);
         queuedJobs.removeTop();
-
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 void BaseSupervisor::verifyActiveBuilds() {
@@ -118,9 +128,11 @@ void BaseSupervisor::verifyFinishedBuilds() {
         }
 
         for (Building& building : buildings) {
-            if (building.status == BuildingStatus::UnderConstruction || building.status == BuildingStatus::OrderGiven) {
-                building.status = BuildingStatus::Constructed;
-                building.unit = buildingInstance;
+            if (buildingInstance->getType() == building.unitType) {
+                if (building.status == BuildingStatus::UnderConstruction || building.status == BuildingStatus::OrderGiven) {
+                    building.status = BuildingStatus::Constructed;
+                    building.unit = buildingInstance;
+                }
             }
         }
     }
