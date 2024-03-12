@@ -1,16 +1,16 @@
 #pragma once
 
+#include <vector>
 #include "MapTools.h"
-
-#include "..\starterbot\BT\BT.h"
+#include "BT.h"
 #include <BWAPI.h>
-#include "..\starterbot\BT\Data.h"
+#include "Data.h"
+#include "Tools.h"
 #include "GameFileParser.hpp";
-
-#include "../starterbot/BT/BT.h"
-#include <BWAPI.h>
-#include "../starterbot/BT/Data.h"
-
+#include "Managers/BasesManager.h";
+#include "Managers/GameCommander.h";
+#include "Managers/ScoutManager.h";
+#include "Managers/ArmyManager.h";
 //#include "map.h"
 
 class StarterBot
@@ -20,14 +20,16 @@ private:
 	BT_NODE* pBT;
 	BT_NODE* pBtTest;
 	Data *pData;
-
+	
 	GameFileParser gameParser;
-
-	BWAPI::Unitset myUnits;
-	BWAPI::Unitset enemyUnits;
-	BWAPI::Unit enemyBase;
-	BWAPI::Position enemyBaseLocation; // Added to store the enemy base location
-
+	
+	// Managers
+	GameCommander gameCommander;
+	BasesManager basesManager;
+	BaseSupervisor mainBaseSupervisor;
+	ScoutManager scoutManager;
+	ArmyManager armyManager;
+	
 
 public:
 
@@ -37,21 +39,9 @@ public:
     void sendIdleWorkersToMinerals();
     void trainAdditionalWorkers();
     void buildAdditionalSupply();
-	void sendScout();
-	void sendAttack();
     void drawDebugInformation();
-	double calculatePriorityScore(BWAPI::Unit enemyUnit);
+
     // functions that are triggered by various BWAPI events from main.cpp
-	void executeAttackStrategy();
-	int determineGamePhase();
-	bool shouldHarass();
-	void executeZealotRush();
-	BWAPI::Position findEnemyBasePosition();
-
-	void attackWithZealots();
-	void buildZealotForce(int desiredCount);
-	void harassmentStrategy();
-
 	void onStart();
 	void onFrame();
 	void onEnd(bool isWinner);

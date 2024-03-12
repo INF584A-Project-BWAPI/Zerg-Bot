@@ -41,24 +41,18 @@ static const std::map<std::string, BuildType> buildTypeStrToEnum = {
 class BuildingRecipe {
 public:
     // Constructor
-    BuildingRecipe(const BWAPI::UnitType& name, const BuildType& type, ProducerType producer,
-        int minProductionLevel, int maxProductionLevel)
-        : name(name), type(type), producer(producer),
-        minProductionLevel(minProductionLevel), maxProductionLevel(maxProductionLevel) {}
+    BuildingRecipe(const BWAPI::UnitType& name, const BuildType& type, ProducerType producer)
+        : name(name), type(type), producer(producer) {}
 
     // Accessors
     BWAPI::UnitType getName() const { return name; }
     BuildType getType() const { return type; }
     ProducerType getProducer() const { return producer; }
-    int getMinProductionLevel() const { return minProductionLevel; }
-    int getMaxProductionLevel() const { return maxProductionLevel; }
 
 private:
     BWAPI::UnitType name;
     BuildType type;
     ProducerType producer;
-    int minProductionLevel;
-    int maxProductionLevel;
 };
 
 

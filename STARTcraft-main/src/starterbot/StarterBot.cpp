@@ -65,9 +65,10 @@ StarterBot::StarterBot()
     //BT_ACTION_TRAIN_WORKER* pTrainWorker = new BT_ACTION_TRAIN_WORKER("TrainWorker", pNotEnoughWorkers);
 
     //Build Additional Supply Provider
-    BT_DECO_REPEATER* pBuildSupplyProviderForeverRepeater = new BT_DECO_REPEATER("RepeatForeverBuildSupplyProvider", pParallelSeq, 0, true, false,false);
-    BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY* pNotEnoughSupply = new BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY("NotEnoughSupply", pBuildSupplyProviderForeverRepeater);
-    BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
+    //BT_DECO_REPEATER* pBuildSupplyProviderForeverRepeater = new BT_DECO_REPEATER("RepeatForeverBuildSupplyProvider", pParallelSeq, 0, true, false,false);
+    //BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY* pNotEnoughSupply = new BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY("NotEnoughSupply", pBuildSupplyProviderForeverRepeater);
+    //BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
+
 
     // Bases Manager
     basesManager.setChild(&mainBaseSupervisor);
@@ -190,16 +191,19 @@ void StarterBot::buildAdditionalSupply()
     const int unusedSupply = Tools::GetTotalSupply(true) - BWAPI::Broodwar->self()->supplyUsed();
 
     // If we have a sufficient amount of supply, we don't need to do anything
-    if (unusedSupply >= 2) { return; }
+    if (unusedSupply > 2) { return; }
 
     // Otherwise, we are going to build a supply provider
+    BWAPI::Broodwar->printf("Supply is running out (building more): %s", std::to_string(unusedSupply));
+
     const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
 
-    const bool startedBuilding = Tools::BuildBuilding(supplyProviderType);
-    if (startedBuilding)
-    {
-        BWAPI::Broodwar->printf("Started Building %s", supplyProviderType.getName().c_str());
-    }
+    JobBase job(0, ManagerType::BaseSupervisor, JobType::Building, false, Importance::High);
+    job.setUnitType(supplyProviderType);
+    job.setGasCost(supplyProviderType.gasPrice());
+    job.setMineralCost(supplyProviderType.mineralPrice());
+
+    gameCommander.postJob(job);
 }
 
 void StarterBot::sendScout() {
