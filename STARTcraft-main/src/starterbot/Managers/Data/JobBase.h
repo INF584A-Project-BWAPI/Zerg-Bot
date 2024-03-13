@@ -11,7 +11,8 @@ enum class Importance {
 
 enum class JobType {
     Building,
-    UnitProduction
+    UnitProduction,
+    Scouting
 };
 
 enum class ManagerType {

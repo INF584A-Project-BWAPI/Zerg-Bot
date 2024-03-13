@@ -8,23 +8,23 @@ void ScoutManager::onFrame() {
     // looks at highest priority item without popping from queue yet
 
     // if I don't have any
-    if (Scouts.size() == 0) {
+    if (scouts.size() == 0) {
         const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
-        for (auto& unit : myUnits)
+        for (BWAPI::Unit u : myUnits)
         {
             // Check the unit type, if it is an idle worker, then we want to make it a scout
-            if (unit->getType().isWorker() && (unit->isIdle() || unit->isGatheringMinerals()))
+            if (u->getType().isWorker() && (u->isIdle() || u->isGatheringMinerals()))
             {
-                makeScout(u);
+                ScoutManager::makeScout(u);
             }
         }
         // we'll also give them a job, move this elsewhere after prototyping
-        JobBase j;
+        JobBase j(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High);
         queuedJobs.queueItem(j);
     }
 
     // iterate over active scouts, check on their jobs and state
-    for (auto s : Scouts) {
+    for (auto s : scouts) {
         checkOnScout(s);
     }
 
@@ -37,14 +37,12 @@ void ScoutManager::onFrame() {
     }
 }
 
-
 void ScoutManager::makeScout(BWAPI::Unit& u) {
     // make the scout struct and push it to the vector
-    scout s;
-    s.unit = u;
-    Scouts.push_back(s);
+    scout sc;
+    sc.unit = &u;
+    scouts.push_back(sc);
 }
-
 
 void ScoutManager::unmakeScout(scout s) {
     // find and remove that scout
@@ -54,14 +52,14 @@ void ScoutManager::unmakeScout(scout s) {
 }
 
 
-void checkOnScout(scout s) {
+void ScoutManager::checkOnScout(scout s) {
     // does it have a job? -> check the bool
     if (!s.working) { // no active job:
         //SendScouting if you have some queued Job, otherwise make "working" = false
         if (!queuedJobs.isEmpty()) {
             const JobBase job = queuedJobs.getTop();
             sendScouting(s, job);
-            queuedJobs.pop();
+            queuedJobs.removeTop();
         }
     }
     else {
@@ -72,7 +70,7 @@ void checkOnScout(scout s) {
     }
 }
 
-void sendScouting(scout s, JobBase job) {
+void ScoutManager::sendScouting(scout s, JobBase job) {
     // assign a unassigned job to a scout, making them move to an unexplored location
     if (StartLocations[ExploredLocations] == HomeLocation) {
         ExploredLocations++; // avoid exploring your own home
