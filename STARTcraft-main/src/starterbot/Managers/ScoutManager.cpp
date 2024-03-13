@@ -40,7 +40,7 @@ void ScoutManager::onFrame() {
 void ScoutManager::makeScout(BWAPI::Unit& u) {
     // make the scout struct and push it to the vector
     scout sc;
-    sc.unit = &u;
+    sc.unit = u;
     scouts.push_back(sc);
 }
 
@@ -66,7 +66,7 @@ void ScoutManager::checkOnScout(scout s) {
         // if it has a job, is it moving to it?
         //    -> what is it seeing? implement the churchill behavior tree TODO
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
-        if (s.unit->isIdle() || s.unit->isMining()) { s.working = false; }
+        if (s.unit->isIdle() || s.unit->isGatheringMinerals()) { s.working = false; }
     }
 }
 

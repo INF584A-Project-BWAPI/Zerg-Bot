@@ -11,7 +11,7 @@
 JobBase j(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High); // default dummy job
 
 struct scout {
-    BWAPI::Unit* unit;
+    BWAPI::Unit& unit;
     JobBase job = j;
     bool working = false;
 };
