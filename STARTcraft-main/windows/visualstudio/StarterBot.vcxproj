@@ -64,6 +64,10 @@
     <ClInclude Include="..\..\src\starterbot\ReplayParser.h" />
     <ClInclude Include="..\..\src\starterbot\StarterBot.h" />
     <ClInclude Include="..\..\src\starterbot\Tools.h" />
+    <ClInclude Include="AttackGroundUnitBT.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION.cpp" />
@@ -241,7 +245,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot\BT\BT_STARCRAFT;C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot\BT;C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot;../../src/bwapi/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\bwem\include;..\..\src\starterbot\BT\BT_STARCRAFT;..\..\src\starterbot;..\..\src\starterbot\BT;../../src/bwapi/include;%(AdditionalIncludeDirectories); C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot\BT\BT_STARCRAFT;C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot\BT;C:\Users\ptourniaire\Desktop\Zerg-Bot\STARTcraft-main\src\starterbot;../../src/bwapi/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -304,7 +308,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>C:\Users\justi\Documents\SCHOOL\X2\INF584A\STARTcraft-main_2023_02_21\STARTcraft-main\src\starterbot\BT\BT_STARCRAFT;C:\Users\justi\Documents\SCHOOL\X2\INF584A\STARTcraft-main_2023_02_21\STARTcraft-main\src\starterbot\BT;C:\Users\justi\Documents\SCHOOL\X2\INF584A\STARTcraft-main_2023_02_21\STARTcraft-main\src\starterbot;../../src/bwapi/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\bwem\include;..\..\src\starterbot\BT\BT_STARCRAFT;..\..\src\starterbot;..\..\src\starterbot\BT;../../src/bwapi/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
