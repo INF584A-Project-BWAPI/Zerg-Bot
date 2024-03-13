@@ -1,9 +1,9 @@
 #include "iostream"
 #include "../Tools.h"
 #include "../BT/Data.h"
-//#include <Data.h>
 #include "BaseSupervisor.h"
 #include "../BT/BT.h"
+
 void BaseSupervisor::onFrame() {
     // Build queued buildings
     if (!queuedJobs.isEmpty()) {
@@ -21,12 +21,21 @@ void BaseSupervisor::onFrame() {
             default:
                 break;
         }
-
     }
 
     verifyActiveBuilds();
     verifyFinishedBuilds();
+    assignIdleWorkes();
+    assignWorkersToGas();
+    pDataResources->unitsAvailable = workers;
+    pDataResources->currMinerals = BWAPI::Broodwar->self()->minerals();
+
+    if (pBT != nullptr && pBT->Evaluate(pDataResources) != BT_NODE::RUNNING) {
+        delete (BT_DECORATOR*)pBT;
+        pBT = nullptr;
+    }
 }
+
 
 bool BaseSupervisor::buildBuilding(const JobBase& job) {
     const BWAPI::UnitType b = job.getUnit();
@@ -89,8 +98,11 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
             , building->getType().getName().c_str()
             , unitType.getName().c_str());
 
-        building->train(unitType);
-        queuedJobs.removeTop();
+        bool successful = building->train(unitType);
+
+        if (successful) {
+            queuedJobs.removeTop();
+        }
     }
 
     return true;
@@ -135,6 +147,60 @@ void BaseSupervisor::verifyFinishedBuilds() {
                     building.unit = buildingInstance;
                 }
             }
+        }
+    }
+}
+
+void BaseSupervisor::assignIdleWorkes() {
+    for (Building& building : buildings) {
+        if (building.unitType == BWAPI::UnitTypes::Protoss_Nexus) {
+            BWAPI::Unitset workersInRadius = building.unit->getUnitsInRadius(1000, BWAPI::Filter::IsWorker && BWAPI::Filter::IsIdle && BWAPI::Filter::IsOwned);
+            for (BWAPI::Unit worker : workersInRadius) {
+                if (!workers.contains(worker)) {
+
+                   
+                    workers.insert(worker);
+                }
+            }
+        }
+    }
+    std::cout << "Idle" << workers.size();
+}
+
+
+void BaseSupervisor::assignWorkersToGas() {
+    int totalWorkers = pDataResources->unitsAvailable.size();
+    int desiredGasWorkers = totalWorkers / 3; // One third of the total workers
+    int currentGasWorkers = 0;
+
+    // First, count how many workers are currently gathering gas
+    for (auto worker : workers) {
+        Worker ws(worker);
+        if (ws.status == WorkerStatus::GatheringGas) {
+            currentGasWorkers++;
+        }
+    }
+
+    // Now, assign workers to gas if we don't have enough
+    if (currentGasWorkers < desiredGasWorkers && desiredGasWorkers <= totalWorkers) {
+        for (const auto& building : buildings) {
+            if (building.unitType == BWAPI::UnitTypes::Protoss_Assimilator && building.status == BuildingStatus::Constructed) {
+                for (BWAPI::Unit worker : workers) {
+                    // Find idle or mineral-gathering workers to reassign
+                    Worker ws(worker);
+                    if (ws.status == WorkerStatus::GatheringMineral || ws.status == WorkerStatus::Idle) {
+                        if (rand() % 100 < 43) { // Assuming each Assimilator can have 3 workers
+                            worker->rightClick(building.unit);
+                            ws.status = WorkerStatus::GatheringGas;
+                            currentGasWorkers++;
+                            //break;
+                        }
+                    }
+                    if (currentGasWorkers >= desiredGasWorkers) {
+                        break; // We have assigned enough workers to gas
+                    }
+                }
+            }            
         }
     }
 }

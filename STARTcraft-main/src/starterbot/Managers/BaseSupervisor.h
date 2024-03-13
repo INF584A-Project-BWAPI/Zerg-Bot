@@ -2,18 +2,18 @@
 
 #include <optional>
 #include "iostream"
-#include "Data.h"
+#include "../BT/Data.h"
 #include "ManagerBase.h"
 #include <tuple>
-#include "Tools.h"
+#include "../Tools.h"
 #include <set>
 
 #include "Data/Building.h"
 #include "Data/ListBuilding.h"
 #include "Data/JobPriorityList.h"
 #include "Data/Worker.h"
-#include "DataResources.h"
-#include "BT.h";
+#include "../BT/DataResources.h"
+#include "../BT/BT.h";
 
 class BaseSupervisor : virtual ManagerBase {
 public:
@@ -52,7 +52,7 @@ public:
     
     // Functions
     void onFrame();
-
+    void assignWorkersToGas();
     // Used by parent managers to give this manager a new job
     void postJob(JobBase& job) { 
         if (job.importance == Importance::High) {

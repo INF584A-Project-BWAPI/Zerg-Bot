@@ -1,6 +1,6 @@
 #pragma once
+#include "../../BT/Data.h"
 
-#include "Data.h"
 
 enum class WorkerStatus {
 	GatheringMineral,
@@ -15,7 +15,15 @@ class Worker {
 
 public:
 	Worker(BWAPI::Unit& unit)
-		: unit(unit) {};
+		: unit(unit) {
+	if (unit->isGatheringGas()) {
+        status = WorkerStatus::GatheringGas;
+    } else if (unit->isGatheringMinerals()) {
+        status = WorkerStatus::GatheringMineral;
+    } else {
+        status = WorkerStatus::Idle;
+    }
+	};
 
 	// Fields
 	BWAPI::Unit& unit;
