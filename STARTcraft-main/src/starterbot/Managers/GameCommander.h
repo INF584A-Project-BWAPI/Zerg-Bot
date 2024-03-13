@@ -5,7 +5,8 @@
 #include "ManagerBase.h";
 #include "ScoutManager.h";
 #include "ArmyManager.h";
-#include "GameFileParser.hpp";
+#include "../../starterbot/GameFileParser.hpp";
+//#include "GameFileParser.hpp";
 
 class GameCommander : public ManagerBase {
 public:

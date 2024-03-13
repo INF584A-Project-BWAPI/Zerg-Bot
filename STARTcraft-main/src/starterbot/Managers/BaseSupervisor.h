@@ -2,13 +2,13 @@
 
 #include <optional>
 #include "iostream"
-#include "Data.h"
+#include "../BT/Data.h"
 #include "ManagerBase.h"
 #include "Data/Building.h"
 #include "Data/ListBuilding.h"
 #include "Data/JobPriorityList.h"
 #include <tuple>
-#include "Tools.h"
+#include "../Tools.h"
 
 class BaseSupervisor : virtual ManagerBase {
 public:

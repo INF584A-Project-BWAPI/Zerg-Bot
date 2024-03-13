@@ -1,7 +1,8 @@
 #include "BasesManager.h";
 #include "GameCommander.h";
-#include <Data.h>;
-#include "GameFileParser.hpp";
+#include "../BT/Data.h";
+#include "../../starterbot/GameFileParser.hpp";
+
 
 void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
 	for (int i = 0; i < buildOrder.size(); i++) {

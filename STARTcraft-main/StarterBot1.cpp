@@ -1,11 +1,15 @@
 #include "StarterBot.h"
 #include "Tools.h"
 #include "MapTools.h"
+
 #include "..\starterbot\BT\Data.h"
 #include <format>
 
 #include "..\starterbot\BT\BT.h"
 #include "GameFileParser.hpp";
+
+
+
 
 
 StarterBot::StarterBot()
@@ -106,25 +110,25 @@ void StarterBot::onFrame()
     gameCommander.onFrame();
     
     // AI BT
-    //if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)
-    //{
-    //    delete (BT_DECORATOR*)pBT;
-    //    pBT = nullptr;
-    //}
+    if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)
+    {
+        delete (BT_DECORATOR*)pBT;
+        pBT = nullptr;
+    }
 
     //Test BT
-    //if (pBtTest != nullptr && pBtTest->Evaluate(pData) != BT_NODE::RUNNING)
-    //{
-    //    delete (BT_DECORATOR*)pBtTest;
-    //    pBtTest = nullptr;
-    //}
+    if (pBtTest != nullptr && pBtTest->Evaluate(pData) != BT_NODE::RUNNING)
+    {
+        delete (BT_DECORATOR*)pBtTest;
+        pBtTest = nullptr;
+    }
 
     
     // Send our idle workers to mine minerals so they don't just stand there
-    //sendIdleWorkersToMinerals();
+    sendIdleWorkersToMinerals();
 
     // Train more workers so we can gather more income
-    //trainAdditionalWorkers();
+    trainAdditionalWorkers();
 
     // Build more supply if we are going to run out soon
     buildAdditionalSupply();
@@ -198,7 +202,28 @@ void StarterBot::buildAdditionalSupply()
     gameCommander.postJob(job);
 }
 
+void StarterBot::sendScout() {
+    const int TotalSupply = Tools::GetTotalSupply(true);
 
+    if (TotalSupply < 5) { return; }
+
+    const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+
+    // iterate over my units and find a random worker
+    for (auto& unit : myUnits)
+    {
+        // Check the unit type, if it is an idle worker, then we want to send it somewhere
+        if (unit->getType().isWorker())
+        {
+            // Find a base on the map
+            BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
+
+            // Send the unit scouting
+            unit->move((BWAPI::Position)StartLocations[0]);
+            break;
+        }
+    }
+}
 // TASK:: move to that locations; then for me, propose the priorties ; and make intelligent commands 
 //void StarterBot::executeAttackStrategy() {
 //    // First, determine the game phase
@@ -327,16 +352,197 @@ void StarterBot::buildAdditionalSupply()
 
 // Decides if harassment should be performed based on current game phase and enemy build
 //Add
+bool StarterBot::shouldHarass() {
+    int phase = determineGamePhase();
+    // Example condition: we only harass in the early game
+
+    int earlyGameProbeCountThreshold = 7; // Example threshold for early game
+    double earlyGameTimeThreshold = 5 * 60; // 5 minutes into the game
+    bool isEarlyGame = (phase == 0);//BWAPI::Broodwar->elapsedTime() < earlyGameTimeThreshold;
+    bool enoughProbesForEarlyHarass = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Probe) <= earlyGameProbeCountThreshold;
+
+    // Evaluate if we have enough forces to spare a unit for harassment without compromising our economy or defense
+    bool economyStable = (pData->nWantedWorkersFarmingMinerals <= pData->unitsFarmingMinerals.size());
+    int defenseUnitThreshold = 5; // Example threshold for a "strong" defense
+    int defenseUnitsCount = Tools::CountUnitsOfType(BWAPI::UnitTypes::Protoss_Photon_Cannon, BWAPI::Broodwar->self()->getUnits());
+    bool defenseStable = defenseUnitsCount >= defenseUnitThreshold;
+    //bool defenseStable = isDefenseStrong();
+
+    // Evaluate enemy's strength - simple check based on scouting information
+    int enemyGatewayCount = Tools::CountUnitsOfType(BWAPI::UnitTypes::Protoss_Gateway, BWAPI::Broodwar->enemy()->getUnits());
+    int enemyCyberneticsCount = Tools::CountUnitsOfType(BWAPI::UnitTypes::Protoss_Cybernetics_Core, BWAPI::Broodwar->enemy()->getUnits());
+    bool enemyWeak = enemyGatewayCount == 0 && enemyCyberneticsCount == 0;
+
+
+    // Decide to harass based on conditions
+    bool harass = isEarlyGame && enoughProbesForEarlyHarass && economyStable && defenseStable && enemyWeak;
+
+    return harass;
+}
 
 // Builds a force of Zealots
+void StarterBot::buildZealotForce(int desiredCount) {
+    int currentZealots = Tools::CountUnitsOfType(BWAPI::UnitTypes::Protoss_Zealot, BWAPI::Broodwar->self()->getUnits());
+
+    if (currentZealots < desiredCount) {
+        //BWAPI::Unit Tools::GetClosestUnitTo(BWAPI::Unit unit, const BWAPI::Unitset& units)
+
+        BWAPI::Unit gateway = Tools::GetClosestUnitOfType(BWAPI::Broodwar->self(), BWAPI::UnitTypes::Protoss_Gateway);
+
+        if (gateway && !gateway->isTraining()) {
+            gateway->train(BWAPI::UnitTypes::Protoss_Zealot);
+        }
+    }
+}
 
 // Executes the Zealot Rush strategy
+void StarterBot::executeZealotRush() {
+    int zealotCount = Tools::CountUnitsOfType(BWAPI::UnitTypes::Protoss_Zealot, BWAPI::Broodwar->self()->getUnits());
+    // Decide on "Hit Early" or "Hit Hard" strategy based on enemy build
+    if (zealotCount >= 2 && zealotCount < 6) {
+        // Hit Early
+        attackWithZealots();
+    }
+    else if (zealotCount >= 6) {
+        // Hit Hard
+        attackWithZealots();
+    }
+}
 
 // Attacks with the current zealot force
-
+void StarterBot::attackWithZealots() {
+    BWAPI::Unitset zealots = BWAPI::Broodwar->self()->getUnits();
+    for (auto& zealot : zealots) {
+        if (zealot->getType() == BWAPI::UnitTypes::Protoss_Zealot) {
+            // Find the enemy base location or enemy units
+            BWAPI::Position enemyBasePos = findEnemyBasePosition();//!
+            if (enemyBasePos.isValid()) {
+                // Move the Zealots to enemy base while avoiding being seen
+                zealot->attack(this->enemyBase);
+            }
+        }
+    }
+}
 // which to defend is another question. set up  
 // Finds potential enemy base locations (implement scouting logic here)
+BWAPI::Position StarterBot::findEnemyBasePosition() {
+    // Placeholder for actual scouting logic
+    // You would have a list of potential start locations and iterate through them
+    // For now, let's just return the first start location
+    // Placeholder for the enemy base position, initially set to an invalid position
+    static BWAPI::Position enemyBasePosition = BWAPI::Positions::Invalid;
 
+    // If we have already found the enemy base, return its position
+    if (enemyBasePosition.isValid())
+    {
+        return enemyBasePosition;
+    }
+
+    // Otherwise, we need to scout and find the enemy base
+    for (const auto& unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        // Check if this unit is a resource depot (e.g., Command Center, Nexus, or Hatchery)
+        if (unit->getType().isResourceDepot())
+        {
+            this->enemyBase = unit;
+            enemyBasePosition = unit->getPosition();
+            return enemyBasePosition;
+        }
+    }
+
+    // If we haven't found the enemy base yet, return the next potential base location
+    // This part assumes that you have some logic to guess or scout for enemy base locations
+    BWAPI::TilePosition nextScoutPosition;// = GetNextScoutPosition();
+    for (const auto& startLocation : BWAPI::Broodwar->getStartLocations())
+    {
+        // Ignore already scouted locations
+        if (!BWAPI::Broodwar->isExplored(startLocation))
+        {
+            nextScoutPosition= startLocation;
+        }
+    }
+
+    // If all start locations have been scouted and no enemy base was found,
+    // return an invalid position
+    nextScoutPosition= BWAPI::TilePositions::Invalid;
+    if (nextScoutPosition.isValid())
+    {
+        return BWAPI::Position(nextScoutPosition);
+    }
+
+    // If no base has been found and there are no more positions to scout,
+    // return an invalid position to indicate that the base has not been found
+    return BWAPI::Positions::Invalid;
+   /* BWAPI::TilePosition::list startLocations = BWAPI::Broodwar->getStartLocations();
+    return BWAPI::Position(startLocations.front());*/
+}
+
+
+
+void StarterBot::harassmentStrategy() {
+    // Select a probe for harassment
+    BWAPI::Unit harasserProbe= nullptr;// = selectHarassmentProbe();harasserProbe =
+    for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+        if (unit->getType() == BWAPI::UnitTypes::Protoss_Probe && unit->isIdle()) {
+            harasserProbe = unit; // Return the first idle Probe found
+        }
+    }
+    //return nullptr; // No idle Probe available
+    if (!harasserProbe) {
+        return; // No available probe for harassment
+    }
+
+    // Check if we can perform gas stealing
+    bool canStealGas = BWAPI::Broodwar->self()->minerals() >= BWAPI::UnitTypes::Protoss_Assimilator.mineralPrice() &&
+        BWAPI::Broodwar->elapsedTime() < 5 * 60;
+    if (canStealGas) {
+        BWAPI::Unit enemyGas = Tools::GetClosestUnitOfType(BWAPI::Broodwar->enemy(), BWAPI::UnitTypes::Resource_Vespene_Geyser); //Tools::GetClosestEnemyGas(harasserProbe);
+        if (enemyGas && !enemyGas->getType().isRefinery()) {
+            // Attempt to build an Assimilator on the enemy's gas
+            if (harasserProbe->build(BWAPI::UnitTypes::Protoss_Assimilator, enemyGas->getTilePosition())) {
+                return; // Successfully started building an Assimilator, end harassment strategy
+            }
+        }
+    }
+
+    BWAPI::Broodwar->sendText("Cannot steal gas");
+    // If not stealing gas, perform hit-and-run tactics
+    BWAPI::UnitType workerType;
+    
+    // Determine the enemy's race and set the worker type accordingly
+    BWAPI::Race enemyRace = BWAPI::Broodwar->enemy()->getRace();
+    if (enemyRace == BWAPI::Races::Protoss) {
+        workerType = BWAPI::UnitTypes::Protoss_Probe;
+    }
+    else if (enemyRace == BWAPI::Races::Terran) {
+        workerType = BWAPI::UnitTypes::Terran_SCV;
+    }
+    else if (enemyRace == BWAPI::Races::Zerg) {
+        workerType = BWAPI::UnitTypes::Zerg_Drone;
+    }
+
+
+    // Use the previously defined GetClosestUnitOfType function
+    BWAPI::Unit enemyWorker = Tools::GetClosestUnitOfType(BWAPI::Broodwar->enemy(), workerType);
+    //BWAPI::Unit enemyWorker = Tools::GetClosestUnitOfType(BWAPI::Broodwar->enemy(), BWAPI::UnitTypes::Protoss_Probe); //Tools::GetClosestEnemyWorker(harasserProbe);
+    if (enemyWorker) {
+        // Check if the probe can attack the worker
+        if (harasserProbe->getDistance(enemyWorker) < 32) { // Arbitrary attack range
+            harasserProbe->attack(enemyWorker);
+        }
+        else {
+            // Move towards the enemy worker to close the distance
+            harasserProbe->move(enemyWorker->getPosition());
+        }
+    }
+    else {
+        // No enemy workers in sight, move towards enemy mineral line
+        BWAPI::Unit enemyMineral = Tools::GetClosestUnitOfType(BWAPI::Broodwar->neutral(), BWAPI::UnitTypes::Resource_Mineral_Field); //Tools::GetClosestEnemyMineral(harasserProbe);
+        if (enemyMineral) {
+            harasserProbe->move(enemyMineral->getPosition());
+        }
+    }
+}
 
 //BWAPI::Unit StarterBot::selectHarassmentProbe() {
 //    for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
@@ -365,7 +571,95 @@ void StarterBot::buildAdditionalSupply()
 
 
 // attack: currently naive logic for acting against encountered enemies. //neutralize and destroy logic
+void StarterBot::sendAttack()
+{
+    // Get all of our combat units
+    const int TotalSupply = Tools::GetTotalSupply(true);
 
+    if (TotalSupply < 5) { return; }
+
+    BWAPI::Unitset myCombatUnits;
+    for (auto& unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        if (unit->getType().canAttack() && !unit->getType().isWorker() && unit->isCompleted())
+        {
+            myCombatUnits.insert(unit);
+        }
+    }
+
+    // Find the closest and weakest enemy unit to attack
+    BWAPI::Unit targetEnemy = nullptr;
+    int minHp = std::numeric_limits<int>::max();
+    double closestDistance = std::numeric_limits<double>::max();
+    const BWAPI::Unitset& EnemyUnits = BWAPI::Broodwar->enemy()->getUnits();
+    for (auto& unit : EnemyUnits)
+    {
+        // Ignore the unit if it is a flying building (e.g., Terran Command Center)
+        if (unit->getType().isBuilding() && unit->isFlying())
+            continue;
+
+    //    // Calculate the distance and hitpoints
+        double distance = unit->getPosition().getDistance(myCombatUnits.getPosition());// why units
+        int hp = unit->getHitPoints();
+
+    //    // Check if this unit is the closest and weakest
+        if (hp < minHp || distance < closestDistance)
+        {
+            targetEnemy = unit;
+            minHp = hp;
+            closestDistance = distance;
+        }
+    }
+
+    //// If we haven't found an enemy, we could either wait or scout for enemies
+    //if (!targetEnemy)
+    //{
+    //    // For now, let's just wait
+    //    sendScout();
+    //    return;
+    //}
+    //
+    if (targetEnemy) { 
+        std::cout << "Enemy found:"<< targetEnemy<<std::endl;
+        for (auto& unit : myCombatUnits)
+        {
+            if (unit->isIdle() || !unit->isAttacking())
+            {
+                unit->attack(targetEnemy);
+            }
+        }
+    }
+    //// Command all of our combat units to attack the found enemy position
+    //const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+    //for (auto& unit : myUnits)
+    //{
+    //    if (unit->getType().canAttack() && !unit->getType().isWorker() && unit->isCompleted())
+    //    {
+    //        if (unit->isIdle() || !unit->isAttacking())
+    //        {
+    //            unit->attack(targetEnemy);
+    //        }
+    //    }
+    //}
+}
+
+double StarterBot::calculatePriorityScore(BWAPI::Unit enemyUnit)
+{
+    // Example: prioritize by unit type, then by health
+    double score = 0.0;
+
+    if (enemyUnit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode) {
+        score += 100;
+    }
+    else if (enemyUnit->getType() == BWAPI::UnitTypes::Terran_Medic) {
+        score += 80;
+    }
+
+    // Prefer lower health units
+    score += (1.0 - (enemyUnit->getHitPoints() / enemyUnit->getType().maxHitPoints())) * 50;
+
+    return score;
+}
 // Draw some relevent information to the screen to help us debug the bot
 void StarterBot::drawDebugInformation()
 {

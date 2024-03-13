@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "Tools.h"
-#include "Data.h"
+#include "../starterbot/BT/Data.h"
 #include <BWAPI/Type.h>
 
 using namespace std;
