@@ -2,6 +2,7 @@
 #include "Tools.h"
 #include <Data.h>
 #include "BaseSupervisor.h"
+#include "BT.h"
 
 void BaseSupervisor::onFrame() {
     // Build queued buildings
@@ -20,12 +21,21 @@ void BaseSupervisor::onFrame() {
             default:
                 break;
         }
-
     }
 
     verifyActiveBuilds();
     verifyFinishedBuilds();
+    assignIdleWorkes();
+
+    pDataResources->unitsAvailable = workers;
+    pDataResources->currMinerals = BWAPI::Broodwar->self()->minerals();
+
+    if (pBT != nullptr && pBT->Evaluate(pDataResources) != BT_NODE::RUNNING) {
+        delete (BT_DECORATOR*)pBT;
+        pBT = nullptr;
+    }
 }
+
 
 bool BaseSupervisor::buildBuilding(const JobBase& job) {
     const BWAPI::UnitType b = job.getUnit();
@@ -88,8 +98,11 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
             , building->getType().getName().c_str()
             , unitType.getName().c_str());
 
-        building->train(unitType);
-        queuedJobs.removeTop();
+        bool successful = building->train(unitType);
+
+        if (successful) {
+            queuedJobs.removeTop();
+        }
     }
 
     return true;
@@ -132,6 +145,19 @@ void BaseSupervisor::verifyFinishedBuilds() {
                 if (building.status == BuildingStatus::UnderConstruction || building.status == BuildingStatus::OrderGiven) {
                     building.status = BuildingStatus::Constructed;
                     building.unit = buildingInstance;
+                }
+            }
+        }
+    }
+}
+
+void BaseSupervisor::assignIdleWorkes() {
+    for (Building& building : buildings) {
+        if (building.unitType == BWAPI::UnitTypes::Protoss_Nexus) {
+            BWAPI::Unitset workersInRadius = building.unit->getUnitsInRadius(1000, BWAPI::Filter::IsWorker && BWAPI::Filter::IsIdle && BWAPI::Filter::IsOwned);
+            for (BWAPI::Unit worker : workersInRadius) {
+                if (!workers.contains(worker)) {
+                    workers.insert(worker);
                 }
             }
         }

@@ -4,11 +4,16 @@
 #include "iostream"
 #include "Data.h"
 #include "ManagerBase.h"
+#include <tuple>
+#include "Tools.h"
+#include <set>
+
 #include "Data/Building.h"
 #include "Data/ListBuilding.h"
 #include "Data/JobPriorityList.h"
-#include <tuple>
-#include "Tools.h"
+#include "Data/Worker.h"
+#include "DataResources.h"
+#include "BT.h";
 
 class BaseSupervisor : virtual ManagerBase {
 public:
@@ -23,6 +28,26 @@ public:
         building.status = BuildingStatus::Constructed;
 
         buildings.push_back(building);
+
+        // Define the data for resource gathering BT
+
+        pDataResources = new DataResources();
+        pDataResources->currMinerals = 0;
+        pDataResources->thresholdMinerals = THRESHOLD1_MINERALS;
+
+        pDataResources->nWantedWorkersTotal = NWANTED_WORKERS_TOTAL;
+        pDataResources->nWantedWorkersFarmingMinerals = NWANTED_WORKERS_FARMING_MINERALS;
+
+        // Define behaviour tree for resource gathering
+
+        pBT = new BT_DECORATOR("EntryPoint", nullptr);
+
+        BT_PARALLEL_SEQUENCER* pParallelSeq = new BT_PARALLEL_SEQUENCER("MainParallelSequence", pBT, 10);
+
+        //Farming Minerals forever
+        BT_DECO_REPEATER* pFarmingResourcesForeverRepeater = new BT_DECO_REPEATER("RepeatForeverFarmingResources", pParallelSeq, 0, true, false, false);
+        BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES* pNotEnoughWorkersFarmingResources = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES("NotEnoughWorkersFarmingResources", pFarmingResourcesForeverRepeater);
+        BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES* pSendWorkerToResources = new BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES("SendWorkerToResources", pNotEnoughWorkersFarmingResources);
     };
     
     // Functions
@@ -46,9 +71,15 @@ public:
         }
     };
 
+    // Set worker units which belong to base
+    void addWorker(BWAPI::Unit newWorker) {
+        workers.insert(newWorker);
+    };
+
 private:
     // Fields
-    std::vector<BWAPI::Unit> workers;
+    std::unordered_set<BWAPI::Unit> workers;
+
     float defence_dps = 0; // Damage Per Second our defence can provide
     std::vector<Building> buildings;
 
@@ -57,11 +88,18 @@ private:
     int allocated_minerals = 0;
     int allocated_gas = 0;
 
+    // Behaviour Trees
+    BT_NODE* pBT;
+
+    // Behaviour Tree Data
+    DataResources* pDataResources;
+
     // Functions
     bool buildBuilding(const JobBase& job);
     bool produceUnit(const JobBase& job);
     void verifyActiveBuilds();
     void verifyFinishedBuilds();
+    void assignIdleWorkes();
 
     // Helper methods
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b);
