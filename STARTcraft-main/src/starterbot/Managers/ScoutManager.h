@@ -7,6 +7,11 @@
 #include "ManagerBase.h"
 #include "Data/JobPriorityList.h"
 
+struct scout {
+    BWAPI::Unit* unit;
+    JobBase job;
+    bool working = false;
+};
 
 class ScoutManager : virtual ManagerBase {
 public:
@@ -24,11 +29,12 @@ public:
 
 private:
     // Fields
-    std::vector<BWAPI::Unit> scouts;
+    std::vector<scout> scouts;
+    BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
+    int ExploredLocations = 0;
+    BWAPI::TilePosition HomeLocation = BWAPI::Broodwar->self()->getStartLocation();
 
     JobPriorityList queuedJobs;
-    std::vector<JobBase> activeJobs;
+    std::vector<JobBase> activeJobs; // not used
 
 };
-
-
