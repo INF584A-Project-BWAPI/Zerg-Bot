@@ -117,6 +117,15 @@
     <ClCompile Include="..\..\src\starterbot\Managers\ArmyManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\Data\Building.cpp">
+      <Filter>Managers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\Data\ListBuilding.cpp">
+      <Filter>Managers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\Data\JobPriorityList.cpp">
+      <Filter>Managers\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -241,6 +250,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\starterbot\Managers\ArmyManager.h">
       <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\Data\Building.h">
+      <Filter>Managers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\Data\ListBuilding.h">
+      <Filter>Managers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\Data\JobPriorityList.h">
+      <Filter>Managers\Data</Filter>
     </ClInclude>
     <ClInclude Include="AttackGroundUnitBT.hpp" />
   </ItemGroup>

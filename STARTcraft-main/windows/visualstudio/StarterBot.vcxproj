@@ -56,7 +56,10 @@
     <ClInclude Include="..\..\src\starterbot\Managers\ArmyManager.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\BasesManager.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\BaseSupervisor.h" />
+    <ClInclude Include="..\..\src\starterbot\Managers\Data\Building.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\Data\JobBase.h" />
+    <ClInclude Include="..\..\src\starterbot\Managers\Data\JobPriorityList.h" />
+    <ClInclude Include="..\..\src\starterbot\Managers\Data\ListBuilding.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\GameCommander.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\ManagerBase.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\ScoutManager.h" />
@@ -104,7 +107,10 @@
     <ClCompile Include="..\..\src\starterbot\Managers\ArmyManager.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\BasesManager.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\BaseSupervisor.cpp" />
+    <ClCompile Include="..\..\src\starterbot\Managers\Data\Building.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\Data\JobBase.cpp" />
+    <ClCompile Include="..\..\src\starterbot\Managers\Data\JobPriorityList.cpp" />
+    <ClCompile Include="..\..\src\starterbot\Managers\Data\ListBuilding.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\GameCommander.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ManagerBase.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ScoutManager.cpp" />
