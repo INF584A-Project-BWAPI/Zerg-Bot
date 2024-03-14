@@ -8,6 +8,7 @@ void BaseSupervisor::onFrame() {
     // Build queued buildings
     if (!queuedJobs.isEmpty()) {
         
+        // Gets the top priority job and builds/produces based on the JobType
         const JobBase& job = queuedJobs.getTop();
         bool doNotSkip = true;
 
@@ -23,10 +24,12 @@ void BaseSupervisor::onFrame() {
         }
     }
 
+    // Verifies statuses of buildings and assigns new idle workers to this bases workers list
     verifyActiveBuilds();
     verifyFinishedBuilds();
     assignIdleWorkes();
 
+    // Updates data in the worker BT and calls the BT with `pBT->Evaluate(pDataResources)`
     pDataResources->unitsAvailable = workers;
     pDataResources->currMinerals = BWAPI::Broodwar->self()->minerals();
 
@@ -45,11 +48,13 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
     const int unit_mineral = b.mineralPrice();
     const int unit_gas = b.gasPrice();
 
+    // If we have the resource required to build building
     if (unit_mineral <= excess_mineral && unit_gas <= excess_gass) {
-        const auto startedBuilding = buildBuilding(b);
-        const BWAPI::TilePosition p = std::get<1>(startedBuilding);
-        const int started = std::get<0>(startedBuilding);
+        const auto startedBuilding = buildBuilding(b); // Try to place building and order unit to build
+        const BWAPI::TilePosition p = std::get<1>(startedBuilding); // Position of the building 
+        const int started = std::get<0>(startedBuilding); // If a worker has started going to construction site
 
+        // If worker is moving to construction site, allocate resources such that they are not used and update building status
         if (started == 1) {
             BWAPI::Broodwar->printf("Moving to Construct Building %s", b.getName().c_str());
             queuedJobs.removeTop();
@@ -71,6 +76,8 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
 
 bool BaseSupervisor::produceUnit(const JobBase& job) {
     const BWAPI::UnitType unitType = job.getUnit();
+
+    // Get the index of the building which we have in this base to produce this unit. If -1 we dont have this building.
     const int buildingIdx = getProductionBuilding(unitType);
 
     if (buildingIdx == -1) {
@@ -115,11 +122,14 @@ void BaseSupervisor::verifyActiveBuilds() {
         }
 
         for (Building& building : buildings) {
+            // OrderGiven means that a worker is on the way to construct the building.
             if (building.status == BuildingStatus::OrderGiven) {
+                // Check that this building and the building instance from the previous for loop is the same through position.
                 const float dx = building.position.x - buildingStarted->getTilePosition().x;
                 const float dy = building.position.y - buildingStarted->getTilePosition().y;
 
                 if (dx * dx + dy * dy == 0.0) {
+                    // If they are the same then we know it is underConstruction and we can unlock the previously allocated resource.
                     allocated_gas -= building.unitType.gasPrice();
                     allocated_minerals -= building.unitType.mineralPrice();
 
@@ -135,6 +145,8 @@ void BaseSupervisor::verifyActiveBuilds() {
 }
 
 void BaseSupervisor::verifyFinishedBuilds() {
+    // When the building is finished constructing, we want to update its entry in our list with its instance and say it is constructed
+    // Thus, we can use this building after this (for example to produce units).
     for (const BWAPI::Unit& buildingInstance : BWAPI::Broodwar->getAllUnits()) {
         if (!buildingInstance->getType().isBuilding() || buildingInstance->isBeingConstructed()) {
             continue;
@@ -152,6 +164,8 @@ void BaseSupervisor::verifyFinishedBuilds() {
 }
 
 void BaseSupervisor::assignIdleWorkes() {
+    // Get all new workers which are idle around our Nexus and add them to our list of available workers, which handles the
+    // case where we produce new workers and have to update this list.
     for (Building& building : buildings) {
         if (building.unitType == BWAPI::UnitTypes::Protoss_Nexus) {
             BWAPI::Unitset workersInRadius = building.unit->getUnitsInRadius(1000, BWAPI::Filter::IsWorker && BWAPI::Filter::IsIdle && BWAPI::Filter::IsOwned);

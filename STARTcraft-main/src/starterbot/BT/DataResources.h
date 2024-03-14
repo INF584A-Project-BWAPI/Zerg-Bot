@@ -13,6 +13,7 @@ public:
 	int nWantedWorkersTotal;
 	int nWantedWorkersFarmingMinerals;
 
+
 	std::unordered_set<BWAPI::Unit> unitsFarmingMinerals;
 	std::unordered_set<BWAPI::Unit> unitsAvailable;
 };
