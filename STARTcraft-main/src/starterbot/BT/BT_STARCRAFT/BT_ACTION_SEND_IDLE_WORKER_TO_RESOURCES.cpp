@@ -14,29 +14,40 @@ BT_NODE::State BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES::Evaluate(void* data)
 
 std::string BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES::GetDescription()
 {
-    return "SEND IDLE WORKER TO MINERAL";
+    return "SEND IDLE WORKER TO RESOURCES";
 }
 
 
 BT_NODE::State BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES::SendIdleWorkerToResources(void* data)
 {
     DataResources* pData = (DataResources*)data;
-    const std::unordered_set<BWAPI::Unit>& myUnits = pData->unitsAvailable;
+    BT_NODE::State orderSent = BT_NODE::FAILURE;
 
-    for (const auto& unit : myUnits)
-    {
-        // Check the unit type, if it is an idle worker, then we want to send it somewhere
-        if (unit->isIdle())
-        {
-            // Get the closest mineral to this worker unit
+    for (const auto& unit : pData->unitsFarmingMinerals) {
+        if (unit->isIdle()) {
+            //if (unit->isCarryingMinerals()) {
+            //    unit->rightClick(pData->nexus);
+            //    continue;
+            //}
+            
             BWAPI::Unit closestMineral = Tools::GetClosestUnitTo(unit, BWAPI::Broodwar->getMinerals());
 
             // If a valid mineral was found, right click it with the unit in order to start harvesting
             if (closestMineral) {
                 unit->rightClick(closestMineral);
-                pData->unitsFarmingMinerals.insert(unit);
+
                 return BT_NODE::SUCCESS;
             }
+        }
+    }
+
+    for (const auto& unit : pData->unitsFarmingGas) {
+        if ((unit->isIdle()  || (unit->isGatheringMinerals() && !unit->isCarryingMinerals())) 
+            && pData->assimilatorAvailable) {
+
+            unit->rightClick(pData->assimilatorUnit);
+
+            return BT_NODE::SUCCESS;
         }
     }
 
