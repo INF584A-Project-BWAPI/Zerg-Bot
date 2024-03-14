@@ -4,16 +4,22 @@
 
 #pragma once
 
+// Where in the queue the executive manager should place this job high importance 
+// means top of the priority and low means at the bottom
 enum class Importance {
     High,
     Low
 };
 
+// The job type, important if the executive manager can
+// perform different types of jobs (think of the BaseSupervisor for example)
 enum class JobType {
     Building,
     UnitProduction
 };
 
+// Which manager should execute on this job 
+// (used to distribute jobs from parent managers)
 enum class ManagerType {
     GameCommander,
     ScoutManager,
@@ -25,6 +31,11 @@ enum class ManagerType {
 
 class JobBase {
 public:
+    /*
+    * Note that we have this mother class for all types of jobs, so some fields will be irrelevant to some other
+    * jobs. Thus, to make our lives simpler we just set default values for the fields we are not going to use anyways.
+    */
+
     JobBase(int priority, ManagerType assignedManager, JobType jobType, bool blocking, Importance importance)
         : priority(priority)
         , assignedManager(assignedManager)
