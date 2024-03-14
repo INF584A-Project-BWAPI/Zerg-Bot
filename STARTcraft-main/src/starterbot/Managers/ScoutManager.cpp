@@ -15,16 +15,17 @@ void ScoutManager::onFrame() {
             // Check the unit type, if it is an idle worker, then we want to make it a scout
             if (u->getType().isWorker() && (u->isIdle() || u->isGatheringMinerals()))
             {
-                ScoutManager::makeScout(u);
+                ScoutManager::makeScout(&u);
             }
         }
         // we'll also give them a job, move this elsewhere after prototyping
         JobBase j(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High);
+        j.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
         queuedJobs.queueItem(j);
     }
 
     // iterate over active scouts, check on their jobs and state
-    for (auto s : scouts) {
+    for (scout s : scouts) {
         checkOnScout(s);
     }
 
@@ -37,22 +38,22 @@ void ScoutManager::onFrame() {
     }
 }
 
-void ScoutManager::makeScout(BWAPI::Unit& u) {
+void ScoutManager::makeScout(BWAPI::Unit* u) {
     // make the scout struct and push it to the vector
     scout sc;
     sc.unit = u;
     scouts.push_back(sc);
 }
 
-void ScoutManager::unmakeScout(scout s) {
+/*void ScoutManager::unmakeScout(scout& s) {
     // find and remove that scout
     if (std::find(scouts.begin(), scouts.end(), s) != scouts.end()) {
         scouts.erase(std::find(scouts.begin(), scouts.end(), s));
     }
-}
+}*/ // fuck it, once a scout, forever a scout
 
 
-void ScoutManager::checkOnScout(scout s) {
+void ScoutManager::checkOnScout(scout & s) {
     // does it have a job? -> check the bool
     if (!s.working) { // no active job:
         //SendScouting if you have some queued Job, otherwise make "working" = false
@@ -66,11 +67,11 @@ void ScoutManager::checkOnScout(scout s) {
         // if it has a job, is it moving to it?
         //    -> what is it seeing? implement the churchill behavior tree TODO
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
-        if (s.unit->isIdle() || s.unit->isGatheringMinerals()) { s.working = false; }
+        if ((*s.unit)->isIdle() || (*s.unit)->isGatheringMinerals()) { s.working = false; }
     }
 }
 
-void ScoutManager::sendScouting(scout s, JobBase job) {
+void ScoutManager::sendScouting(scout & s, JobBase job) {
     // assign a unassigned job to a scout, making them move to an unexplored location
     if (StartLocations[ExploredLocations] == HomeLocation) {
         ExploredLocations++; // avoid exploring your own home
@@ -79,7 +80,7 @@ void ScoutManager::sendScouting(scout s, JobBase job) {
     // job.setTargetLocation
     // then s.u->move(job.getTargetLocation)
     s.working = true;
-    s.unit->move((BWAPI::Position)StartLocations[ExploredLocations]);
+    (*s.unit)->move((BWAPI::Position)StartLocations[ExploredLocations]);
 
     if (job.getTargetLocation() == HomeLocation) {
         // go to the location assigned by the job EXCEPT if that location is home (default)

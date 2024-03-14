@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vector>;
-#include "Data/JobBase.h";
-#include "ManagerBase.h";
-#include "ScoutManager.h";
-#include "ArmyManager.h";
-#include "GameFileParser.hpp";
+#include <vector>
+#include "Data/JobBase.h"
+#include "ManagerBase.h"
+#include "ScoutManager.h"
+#include "ArmyManager.h"
+#include "GameFileParser.hpp"
 
 class GameCommander : public ManagerBase {
 public:

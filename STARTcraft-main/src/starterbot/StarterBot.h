@@ -6,11 +6,11 @@
 #include <BWAPI.h>
 #include "Data.h"
 #include "Tools.h"
-#include "GameFileParser.hpp";
-#include "Managers/BasesManager.h";
-#include "Managers/GameCommander.h";
-#include "Managers/ScoutManager.h";
-#include "Managers/ArmyManager.h";
+#include "GameFileParser.hpp"
+#include "Managers/BasesManager.h"
+#include "Managers/GameCommander.h"
+#include "Managers/ScoutManager.h"
+#include "Managers/ArmyManager.h"
 //#include "map.h"
 
 class StarterBot

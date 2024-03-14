@@ -73,5 +73,5 @@ private:
     BWAPI::UnitType unit;
 
     // Fields used in scouting jobs
-    BWAPI::TilePosition targetLocation = BWAPI::Broodwar->self()->getStartLocation();
+    BWAPI::TilePosition targetLocation;// = BWAPI::Broodwar->self()->getStartLocation();
 };

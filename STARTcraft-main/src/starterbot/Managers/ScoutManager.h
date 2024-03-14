@@ -8,11 +8,12 @@
 #include "Data/JobPriorityList.h"
 
 
-JobBase j(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High); // default dummy job
+
 
 struct scout {
-    BWAPI::Unit& unit;
-    JobBase job = j;
+    BWAPI::Unit* unit;
+    JobBase job = JobBase(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High); // default dummy job
+    //JobBase job = j;
     bool working = false;
 };
 
@@ -30,10 +31,10 @@ public:
     // Setters
     void postJob(JobBase job) { queuedJobs.queueTop(job); };
 
-    void makeScout(BWAPI::Unit& u);
-    void unmakeScout(scout s);
-    void checkOnScout(scout s);
-    void sendScouting(scout s, JobBase job);
+    void makeScout(BWAPI::Unit* u);
+    //void unmakeScout(scout &s);
+    void checkOnScout(scout &s);
+    void sendScouting(scout &s, JobBase job);
 
 private:
 
