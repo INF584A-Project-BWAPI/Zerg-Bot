@@ -10,7 +10,6 @@
 
 #include "Data/Building.h"
 #include "Data/JobPriorityList.h"
-#include "Data/Worker.h"
 #include "DataResources.h"
 #include "BT.h";
 
