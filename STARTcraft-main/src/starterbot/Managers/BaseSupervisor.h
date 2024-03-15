@@ -13,11 +13,13 @@
 #include "Data/JobPriorityList.h"
 #include "DataResources.h"
 #include "BT.h";
+#include "Blackboard.h"
+
 
 class BaseSupervisor : virtual ManagerBase {
 public:
     // Constructor
-    BaseSupervisor() noexcept : ManagerBase(ManagerType::BaseSupervisor) {
+    BaseSupervisor(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::BaseSupervisor, blackboard) {
         /* 
         * When we construct the baseSupervisor we just look for a Nexus we own and
         * add this to the buildings list using the Building.h wrapper such that we

@@ -9,7 +9,7 @@
 class BasesManager: public ManagerBase {
 public:
     // Constructor
-    BasesManager() noexcept : ManagerBase(ManagerType::BasesManager) {};
+    BasesManager(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::BasesManager, blackboard) {};
 
 
     // Setters
