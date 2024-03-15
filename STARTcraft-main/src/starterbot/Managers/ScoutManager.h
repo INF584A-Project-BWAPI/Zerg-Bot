@@ -11,7 +11,7 @@
 
 
 struct scout {
-    BWAPI::Unit* unit;
+    BWAPI::Unit unit;
     JobBase job = JobBase(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High); // default dummy job
     //JobBase job = j;
     bool working = false; // is it scouting actively
@@ -35,10 +35,10 @@ public:
     // Setters
     void postJob(JobBase job) { queuedJobs.queueTop(job); };
 
-    void makeScout(BWAPI::Unit* u);
+    void makeScout(BWAPI::Unit u);
     //void unmakeScout(scout &s);
-    void checkOnScout(scout &s);
-    void sendScouting(scout &s, JobBase job);
+    void checkOnScout(scout * s);
+    void sendScouting(scout * s, JobBase job);
 
 private:
 

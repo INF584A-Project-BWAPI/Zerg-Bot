@@ -15,7 +15,7 @@ void ScoutManager::onFrame() {
             // Check the unit type, if it is an idle worker, then we want to make it a scout
             if (u->getType().isWorker())
             {
-                ScoutManager::makeScout(&u);
+                ScoutManager::makeScout(u);
                 break;
             }
         }
@@ -24,15 +24,18 @@ void ScoutManager::onFrame() {
         j.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
         queuedJobs.queueBottom(j);
         // experiment with a couple more jobs -> leads to crash, ask patrick
-        //JobBase j2(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::Low);
-        //j2.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
-        //queuedJobs.queueBottom(j2);
+        JobBase j2(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::Low);
+        j2.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
+        queuedJobs.queueBottom(j2);
     }
 
     // iterate over active scouts, check on their jobs and state
-    for (scout s : scouts) {
-        checkOnScout(s);
+    for (int idx = 0; idx < scouts.size(); ++idx) {
+        checkOnScout( & scouts[idx]);
     }
+    //for (scout s : scouts) {
+    //    checkOnScout(s);
+    //}
 
     // if you still have queued jobs, this means you need more scouts
     /*if (!queuedJobs.isEmpty()) {
@@ -43,7 +46,7 @@ void ScoutManager::onFrame() {
     }*/
 }
 
-void ScoutManager::makeScout(BWAPI::Unit* u) {
+void ScoutManager::makeScout(BWAPI::Unit u) {
     // make the scout struct and push it to the vector
     scout sc;
     sc.unit = u;
@@ -58,14 +61,15 @@ void ScoutManager::makeScout(BWAPI::Unit* u) {
 }*/ // fuck it, once a scout, forever a scout
 
 
-void ScoutManager::checkOnScout(scout & s) {
+void ScoutManager::checkOnScout(scout * s) {
     // does it have a job? -> check the bool
-    if (!s.is_working()) { // no active job:
+    if (!s->is_working()) { // no active job:
         //SendScouting if you have some queued Job, otherwise make "working" = false
         if (!queuedJobs.isEmpty()) {
             const JobBase job = queuedJobs.getTop();
-            queuedJobs.removeTop(); // why does this crash?
+            s->set_working(true);
             sendScouting(s, job);
+            queuedJobs.removeTop(); // why does this crash?
         }
         //std::cout << "no more scouting jobs left!" << '\n';
     }
@@ -73,30 +77,31 @@ void ScoutManager::checkOnScout(scout & s) {
         // if it has a job, is it moving to it?
         //    -> what is it seeing? implement the churchill behavior tree TODO
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
-        if ((*s.unit)->isGatheringMinerals()) { // isGatheringMinerals() is not a sufficient condition to check idleness
+        BWAPI::Unit u = s->unit;
+        if (u->isGatheringMinerals()) { // isGatheringMinerals() is not a sufficient condition to check idleness
             std::cout << "this unit is idle, I will send it scouting" << '\n';
-            s.set_working(false);
+            s->set_working(false);
             //checkOnScout(s);
         }
-        if ((*s.unit)->isMoving()) {
-            std::cout << "this unit is moving" << '\n';
+        if (u->isMoving()) {
+            //std::cout << "this unit is moving" << '\n';
         }
     }
 }
 
-void ScoutManager::sendScouting(scout & s, JobBase job) {
+void ScoutManager::sendScouting(scout * s, JobBase job) {
     // assign a unassigned job to a scout, making them move to an unexplored location
     std::cout << "Sending scout to explore" << '\n';
-    s.set_working(true);
     if (ExploredLocations >= StartLocations.size()) { ExploredLocations = 0; } // if everything has been explored once, explore again
-    if (StartLocations[ExploredLocations] == HomeLocation) { ExploredLocations++; } // don't explore own home
+    if (StartLocations[ExploredLocations] == HomeLocation) { ExploredLocations = ExploredLocations % StartLocations.size(); } // don't explore own home
 
     if (job.getTargetLocation() == HomeLocation) {
         // go to the location assigned by the job EXCEPT if that location is home (default)
         job.setTargetLocation(StartLocations[ExploredLocations]);
     }
-    s.set_job(job);
-    (*s.unit)->move((BWAPI::Position)job.getTargetLocation());
+    s->set_job(job);
+    BWAPI::Unit u = s->unit;
+    u->move((BWAPI::Position)job.getTargetLocation());
     ExploredLocations++;
 }
 
