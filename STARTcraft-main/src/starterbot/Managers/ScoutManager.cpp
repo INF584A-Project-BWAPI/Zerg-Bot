@@ -24,9 +24,9 @@ void ScoutManager::onFrame() {
         j.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
         queuedJobs.queueBottom(j);
         // experiment with a couple more jobs -> leads to crash, ask patrick
-        JobBase j2(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::Low);
-        j2.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
-        queuedJobs.queueBottom(j2);
+        //JobBase j2(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::Low);
+        //j2.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
+        //queuedJobs.queueBottom(j2);
     }
 
     // iterate over active scouts, check on their jobs and state
@@ -73,11 +73,14 @@ void ScoutManager::checkOnScout(scout & s) {
         // if it has a job, is it moving to it?
         //    -> what is it seeing? implement the churchill behavior tree TODO
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
-        /*if ((*s.unit)->isGatheringMinerals()) { // isGatheringMinerals() is not a sufficient condition to check idleness
+        if ((*s.unit)->isGatheringMinerals()) { // isGatheringMinerals() is not a sufficient condition to check idleness
             std::cout << "this unit is idle, I will send it scouting" << '\n';
             s.set_working(false);
-            checkOnScout(s);
-        }*/
+            //checkOnScout(s);
+        }
+        if ((*s.unit)->isMoving()) {
+            std::cout << "this unit is moving" << '\n';
+        }
     }
 }
 
@@ -86,6 +89,7 @@ void ScoutManager::sendScouting(scout & s, JobBase job) {
     std::cout << "Sending scout to explore" << '\n';
     s.set_working(true);
     if (ExploredLocations >= StartLocations.size()) { ExploredLocations = 0; } // if everything has been explored once, explore again
+    if (StartLocations[ExploredLocations] == HomeLocation) { ExploredLocations++; } // don't explore own home
 
     if (job.getTargetLocation() == HomeLocation) {
         // go to the location assigned by the job EXCEPT if that location is home (default)
