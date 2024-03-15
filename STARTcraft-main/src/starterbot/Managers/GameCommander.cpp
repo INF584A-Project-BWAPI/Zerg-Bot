@@ -8,10 +8,11 @@ void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
 		const BuildingRecipe order = buildOrder.at(i);
 		JobType jobType;
 
+		const BWAPI::UnitType unit = order.getName();
 		if (order.getProducer() == ProducerType::Worker) { jobType = JobType::Building; }
 		else { jobType = JobType::UnitProduction; };
 
-		const BWAPI::UnitType unit = order.getName();
+		
 
 		JobBase job(i, ManagerType::BaseSupervisor, jobType, false, Importance::Low);
 		job.setUnitType(unit);
@@ -20,6 +21,22 @@ void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
 		job.setSupplyCost(unit.supplyRequired());
 
 		postJob(job);
+	}
+
+	//new Base code
+	BWAPI::TilePosition homePosition = BWAPI::Broodwar->self()->getStartLocation();
+	double minDistance = std::numeric_limits<double>::max();
+	BWAPI::TilePosition expansionPosition = homePosition;
+
+	for (auto& baseLocation : BWAPI::Broodwar->getStartLocations()) {
+		if (baseLocation == homePosition) continue; // Skip the main base location
+
+		double distance = homePosition.getDistance(baseLocation);
+		if (distance < minDistance ) {
+			//&& isBaseLocationSuitable(baseLocation)
+			minDistance = distance;
+			expansionPosition = baseLocation;
+		}
 	}
 }
 

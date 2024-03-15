@@ -198,6 +198,11 @@
       "name": "zealot",
       "buildType": "Unit",
       "producerType": "Base"
+    },
+    {
+      "name": "zealot",
+      "buildType": "Unit",
+      "producerType": "Base"
     }
   ],
     "baseParameters": {

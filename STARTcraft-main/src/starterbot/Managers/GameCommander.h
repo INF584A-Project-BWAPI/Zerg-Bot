@@ -39,4 +39,5 @@ private:
     // Functions
     void onFrameChildren();
     void distributeJobs();
+    void newBase();
 };
