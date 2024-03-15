@@ -29,6 +29,9 @@ private:
 	BaseSupervisor mainBaseSupervisor;
 	ScoutManager scoutManager;
 	ArmyManager armyManager;
+
+	// Fields
+	bool alreadySentSupplyJob = false;
 	
 
 public:

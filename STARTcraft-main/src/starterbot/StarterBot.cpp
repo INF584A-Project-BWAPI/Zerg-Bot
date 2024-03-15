@@ -191,10 +191,13 @@ void StarterBot::buildAdditionalSupply()
     const int unusedSupply = Tools::GetTotalSupply(true) - BWAPI::Broodwar->self()->supplyUsed();
 
     // If we have a sufficient amount of supply, we don't need to do anything
-    if (unusedSupply > 2) { return; }
+    if (unusedSupply > 2 || alreadySentSupplyJob) {
+        alreadySentSupplyJob = false;
+        return;
+    }
 
     // Otherwise, we are going to build a supply provider
-    BWAPI::Broodwar->printf("Supply is running out (building more): %s", std::to_string(unusedSupply));
+    //BWAPI::Broodwar->printf("Supply is running out (building more): %s", unusedSupply);
 
     const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
 
@@ -204,6 +207,8 @@ void StarterBot::buildAdditionalSupply()
     job.setMineralCost(supplyProviderType.mineralPrice());
 
     gameCommander.postJob(job);
+
+    alreadySentSupplyJob = true;
 }
 
 // Draw some relevent information to the screen to help us debug the bot
