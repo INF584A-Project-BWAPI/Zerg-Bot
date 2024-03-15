@@ -1,6 +1,6 @@
 #include "BT_ACTION_TRAIN_WORKER.h"
-#include "Tools.h"
-#include "Data.h"
+#include "../../Tools.h"
+#include "../Data.h"
 
 BT_ACTION_TRAIN_WORKER::BT_ACTION_TRAIN_WORKER(std::string name,BT_NODE* parent)
     :  BT_ACTION(name,parent) {}

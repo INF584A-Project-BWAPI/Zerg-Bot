@@ -1,8 +1,8 @@
 #include "iostream"
-#include "Tools.h"
-#include <Data.h>
+#include "../Tools.h"
+#include "../BT/Data.h"
 #include "BaseSupervisor.h"
-#include "BT.h"
+#include "../BT/BT.h"
 
 void BaseSupervisor::onFrame() {
     // Build queued buildings
@@ -27,7 +27,8 @@ void BaseSupervisor::onFrame() {
     // Verifies statuses of buildings and assigns new idle workers to this bases workers list
     verifyActiveBuilds();
     verifyFinishedBuilds();
-
+    upgradeEnhancements();
+    researchProtossTechs();
     assignIdleWorkes(); // Assigns new idle workers to our list of available workers
     assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
 
@@ -41,6 +42,52 @@ void BaseSupervisor::onFrame() {
     }
 }
 
+void BaseSupervisor::upgradeEnhancements() {
+    for (auto upgradeType : protossUpgrades) {
+        // Check if we have the building that can perform the upgrade
+        BWAPI::Unit upgradeBuilding = nullptr;// getBuildingForUpgrade(upgradeType);
+        for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+            // Check if the unit is the correct type of building and if it can perform the desired upgrade
+            if (unit->getType().upgradesWhat().contains(upgradeType) && unit->isCompleted()) {
+                upgradeBuilding = unit;
+            }
+        }
+
+        if (!upgradeBuilding || upgradeBuilding->isUpgrading()) {
+            continue; // Skip if we don't have the building or it's already busy
+        }
+
+        // Check if we can afford the upgrade and if it's not already researched
+        if (BWAPI::Broodwar->canUpgrade(upgradeType, upgradeBuilding) && !BWAPI::Broodwar->self()->getUpgradeLevel(upgradeType)) {
+            upgradeBuilding->upgrade(upgradeType);
+            BWAPI::Broodwar->printf("Upgrading %s", upgradeType.getName().c_str());
+        }
+    }
+}
+
+void BaseSupervisor::researchProtossTechs() {
+    for (auto techType : protossTechs) {
+        // Check if we have the building that can perform the research
+        BWAPI::Unit researchBuilding = nullptr;// getBuildingForTech(techType);
+        for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+            // Check if the unit is the correct type of building and if it can perform the desired research
+            if (unit->getType().researchesWhat().contains(techType) && unit->isCompleted()) {
+                researchBuilding = unit;
+            }
+        }
+
+        if (!researchBuilding || researchBuilding->isResearching()) {
+            continue; // Skip if we don't have the building or it's already busy
+        }
+
+        // Check if we can afford the research and if it's not already researched
+        if (BWAPI::Broodwar->canResearch(techType, researchBuilding) && !BWAPI::Broodwar->self()->hasResearched(techType)) {
+            researchBuilding->research(techType);
+            BWAPI::Broodwar->printf("Researching %s", techType.getName().c_str());
+            std::cout << "R";
+        }
+    }
+}
 
 bool BaseSupervisor::buildBuilding(const JobBase& job) {
     const BWAPI::UnitType b = job.getUnit();

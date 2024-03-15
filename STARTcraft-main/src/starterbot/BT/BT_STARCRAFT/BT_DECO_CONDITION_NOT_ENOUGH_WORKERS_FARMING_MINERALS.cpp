@@ -1,7 +1,7 @@
 #include "BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.h"
-#include "Data.h"
 #include <BWAPI.h>
-#include "Tools.h"
+#include "../../Tools.h"
+#include "../Data.h"
 
 BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS::BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS(std::string name, BT_NODE* parent)
     : BT_DECO_CONDITION(name,parent, IsThereNotEnoughWorkersFarmingMinerals) {}

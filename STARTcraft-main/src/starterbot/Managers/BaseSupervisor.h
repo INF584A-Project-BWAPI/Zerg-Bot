@@ -2,17 +2,17 @@
 
 #include <optional>
 #include "iostream"
-#include "Data.h"
+#include "../BT/Data.h"
 #include "ManagerBase.h"
 #include <tuple>
-#include "Tools.h"
+#include "../Tools.h"
 #include <set>
 
-#include "GameFileParser.hpp"
+#include "../../starterbot/GameFileParser.hpp"
 #include "Data/Building.h"
 #include "Data/JobPriorityList.h"
-#include "DataResources.h"
-#include "BT.h";
+#include "../BT/DataResources.h"
+#include "../BT/BT.h";
 
 class BaseSupervisor : virtual ManagerBase {
 public:
@@ -111,11 +111,52 @@ private:
     void verifyActiveBuilds(); // If construction has started we can free up the allocated resources
     void verifyFinishedBuilds(); // Looks at the buildings list and checks if building is finished and thus update status
     void verifyAliveWorkers(); // If a worker has died, then we want to remove it from being accessible.
-    
+    void upgradeEnhancements();//UpGrades
+    void researchProtossTechs();//research
     void assignIdleWorkes(); // Any new idle worker spawned by nexus is added to the available workers vector
     void assignWorkersToHarvest(); // Assigns workers to either mineral or gas collection as default behaviour
 
     // Helper methods
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b); // Returns an int (0 - impossible, 1 - possible) and a position we build it on
     int getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
+    
+    std::set<BWAPI::UpgradeType> protossUpgrades = {
+    BWAPI::UpgradeTypes::Singularity_Charge, // Dragoon Range Upgrade
+    BWAPI::UpgradeTypes::Leg_Enhancements, // Zealot Speed Upgrade
+    BWAPI::UpgradeTypes::Protoss_Plasma_Shields, // Shield Upgrade
+    BWAPI::UpgradeTypes::Protoss_Ground_Weapons, // Ground Weapons Upgrade
+    BWAPI::UpgradeTypes::Protoss_Ground_Armor, // Ground Armor Upgrade
+    BWAPI::UpgradeTypes::Protoss_Air_Weapons, // Air Weapons Upgrade
+    BWAPI::UpgradeTypes::Protoss_Air_Armor, // Air Armor Upgrade
+    // Add other Protoss upgrades as needed
+    BWAPI::UpgradeTypes::Scarab_Damage,
+    BWAPI::UpgradeTypes::Reaver_Capacity,
+    BWAPI::UpgradeTypes::Gravitic_Drive,
+    BWAPI::UpgradeTypes::Sensor_Array,
+    BWAPI::UpgradeTypes::Gravitic_Boosters,
+    BWAPI::UpgradeTypes::Khaydarin_Amulet,
+    BWAPI::UpgradeTypes::Apial_Sensors,
+    BWAPI::UpgradeTypes::Gravitic_Thrusters,
+    BWAPI::UpgradeTypes::Carrier_Capacity,
+    BWAPI::UpgradeTypes::Khaydarin_Core,
+    BWAPI::UpgradeTypes::Argus_Jewel,
+    BWAPI::UpgradeTypes::Argus_Talisman
+    };
+
+    std::set<BWAPI::TechType> protossTechs = {
+    BWAPI::TechTypes::Psionic_Storm,
+    BWAPI::TechTypes::Hallucination,
+    BWAPI::TechTypes::Recall,
+    BWAPI::TechTypes::Stasis_Field,
+    BWAPI::TechTypes::Disruption_Web,
+    BWAPI::TechTypes::Mind_Control,
+    BWAPI::TechTypes::Maelstrom,
+
+    BWAPI::TechTypes::Feedback,
+    BWAPI::TechTypes::Dark_Archon_Meld,
+    BWAPI::TechTypes::Archon_Warp
+    // Add other Protoss techs as needed
+    };
+
+
 };

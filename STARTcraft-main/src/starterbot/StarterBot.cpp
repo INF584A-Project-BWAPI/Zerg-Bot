@@ -1,10 +1,10 @@
 #include "StarterBot.h"
 #include "Tools.h"
 #include "MapTools.h"
-#include <Data.h>
+#include "..\starterbot\BT\Data.h"
 #include <format>
 
-#include "BT.h"
+#include "..\starterbot\BT\BT.h"
 #include "Managers/GameCommander.h";
 #include "GameFileParser.hpp";
 

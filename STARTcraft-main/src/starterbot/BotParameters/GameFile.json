@@ -107,88 +107,99 @@
             "children": []
         }
     ],
-    "build_order": [
-        {
-            "name": "pylon",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "gateway",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "assimilator",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "forge",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "photon_cannon",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "photon_cannon",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "cybernetics_core",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        }
-    ],
+  "build_order": [
+    {
+      "name": "pylon",
+      "buildType": "Building",
+      "producerType": "Worker"
+    },
+    {
+      "name": "probe",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "probe",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "gateway",
+      "buildType": "Building",
+      "producerType": "Worker"
+    },
+    {
+      "name": "probe",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "probe",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "assimilator",
+      "buildType": "Building",
+      "producerType": "Worker"
+    },
+    {
+      "name": "forge",
+      "buildType": "Building",
+      "producerType": "Worker"
+    },
+    {
+      "name": "photon_cannon",
+      "buildType": "Building",
+      "producerType": "Worker"
+    },
+    {
+      "name": "photon_cannon",
+      "buildType": "Building",
+      "producerType": "Worker"
+    },
+    {
+      "name": "cybernetics_core",
+      "buildType": "Building",
+      "producerType": "Worker"
+    },
+    {
+      "name": "zealot",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "zealot",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "zealot",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "zealot",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "zealot",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    //trying extension
+    {
+      "name": "templar_archives",
+      "buildType": "Unit",
+      "producerType": "Base"
+    },
+    {
+      "name": "zealot",
+      "buildType": "Unit",
+      "producerType": "Base"
+    }
+  ],
     "baseParameters": {
         "numMineralGatherers": 10,
         "numGasGatherers":  3

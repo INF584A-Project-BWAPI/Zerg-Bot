@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>;
-#include "Data.h"
+#include "../../BT/Data.h"
 
 enum class BuildingStatus {
 	UnderConstruction,

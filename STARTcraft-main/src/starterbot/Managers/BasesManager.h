@@ -27,7 +27,7 @@ public:
 private:
     // Fields
     ManagerBase* parent = nullptr;
-    std::vector<BaseSupervisor*> children;
+    std::vector<BaseSupervisor*> children;//not just one child
 
     int allocated_minerals = 0;
     int allocated_gas = 0;

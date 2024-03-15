@@ -1,6 +1,6 @@
 #pragma once
 #include <cassert>
-#include "BT_ACTION.h"
+#include "../BT_ACTION.h"
 #include <vector>
 #include <BWAPI.h>
 

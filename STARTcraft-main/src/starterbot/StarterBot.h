@@ -2,9 +2,9 @@
 
 #include <vector>
 #include "MapTools.h"
-#include "BT.h"
+#include "..\starterbot\BT\BT.h"
 #include <BWAPI.h>
-#include "Data.h"
+#include "..\starterbot\BT\Data.h"
 #include "Tools.h"
 #include "GameFileParser.hpp";
 #include "Managers/BasesManager.h";

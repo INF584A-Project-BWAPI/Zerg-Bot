@@ -51,6 +51,7 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_Upgrade.h" />
     <ClInclude Include="..\..\src\starterbot\BT\Data.h" />
     <ClInclude Include="..\..\src\starterbot\BT\DataResources.h" />
     <ClInclude Include="..\..\src\starterbot\GameFileParser.hpp" />
@@ -102,6 +103,7 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_Upgrade.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\DataResources.cpp" />
     <ClCompile Include="..\..\src\starterbot\GameFileParser.cpp" />
     <ClCompile Include="..\..\src\starterbot\main.cpp" />
