@@ -5,7 +5,7 @@
 
 enum class BuildingStatus {
 	UnderConstruction,
-	OrderGiven,
+	OrderGiven, // A worker is on the way to build this building (resources not used yet)
 	Constructed,
 	UnAssigned
 };
@@ -23,6 +23,6 @@ public:
 	// Functions
 	Building(BWAPI::TilePosition p, BWAPI::UnitType t);
 
-	bool operator == (const Building& b);
+	bool operator == (const Building& b); // Compare building based on position and its UnitType
 };
 

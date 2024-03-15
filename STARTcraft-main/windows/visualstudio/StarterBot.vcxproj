@@ -45,11 +45,14 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_SEQUENCER.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_BUILD_SUPPLY_PROVIDER.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_TRAIN_WORKER.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES.h" />
     <ClInclude Include="..\..\src\starterbot\BT\Data.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\DataResources.h" />
     <ClInclude Include="..\..\src\starterbot\GameFileParser.hpp" />
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
     <ClInclude Include="..\..\src\starterbot\json.hpp" />
@@ -59,7 +62,6 @@
     <ClInclude Include="..\..\src\starterbot\Managers\Data\Building.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\Data\JobBase.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\Data\JobPriorityList.h" />
-    <ClInclude Include="..\..\src\starterbot\Managers\Data\ListBuilding.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\GameCommander.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\ManagerBase.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\ScoutManager.h" />
@@ -98,10 +100,13 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_SEQUENCER.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_BUILD_SUPPLY_PROVIDER.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_TRAIN_WORKER.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\DataResources.cpp" />
     <ClCompile Include="..\..\src\starterbot\GameFileParser.cpp" />
     <ClCompile Include="..\..\src\starterbot\main.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ArmyManager.cpp" />
@@ -110,7 +115,6 @@
     <ClCompile Include="..\..\src\starterbot\Managers\Data\Building.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\Data\JobBase.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\Data\JobPriorityList.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\Data\ListBuilding.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\GameCommander.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ManagerBase.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ScoutManager.cpp" />
