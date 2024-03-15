@@ -100,7 +100,7 @@ private:
     void verifyActiveBuilds();
     void verifyFinishedBuilds();
     void assignIdleWorkes();
-
+    bool startUpgrade(const JobBase& job);
     // Helper methods
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b);
     int getProductionBuilding(BWAPI::UnitType u);

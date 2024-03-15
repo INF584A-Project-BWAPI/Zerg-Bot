@@ -18,6 +18,9 @@ void BaseSupervisor::onFrame() {
             case JobType::UnitProduction:
                 doNotSkip = produceUnit(job);
                 break;
+            case JobType::UpgradeJob:
+                doNotSkip = startUpgrade(job);
+                break;
             default:
                 break;
         }
@@ -36,6 +39,22 @@ void BaseSupervisor::onFrame() {
     }
 }
 
+bool BaseSupervisor::startUpgrade(const JobBase& job) {
+    // Find a building that can perform the upgrade
+    BWAPI::UpgradeType upgradeType=job.getUpgrade();
+    for (auto& building : buildings) {
+        if (building.unit->getType().upgradesWhat().contains(upgradeType)) {
+            // Check if the upgrade can be started (e.g., enough resources, prerequisites met)
+            if (BWAPI::Broodwar->self()->isUpgrading(upgradeType) || building.unit->upgrade(upgradeType)) {
+                std::cout <<"upgrading";
+                BWAPI::Broodwar->printf("Starting upgrade: %s", upgradeType.getName().c_str());
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 bool BaseSupervisor::buildBuilding(const JobBase& job) {
     const BWAPI::UnitType b = job.getUnit();
@@ -164,7 +183,41 @@ void BaseSupervisor::assignIdleWorkes() {
             }
         }
     }
-    std::cout << "Idle" << workers.size();
+    //Upgrade Purposes
+    bool ExistCore=false;
+    bool ExistCitadel = false;
+    for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+        if (unit->getType() == BWAPI::UnitTypes::Protoss_Cybernetics_Core && unit->isCompleted()) {
+            ExistCore= true;
+        }
+        if (unit->getType() == BWAPI::UnitTypes::Protoss_Citadel_of_Adun && unit->isCompleted()) {
+            ExistCitadel= true;
+        }
+    }
+    if (ExistCore) {
+        JobBase singularityChargeUpgrade(
+            6, // Priority
+            ManagerType::ProductionManager, // Assigned Manager
+            JobType::UpgradeJob, // Job Type
+            false, // Blocking
+            Importance::High // Importance
+        );
+        singularityChargeUpgrade.setUpgradeType(BWAPI::UpgradeTypes::Singularity_Charge);
+        queuedJobs.queueItem(singularityChargeUpgrade);//?
+        //queuedJobs.queueItem(JobBase JobBase(0,BaseSupervisor,JobType::UpgradeJob));
+    }
+    if (ExistCitadel) {
+        JobBase legEnhancementsUpgrade(
+            1, // Priority
+            ManagerType::ProductionManager, // Assigned Manager
+            JobType::UpgradeJob, // Job Type
+            false, // Blocking
+            Importance::Low // Importance, slightly lower than Singularity Charge
+        );
+        legEnhancementsUpgrade.setUpgradeType(BWAPI::UpgradeTypes::Leg_Enhancements);
+        queuedJobs.queueItem(legEnhancementsUpgrade);
+    }
+
 }
 
 
