@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>;
-#include "Data/JobBase.h";
-#include "ManagerBase.h";
-#include "BaseSupervisor.h";
-#include "BasesManager.h";
+#include <vector>
+#include "Data/JobBase.h"
+#include "ManagerBase.h"
+#include "BaseSupervisor.h"
+#include "BasesManager.h"
 
 class BasesManager: public ManagerBase {
 public:
