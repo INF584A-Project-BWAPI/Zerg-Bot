@@ -1,16 +1,17 @@
 #pragma once
 
-#include <vector>;
-#include "Data/JobBase.h";
-#include "ManagerBase.h";
-#include "ScoutManager.h";
-#include "ArmyManager.h";
-#include "GameFileParser.hpp";
+#include <vector>
+#include "Data/JobBase.h"
+#include "ManagerBase.h"
+#include "ScoutManager.h"
+#include "ArmyManager.h"
+#include "GameFileParser.hpp"
+#include "Blackboard.h"
 
 class GameCommander : public ManagerBase {
 public:
     // Constructor
-    GameCommander() noexcept : ManagerBase(ManagerType::GameCommander) {};
+    GameCommander(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::GameCommander, blackboard) {};
 
     // Setters
     void setManagerBases(BasesManager* manager) noexcept { basesManager = manager; };

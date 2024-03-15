@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\starterbot\Blackboard.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION_IDLE.h" />
@@ -69,8 +70,10 @@
     <ClInclude Include="..\..\src\starterbot\ReplayParser.h" />
     <ClInclude Include="..\..\src\starterbot\StarterBot.h" />
     <ClInclude Include="..\..\src\starterbot\Tools.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\starterbot\Blackboard.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_IDLE.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_LOG.cpp" />
@@ -121,6 +124,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\starterbot\BotParameters\GameFile.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="StarterBot.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>StarterBot</ProjectName>

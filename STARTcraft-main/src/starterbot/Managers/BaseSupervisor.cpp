@@ -24,9 +24,12 @@ void BaseSupervisor::onFrame() {
         }
     }
 
+    std::cout << "Number of scout units: " << blackboard.scouts.size() << std::endl;
+
     // Verifies statuses of buildings and assigns new idle workers to this bases workers list
     verifyActiveBuilds();
     verifyFinishedBuilds();
+    verifyAliveWorkers();
 
     assignIdleWorkes(); // Assigns new idle workers to our list of available workers
     assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
@@ -173,10 +176,10 @@ void BaseSupervisor::verifyFinishedBuilds() {
 
 void BaseSupervisor::verifyAliveWorkers() {
     // Remove any workers which are no longer alive
+    std::unordered_set<BWAPI::Unit> unitsToRemove;
+
     for (BWAPI::Unit worker : workers) {
         if (!worker->exists()) {
-            workers.erase(worker);
-
             if (gasMiners.contains(worker)) {
                 gasMiners.erase(worker);
             }
@@ -184,7 +187,25 @@ void BaseSupervisor::verifyAliveWorkers() {
             if (mineralMiners.contains(worker)) {
                 mineralMiners.erase(worker);
             }
+
+            unitsToRemove.insert(worker);
         }
+
+        if (blackboard.scouts.contains(worker)) {
+            if (gasMiners.contains(worker)) {
+                gasMiners.erase(worker);
+            }
+
+            if (mineralMiners.contains(worker)) {
+                mineralMiners.erase(worker);
+            }
+
+            unitsToRemove.insert(worker);
+        }
+    }
+
+    for (BWAPI::Unit worker : unitsToRemove) {
+        workers.erase(worker);
     }
 }
 
@@ -197,6 +218,10 @@ void BaseSupervisor::assignIdleWorkes() {
             for (BWAPI::Unit worker : workersInRadius) {
                 if (!workers.contains(worker)) {
                     workers.insert(worker);
+
+                    if (blackboard.scouts.contains(worker)) {
+                        blackboard.scouts.erase(worker);
+                    }
                 }
             }
         }

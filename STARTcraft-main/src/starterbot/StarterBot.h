@@ -6,11 +6,12 @@
 #include <BWAPI.h>
 #include "Data.h"
 #include "Tools.h"
-#include "GameFileParser.hpp";
-#include "Managers/BasesManager.h";
-#include "Managers/GameCommander.h";
-#include "Managers/ScoutManager.h";
-#include "Managers/ArmyManager.h";
+#include "GameFileParser.hpp"
+#include "Managers/BasesManager.h"
+#include "Managers/GameCommander.h"
+#include "Managers/ScoutManager.h"
+#include "Managers/ArmyManager.h"
+#include "Blackboard.h"
 //#include "map.h"
 
 class StarterBot
@@ -22,13 +23,14 @@ private:
 	Data *pData;
 	
 	GameFileParser gameParser;
-	
+	Blackboard blackboard;
+
 	// Managers
-	GameCommander gameCommander;
-	BasesManager basesManager;
-	BaseSupervisor mainBaseSupervisor;
-	ScoutManager scoutManager;
-	ArmyManager armyManager;
+	GameCommander gameCommander = GameCommander(blackboard);
+	BasesManager basesManager = BasesManager(blackboard);
+	BaseSupervisor mainBaseSupervisor = BaseSupervisor(blackboard);
+	ScoutManager scoutManager = ScoutManager(blackboard);
+	ArmyManager armyManager = ArmyManager(blackboard);
 
 	// Fields
 	bool alreadySentSupplyJob = false;

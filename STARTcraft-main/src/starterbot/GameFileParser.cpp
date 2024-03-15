@@ -97,7 +97,7 @@ ProducerType GameFileParser::parse_producertype_enum(const string& type) {
         // Handle error case when string doesn't match any enum value
         throw std::invalid_argument("Invalid ProducerType string: " + type);
     }
-}
+} 
 
 void GameFileParser::parseBaseParameters() {
     baseParameters.nMineralMinersWanted = json_file["baseParameters"]["numMineralGatherers"];

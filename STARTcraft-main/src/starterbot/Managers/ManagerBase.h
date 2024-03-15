@@ -1,14 +1,18 @@
 #pragma once
 
 #include "Data/JobBase.h"
-
+#include "Blackboard.h"
 
 class ManagerBase {
 public:
-    ManagerBase(ManagerType managerType) noexcept : managerType(managerType) {};
+    ManagerBase(ManagerType managerType, Blackboard& blackboard) noexcept
+        : managerType(managerType)
+        , blackboard(blackboard) {};
 
-    // Getters
     ManagerType getManagerType() const noexcept { return managerType; };
+
+    // Fields
+    Blackboard& blackboard;
 
 private:
     // Fields
