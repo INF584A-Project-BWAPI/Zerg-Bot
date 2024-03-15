@@ -61,7 +61,7 @@ StarterBot::StarterBot()
     //BT_DECO_REPEATER* pBuildSupplyProviderForeverRepeater = new BT_DECO_REPEATER("RepeatForeverBuildSupplyProvider", pParallelSeq, 0, true, false,false);
     //BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY* pNotEnoughSupply = new BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY("NotEnoughSupply", pBuildSupplyProviderForeverRepeater);
     //BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
-
+    
     const BWAPI::Unitset myUnits = BWAPI::Broodwar->self()->getUnits();
 
     for (auto& unit : myUnits) {
@@ -83,6 +83,22 @@ StarterBot::StarterBot()
     gameCommander.setBuildOrder(gameParser.buildorder);
 
     gameParser.print_build_order();
+
+    std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders("attack");
+
+    SquadProductionOrder squadProductionOrder;
+    squadProductionOrder.isConstructed = false;
+
+    for (ParsedUnitOrder order : orders) {
+        UnitProductionOrder unitProductionOrder;
+        unitProductionOrder.orderCount = order.count;
+        unitProductionOrder.unitType = order.unitType;
+        unitProductionOrder.jobsCount = 0;
+
+        squadProductionOrder.productionOrder.push_back(unitProductionOrder);
+    }
+
+    blackboard.squadProductionOrders.push_back(squadProductionOrder);
 }
 
 // Called when the bot starts!
@@ -127,7 +143,7 @@ void StarterBot::onFrame()
         pBtTest = nullptr;
     }*/
 
-    buildAdditionalSupply();
+    //buildAdditionalSupply();
 
     /*
     // Send our idle workers to mine minerals so they don't just stand there

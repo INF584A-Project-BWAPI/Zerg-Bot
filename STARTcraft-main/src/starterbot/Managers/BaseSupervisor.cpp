@@ -6,22 +6,14 @@
 
 void BaseSupervisor::onFrame() {
     // Build queued buildings
-    if (!queuedJobs.isEmpty()) {
-        
-        // Gets the top priority job and builds/produces based on the JobType
-        const JobBase& job = queuedJobs.getTop();
-        bool doNotSkip = true;
+    if (!queuedBuildJobs.isEmpty()) {
+        const JobBase& job = queuedBuildJobs.getTop();
+        buildBuilding(job);
+    }
 
-        switch (job.getJobType()) {
-            case JobType::Building:
-                doNotSkip = buildBuilding(job);
-                break;
-            case JobType::UnitProduction:
-                doNotSkip = produceUnit(job);
-                break;
-            default:
-                break;
-        }
+    if (!queuedProductionJobs.isEmpty()) {
+        const JobBase& job = queuedProductionJobs.getTop();
+        produceUnit(job);
     }
 
     std::cout << "Number of scout units: " << blackboard.scouts.size() << std::endl;
@@ -33,6 +25,7 @@ void BaseSupervisor::onFrame() {
 
     assignIdleWorkes(); // Assigns new idle workers to our list of available workers
     assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
+    assignSquadProduction();
 
     // Updates data in the worker BT and calls the BT with `pBT->Evaluate(pDataResources)`
     pDataResources->unitsFarmingGas = gasMiners;
@@ -62,7 +55,7 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
         // If worker is moving to construction site, allocate resources such that they are not used and update building status
         if (started == 1) {
             BWAPI::Broodwar->printf("Moving to Construct Building %s", b.getName().c_str());
-            queuedJobs.removeTop();
+            queuedBuildJobs.removeTop();
 
             Building building(p, b);
             building.status = BuildingStatus::OrderGiven;
@@ -113,7 +106,7 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
         bool successful = building->train(unitType);
 
         if (successful) {
-            queuedJobs.removeTop();
+            queuedProductionJobs.removeTop();
         }
     }
 
@@ -209,6 +202,30 @@ void BaseSupervisor::verifyAliveWorkers() {
     }
 }
 
+void BaseSupervisor::verifyArePylonsNeeded() {
+    // Get the amount of supply supply we currently have unused
+    const int unusedSupply = Tools::GetTotalSupply(true) - BWAPI::Broodwar->self()->supplyUsed();
+    bool pylonPlanned = queuedBuildJobs.getTop().getUnit() == BWAPI::UnitTypes::Protoss_Pylon;
+
+
+    // If we have a sufficient amount of supply, we don't need to do anything
+    if (unusedSupply > 2 || pylonPlanned) {
+        return;
+    }
+
+    // Otherwise, we are going to build a supply provider
+    //BWAPI::Broodwar->printf("Supply is running out (building more): %s", unusedSupply);
+
+    const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
+
+    JobBase job(0, ManagerType::BaseSupervisor, JobType::Building, false, Importance::High);
+    job.setUnitType(supplyProviderType);
+    job.setGasCost(supplyProviderType.gasPrice());
+    job.setMineralCost(supplyProviderType.mineralPrice());
+
+    queuedBuildJobs.queueTop(job);
+}
+
 void BaseSupervisor::assignIdleWorkes() {
     // Get all new workers which are idle around our Nexus and add them to our list of available workers, which handles the
     // case where we produce new workers and have to update this list.
@@ -245,6 +262,24 @@ void BaseSupervisor::assignWorkersToHarvest() {
             && !mineralMiners.contains(worker)) {
             mineralMiners.insert(worker);
             continue;
+        }
+    }
+}
+
+void BaseSupervisor::assignSquadProduction() {
+    for (SquadProductionOrder& order : blackboard.squadProductionOrders) {
+        if (!order.isConstructed) {
+            for (UnitProductionOrder& unitOrder : order.productionOrder) {
+                int buildingIndx = getProductionBuilding(unitOrder.unitType);
+                bool canProduce = (buildingIndx != -1) && (unitOrder.jobsCount < unitOrder.orderCount);
+
+                if (canProduce) {
+                    JobBase produceAttacker(0, ManagerType::BaseSupervisor, JobType::UnitProduction, false, Importance::High);
+                    produceAttacker.setUnitType(unitOrder.unitType);
+
+                    queuedProductionJobs.queueTop(produceAttacker);
+                }
+            }
         }
     }
 }

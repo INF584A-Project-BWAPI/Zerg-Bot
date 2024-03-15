@@ -57,6 +57,27 @@ void GameFileParser::print_build_order() {
     }
 }
 
+std::vector<ParsedUnitOrder> GameFileParser::parseSquadProductionOrders(std::string squadName) {
+
+    for (nlohmann::json squad : json_file["squads"]) {
+        if (squad["name"] == squadName) {
+            std::vector<ParsedUnitOrder> unitOrders;
+
+            for (nlohmann::json order : squad["units"]) {
+                ParsedUnitOrder parsedUnitOrder;
+                parsedUnitOrder.count = order["count"];
+                parsedUnitOrder.unitType = unit_type_map[order["unitType"]];
+
+                unitOrders.push_back(parsedUnitOrder);
+            }
+
+            return unitOrders;
+        }
+    }
+
+    return std::vector<ParsedUnitOrder>();
+}
+
 int GameFileParser::parse_build_order() {
     if (!json_loaded) {
         std::cerr << "JSON game file was not pre-loaded." << std::endl;

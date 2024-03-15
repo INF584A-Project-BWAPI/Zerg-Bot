@@ -162,35 +162,21 @@
             "name": "cybernetics_core",
             "buildType": "Building",
             "producerType": "Worker"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "zealot",
-            "buildType": "Unit",
-            "producerType": "Base"
         }
     ],
     "baseParameters": {
         "numMineralGatherers": 10,
-        "numGasGatherers":  3
-    }
+        "numGasGatherers": 3
+    },
+    "squads": [
+        {
+            "name": "attack",
+            "units": [
+                {
+                    "unitType": "zealot",
+                    "count": 10
+                }
+            ]
+        }
+    ]
 }
