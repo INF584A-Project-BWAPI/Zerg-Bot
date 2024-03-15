@@ -7,21 +7,26 @@ void ScoutManager::onFrame() {
     // Build queued buildings
     // looks at highest priority item without popping from queue yet
 
-    // if I don't have any
+    // if I don't have any scouts, make one
     if (scouts.size() == 0) {
         const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
         for (BWAPI::Unit u : myUnits)
         {
             // Check the unit type, if it is an idle worker, then we want to make it a scout
-            if (u->getType().isWorker() && (u->isIdle() || u->isGatheringMinerals()))
+            if (u->getType().isWorker())
             {
                 ScoutManager::makeScout(&u);
+                break;
             }
         }
         // we'll also give them a job, move this elsewhere after prototyping
-        JobBase j(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High);
+        JobBase j(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::Low);
         j.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
-        queuedJobs.queueItem(j);
+        queuedJobs.queueBottom(j);
+        // experiment with a couple more jobs -> leads to crash, ask patrick
+        JobBase j2(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::Low);
+        j2.setTargetLocation(BWAPI::Broodwar->self()->getStartLocation());
+        queuedJobs.queueBottom(j2);
     }
 
     // iterate over active scouts, check on their jobs and state
@@ -30,12 +35,12 @@ void ScoutManager::onFrame() {
     }
 
     // if you still have queued jobs, this means you need more scouts
-    if (!queuedJobs.isEmpty()) {
+    /*if (!queuedJobs.isEmpty()) {
         const JobBase job = queuedJobs.getTop();
         std::cout << "We have at least 1 unassigned Scout Job: " << job.getUnit() << std::endl;
         // find a mining worker -> make them a scout and assign the job to them
         // or just do nothing, and periodically increase the number of scouts you own
-    }
+    }*/
 }
 
 void ScoutManager::makeScout(BWAPI::Unit* u) {
@@ -55,38 +60,39 @@ void ScoutManager::makeScout(BWAPI::Unit* u) {
 
 void ScoutManager::checkOnScout(scout & s) {
     // does it have a job? -> check the bool
-    if (!s.working) { // no active job:
+    if (!s.is_working()) { // no active job:
         //SendScouting if you have some queued Job, otherwise make "working" = false
         if (!queuedJobs.isEmpty()) {
             const JobBase job = queuedJobs.getTop();
+            queuedJobs.removeTop(); // why does this crash?
             sendScouting(s, job);
-            queuedJobs.removeTop();
         }
+        //std::cout << "no more scouting jobs left!" << '\n';
     }
     else {
         // if it has a job, is it moving to it?
         //    -> what is it seeing? implement the churchill behavior tree TODO
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
-        if ((*s.unit)->isIdle() || (*s.unit)->isGatheringMinerals()) { s.working = false; }
+        /*if ((*s.unit)->isGatheringMinerals()) { // isGatheringMinerals() is not a sufficient condition to check idleness
+            std::cout << "this unit is idle, I will send it scouting" << '\n';
+            s.set_working(false);
+            checkOnScout(s);
+        }*/
     }
 }
 
 void ScoutManager::sendScouting(scout & s, JobBase job) {
     // assign a unassigned job to a scout, making them move to an unexplored location
-    if (StartLocations[ExploredLocations] == HomeLocation) {
-        ExploredLocations++; // avoid exploring your own home
-    }
+    std::cout << "Sending scout to explore" << '\n';
+    s.set_working(true);
     if (ExploredLocations >= StartLocations.size()) { ExploredLocations = 0; } // if everything has been explored once, explore again
-    // job.setTargetLocation
-    // then s.u->move(job.getTargetLocation)
-    s.working = true;
-    (*s.unit)->move((BWAPI::Position)StartLocations[ExploredLocations]);
 
     if (job.getTargetLocation() == HomeLocation) {
         // go to the location assigned by the job EXCEPT if that location is home (default)
         job.setTargetLocation(StartLocations[ExploredLocations]);
     }
-    s.job = job;
+    s.set_job(job);
+    (*s.unit)->move((BWAPI::Position)job.getTargetLocation());
     ExploredLocations++;
 }
 

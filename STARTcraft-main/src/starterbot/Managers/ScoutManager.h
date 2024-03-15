@@ -14,7 +14,11 @@ struct scout {
     BWAPI::Unit* unit;
     JobBase job = JobBase(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High); // default dummy job
     //JobBase job = j;
-    bool working = false;
+    bool working = false; // is it scouting actively
+
+    void set_working(bool b) { working = b; };
+    void set_job(JobBase j) { job = j; };
+    bool is_working() { return working; };
 };
 
 class ScoutManager : virtual ManagerBase {
