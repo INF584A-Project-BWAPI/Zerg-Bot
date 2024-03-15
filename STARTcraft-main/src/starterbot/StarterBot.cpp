@@ -43,14 +43,14 @@ StarterBot::StarterBot()
 
 
     // Starcraft AI BT
-    pBT = new BT_DECORATOR("EntryPoint", nullptr);
+    //pBT = new BT_DECORATOR("EntryPoint", nullptr);
     
-    BT_PARALLEL_SEQUENCER* pParallelSeq = new BT_PARALLEL_SEQUENCER("MainParallelSequence", pBT, 10);
+    //BT_PARALLEL_SEQUENCER* pParallelSeq = new BT_PARALLEL_SEQUENCER("MainParallelSequence", pBT, 10);
 
     //Farming Minerals forever
-    BT_DECO_REPEATER* pFarmingMineralsForeverRepeater = new BT_DECO_REPEATER("RepeatForeverFarmingMinerals", pParallelSeq, 0, true, false,false);
-    BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS* pNotEnoughWorkersFarmingMinerals = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS("NotEnoughWorkersFarmingMinerals", pFarmingMineralsForeverRepeater);
-    BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS* pSendWorkerToMinerals = new BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS("SendWorkerToMinerals", pNotEnoughWorkersFarmingMinerals);
+    //BT_DECO_REPEATER* pFarmingMineralsForeverRepeater = new BT_DECO_REPEATER("RepeatForeverFarmingMinerals", pParallelSeq, 0, true, false,false);
+    //BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS* pNotEnoughWorkersFarmingMinerals = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS("NotEnoughWorkersFarmingMinerals", pFarmingMineralsForeverRepeater);
+    //BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS* pSendWorkerToMinerals = new BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS("SendWorkerToMinerals", pNotEnoughWorkersFarmingMinerals);
 
     //Training Workers
     //BT_DECO_REPEATER* pTrainingWorkersForeverRepeater = new BT_DECO_REPEATER("RepeatForeverTrainingWorkers", pParallelSeq, 0, true, false,false);
@@ -62,8 +62,15 @@ StarterBot::StarterBot()
     //BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY* pNotEnoughSupply = new BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY("NotEnoughSupply", pBuildSupplyProviderForeverRepeater);
     //BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
 
+    const BWAPI::Unitset myUnits = BWAPI::Broodwar->self()->getUnits();
 
-    // Bases Manager
+    for (auto& unit : myUnits) {
+        if (unit->getType().isWorker()) {
+            mainBaseSupervisor.addWorker(unit);
+        }
+    }
+
+    // Set the main base supervisor
     basesManager.setChild(&mainBaseSupervisor);
 
     // Game Commander
@@ -107,18 +114,18 @@ void StarterBot::onFrame()
     gameCommander.onFrame();
     
     // AI BT
-    if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)
-    {
-        delete (BT_DECORATOR*)pBT;
-        pBT = nullptr;
-    }
+    //if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)
+    //{
+    //    delete (BT_DECORATOR*)pBT;
+    //    pBT = nullptr;
+    //}
 
     //Test BT
-    if (pBtTest != nullptr && pBtTest->Evaluate(pData) != BT_NODE::RUNNING)
+    /*if (pBtTest != nullptr && pBtTest->Evaluate(pData) != BT_NODE::RUNNING)
     {
         delete (BT_DECORATOR*)pBtTest;
         pBtTest = nullptr;
-    }
+    }*/
 
     buildAdditionalSupply();
 
@@ -184,10 +191,13 @@ void StarterBot::buildAdditionalSupply()
     const int unusedSupply = Tools::GetTotalSupply(true) - BWAPI::Broodwar->self()->supplyUsed();
 
     // If we have a sufficient amount of supply, we don't need to do anything
-    if (unusedSupply > 2) { return; }
+    if (unusedSupply > 2 || alreadySentSupplyJob) {
+        alreadySentSupplyJob = false;
+        return;
+    }
 
     // Otherwise, we are going to build a supply provider
-    BWAPI::Broodwar->printf("Supply is running out (building more): %s", std::to_string(unusedSupply));
+    //BWAPI::Broodwar->printf("Supply is running out (building more): %s", unusedSupply);
 
     const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
 
@@ -197,6 +207,8 @@ void StarterBot::buildAdditionalSupply()
     job.setMineralCost(supplyProviderType.mineralPrice());
 
     gameCommander.postJob(job);
+
+    alreadySentSupplyJob = true;
 }
 
 // Draw some relevent information to the screen to help us debug the bot

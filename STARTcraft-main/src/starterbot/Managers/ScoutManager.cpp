@@ -51,6 +51,7 @@ void ScoutManager::makeScout(BWAPI::Unit u) {
     scout sc;
     sc.unit = u;
     scouts.push_back(sc);
+    blackboard.scouts.insert(sc.unit);
 }
 
 /*void ScoutManager::unmakeScout(scout& s) {
@@ -78,7 +79,7 @@ void ScoutManager::checkOnScout(scout * s) {
         //    -> what is it seeing? implement the churchill behavior tree TODO
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
         BWAPI::Unit u = s->unit;
-        if (u->isGatheringMinerals()) { // isGatheringMinerals() is not a sufficient condition to check idleness
+        if (u->isGatheringMinerals() || u->isIdle()) { // isGatheringMinerals() is not a sufficient condition to check idleness
             std::cout << "this unit is idle, I will send it scouting" << '\n';
             s->set_working(false);
             //checkOnScout(s);

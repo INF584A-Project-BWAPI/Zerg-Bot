@@ -38,6 +38,13 @@ static const std::map<std::string, BuildType> buildTypeStrToEnum = {
     {"Building", BuildType::Building},
 };
 
+struct BaseParameters {
+public:
+    int nGasMinersWanted;
+    int nMineralMinersWanted;
+};
+
+
 class BuildingRecipe {
 public:
     // Constructor
@@ -65,6 +72,8 @@ class GameFileParser
 {
 public:
     std::vector<BuildingRecipe> buildorder;
+    BaseParameters baseParameters;
+
     nlohmann::json json_file;
 
     GameFileParser();
@@ -81,6 +90,8 @@ private:
     int parse_build_order();
     BuildType parse_buildtype_enum(const string& type);
     ProducerType parse_producertype_enum(const string& type);
+
+    void parseBaseParameters();
 };
 
 #endif // GAME_FILE_PARSER_H

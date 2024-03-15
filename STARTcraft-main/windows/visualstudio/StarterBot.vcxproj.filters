@@ -120,12 +120,19 @@
     <ClCompile Include="..\..\src\starterbot\Managers\Data\Building.cpp">
       <Filter>Managers\Data</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\starterbot\Managers\Data\ListBuilding.cpp">
-      <Filter>Managers\Data</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\starterbot\Managers\Data\JobPriorityList.cpp">
       <Filter>Managers\Data</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\DataResources.cpp">
+      <Filter>BT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.cpp">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Blackboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -254,12 +261,20 @@
     <ClInclude Include="..\..\src\starterbot\Managers\Data\Building.h">
       <Filter>Managers\Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\starterbot\Managers\Data\ListBuilding.h">
-      <Filter>Managers\Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\starterbot\Managers\Data\JobPriorityList.h">
       <Filter>Managers\Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\DataResources.h">
+      <Filter>BT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.h">
+      <Filter>BT\BT_STARCRAFT</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\..\src\starterbot\Blackboard.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BT">
@@ -285,5 +300,8 @@
     <None Include="..\..\src\starterbot\BotParameters\GameFile.json">
       <Filter>BotParameters</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="StarterBot.rc" />
   </ItemGroup>
 </Project>

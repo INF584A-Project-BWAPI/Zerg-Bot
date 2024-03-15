@@ -6,7 +6,7 @@
 #include "Data.h"
 #include "ManagerBase.h"
 #include "Data/JobPriorityList.h"
-
+#include "Blackboard.h";
 
 
 
@@ -24,7 +24,7 @@ struct scout {
 class ScoutManager : virtual ManagerBase {
 public:
     // Constructor
-    ScoutManager() noexcept : ManagerBase(ManagerType::ScoutManager) {};
+    ScoutManager(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::ScoutManager, blackboard) {};
 
     // Functions
     void onFrame();
