@@ -46,7 +46,6 @@ private:
     // Fields
     std::vector<scout> scouts;
     BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
-    BWAPI::Broodwar->get
     int ExploredLocations = 0;
     BWAPI::TilePosition HomeLocation = BWAPI::Broodwar->self()->getStartLocation();
 
