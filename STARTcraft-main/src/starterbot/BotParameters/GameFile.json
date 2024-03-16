@@ -144,22 +144,22 @@
             "producerType": "Worker"
         },
         {
-            "name": "forge",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "photon_cannon",
-            "buildType": "Building",
-            "producerType": "Worker"
-        },
-        {
-            "name": "photon_cannon",
+            "name": "gateway",
             "buildType": "Building",
             "producerType": "Worker"
         },
         {
             "name": "cybernetics_core",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
             "buildType": "Building",
             "producerType": "Worker"
         }
@@ -174,7 +174,11 @@
             "units": [
                 {
                     "unitType": "zealot",
-                    "count": 10
+                    "count": 5
+                },
+                {
+                    "unitType": "dragoon",
+                    "count": 2
                 }
             ]
         }

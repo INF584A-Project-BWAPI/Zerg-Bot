@@ -28,6 +28,16 @@ GameFileParser::GameFileParser() {
     // Unit mapping
     unit_type_map["probe"] = BWAPI::UnitTypes::Protoss_Probe;
     unit_type_map["zealot"] = BWAPI::UnitTypes::Protoss_Zealot;
+    unit_type_map["dragoon"] = BWAPI::UnitTypes::Protoss_Dragoon;
+    unit_type_map["high_templar"] = BWAPI::UnitTypes::Protoss_High_Templar;
+    unit_type_map["archon"] = BWAPI::UnitTypes::Protoss_Archon;
+    unit_type_map["shuttle"] = BWAPI::UnitTypes::Protoss_Shuttle;
+    unit_type_map["observer"] = BWAPI::UnitTypes::Protoss_Observer;
+    unit_type_map["scout"] = BWAPI::UnitTypes::Protoss_Scout;
+    unit_type_map["carrier"] = BWAPI::UnitTypes::Protoss_Carrier;
+    unit_type_map["interceptor"] = BWAPI::UnitTypes::Protoss_Interceptor;
+    unit_type_map["arbiter"] = BWAPI::UnitTypes::Protoss_Arbiter;
+
 };
 
 int GameFileParser::parse_game_file(string const path) {

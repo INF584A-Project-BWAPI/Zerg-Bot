@@ -161,6 +161,23 @@ void StarterBot::onFrame()
 
     // Draw some relevent information to the screen to help us debug the bot
     drawDebugInformation();
+
+
+    // Verify the production status os squads
+    for (SquadProductionOrder& squadOrder : blackboard.squadProductionOrders) {
+        if (!squadOrder.isConstructed) {
+            bool isFinished = true;
+
+            for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
+                if (unitOrder.unitInstances.size() < unitOrder.orderCount) {
+                    isFinished = false;
+                    break;
+                }
+            }
+
+            squadOrder.isConstructed = isFinished;
+        }
+    }
 }
 
 // Send our idle workers to mine minerals so they don't just stand there
@@ -273,9 +290,24 @@ void StarterBot::onUnitCreate(BWAPI::Unit unit)
 }
 
 // Called whenever a unit finished construction, with a pointer to the unit
-void StarterBot::onUnitComplete(BWAPI::Unit unit)
-{
-	
+void StarterBot::onUnitComplete(BWAPI::Unit unit) {
+    if (unit->exists()) {
+        for (SquadProductionOrder& squadOrder : blackboard.squadProductionOrders) {
+            bool assigned = false;
+
+            if (!squadOrder.isConstructed) {
+                for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
+                    if (unitOrder.unitType == unit->getType()) {
+                        unitOrder.unitInstances.insert(unit);
+                        assigned = true;
+                    }
+                }
+            }
+
+            if (assigned)
+                break;
+        }
+    }
 }
 
 // Called whenever a unit appears, with a pointer to the destroyed unit
