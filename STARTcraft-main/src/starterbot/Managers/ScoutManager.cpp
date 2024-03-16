@@ -11,7 +11,7 @@ void ScoutManager::onFrame() {
 
     // if I don't have any scouts, make one
     if (scouts.size() == 0) { // maybe add more conditions to define whether or not it is useful to send the scout
-        std::cout << "Number of places to explore: " << StartLocations.size() << '\n';
+        std::cout << "Number of places to explore: " << StartLocations.size() - 1<< '\n';
         const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
         for (BWAPI::Unit u : myUnits)
         {
@@ -94,11 +94,17 @@ void ScoutManager::syncWithBlackboard() {
             //blackboard.scouts.insert(sc_scout.unit); // add the scout to the blackboard
             unmakeScout(sc_scout); // unmake the scout
         }
+        if (!sc_scout.unit->exists()) { 
+            std::cout << "SCOUT IS DEADED" << '\n';
+            unmakeScout(sc_scout);
+            blackboard.scouts.erase(sc_scout.unit);
+        }
     }
 }
 
 void ScoutManager::checkOnScout(scout * s) {
     // does it have a job? -> check the bool
+    if (!s->unit->exists()) { unmakeScout(*s); return; }
     if (!s->is_working()) { // no active job:
         //SendScouting if you have some queued Job, otherwise make "working" = false
         if (!queuedJobs.isEmpty()) {
@@ -122,8 +128,15 @@ void ScoutManager::checkOnScout(scout * s) {
         if (u->isMoving()) {
             //std::cout << "this scout is moving" << '\n';
             BWAPI::Unitset scout_info = u->getUnitsInRadius(9000, BWAPI::Filter::IsEnemy);
-            if (scout_info.size() != 0 && scout_info.size() > s->max_saw) {
-                blackboard.scout_into.push_back(scout_info);
+            // amazingly bad implementation, but works
+            if (blackboard.scout_info.empty()) {
+                blackboard.scout_info.push_back(scout_info);
+                s->max_saw = scout_info.size();
+                std::cout << "scout sees " << scout_info.size() << " baddies.\n";
+                return;
+            }
+            if (scout_info.size() != 0 && scout_info.size() > blackboard.scout_info.back().size()) {
+                blackboard.scout_info.push_back(scout_info);
                 s->max_saw = scout_info.size();
                 std::cout << "scout sees " << scout_info.size() << " baddies.\n";
             }
