@@ -215,6 +215,25 @@ void BaseSupervisor::verifyAliveWorkers() {
     for (BWAPI::Unit worker : unitsToRemove) {
         workers.erase(worker);
     }
+
+    // Replace this unit so we can meet resource demand 
+    int desiredMineral = gameParser.baseParameters.nMineralMinersWanted - mineralMiners.size();
+    int desiredGas = gameParser.baseParameters.nGasMinersWanted - gasMiners.size();
+
+    if (desiredMineral > 0 || desiredGas > 0) {
+        BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+        int inProduction = queuedProductionJobs.countUnitTypes(workerType);
+        int toProduce = (desiredMineral + desiredGas) - inProduction;
+
+        if (toProduce > 0) {
+            for (int i = 0; i < toProduce; i++) {
+                JobBase replaceWorkerJob(0, ManagerType::BaseSupervisor, JobType::UnitProduction, false, Importance::High);
+                replaceWorkerJob.setUnitType(workerType);
+
+                queuedProductionJobs.queueTop(replaceWorkerJob);
+            }
+        }
+    }
 }
 
 void BaseSupervisor::verifyArePylonsNeeded() {

@@ -123,38 +123,9 @@ void StarterBot::onFrame()
 {
     // Update our MapTools information
     m_mapTools.onFrame();
-
-    pData->currMinerals = BWAPI::Broodwar->self()->minerals();
-    pData->currSupply = Tools::GetUnusedSupply(true);
-
     gameCommander.onFrame();
     
-    // AI BT
-    //if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)
-    //{
-    //    delete (BT_DECORATOR*)pBT;
-    //    pBT = nullptr;
-    //}
 
-    //Test BT
-    /*if (pBtTest != nullptr && pBtTest->Evaluate(pData) != BT_NODE::RUNNING)
-    {
-        delete (BT_DECORATOR*)pBtTest;
-        pBtTest = nullptr;
-    }*/
-
-    //buildAdditionalSupply();
-
-    /*
-    // Send our idle workers to mine minerals so they don't just stand there
-    sendIdleWorkersToMinerals();
-
-    // Train more workers so we can gather more income
-    trainAdditionalWorkers();
-
-    // Build more supply if we are going to run out soon
-    buildAdditionalSupply();
-    */
 
     // Draw unit health bars, which brood war unfortunately does not do
     Tools::DrawUnitHealthBars();
@@ -162,9 +133,11 @@ void StarterBot::onFrame()
     // Draw some relevent information to the screen to help us debug the bot
     drawDebugInformation();
 
-
     // Verify the production status os squads
-    for (SquadProductionOrder& squadOrder : blackboard.squadProductionOrders) {
+    std::vector<int> ordersToErase;
+
+    for (int i = 0; i < blackboard.squadProductionOrders.size(); i++) {
+        SquadProductionOrder& squadOrder = blackboard.squadProductionOrders[i];
         if (!squadOrder.isConstructed) {
             bool isFinished = true;
 
@@ -176,7 +149,24 @@ void StarterBot::onFrame()
             }
 
             squadOrder.isConstructed = isFinished;
+
+            if (squadOrder.isConstructed) {
+                BWAPI::Unitset squad;
+
+                for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
+                    for (BWAPI::Unit unit : unitOrder.unitInstances) {
+                        squad.insert(unit);
+                    }
+                }
+
+                blackboard.squads.push_back(squad);
+                ordersToErase.push_back(i);
+            }
         }
+    }
+
+    for (int i : ordersToErase) {
+        blackboard.squadProductionOrders.erase(blackboard.squadProductionOrders.begin() + i);
     }
 }
 

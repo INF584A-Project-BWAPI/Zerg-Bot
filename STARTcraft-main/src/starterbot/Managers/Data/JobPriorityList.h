@@ -31,6 +31,8 @@ public:
     bool canSkipItem();
     std::string getQueueInformation() const;
 
+    int countUnitTypes(BWAPI::UnitType type);
+
 private:
 	std::deque<JobBase> queue;
 

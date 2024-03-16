@@ -114,29 +114,9 @@
             "producerType": "Worker"
         },
         {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
             "name": "gateway",
             "buildType": "Building",
             "producerType": "Worker"
-        },
-        {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
-        },
-        {
-            "name": "probe",
-            "buildType": "Unit",
-            "producerType": "Base"
         },
         {
             "name": "assimilator",
