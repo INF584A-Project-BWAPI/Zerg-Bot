@@ -14,6 +14,7 @@ struct scout {
     JobBase job = JobBase(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High); // default dummy job
     //JobBase job = j;
     bool working = false; // is it scouting actively
+    int max_saw = 0;
 
     void set_working(bool b) { working = b; };
     void set_job(JobBase j) { job = j; };
@@ -45,6 +46,7 @@ private:
     // Fields
     std::vector<scout> scouts;
     BWAPI::TilePosition::list StartLocations = BWAPI::Broodwar->getStartLocations();
+    BWAPI::Broodwar->get
     int ExploredLocations = 0;
     BWAPI::TilePosition HomeLocation = BWAPI::Broodwar->self()->getStartLocation();
 

@@ -11,6 +11,7 @@ void ScoutManager::onFrame() {
 
     // if I don't have any scouts, make one
     if (scouts.size() == 0) { // maybe add more conditions to define whether or not it is useful to send the scout
+        std::cout << "Number of places to explore: " << StartLocations.size() << '\n';
         const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
         for (BWAPI::Unit u : myUnits)
         {
@@ -121,8 +122,9 @@ void ScoutManager::checkOnScout(scout * s) {
         if (u->isMoving()) {
             //std::cout << "this scout is moving" << '\n';
             BWAPI::Unitset scout_info = u->getUnitsInRadius(9000, BWAPI::Filter::IsEnemy);
-            if (scout_info.size() != 0) {
+            if (scout_info.size() != 0 && scout_info.size() > s->max_saw) {
                 blackboard.scout_into.push_back(scout_info);
+                s->max_saw = scout_info.size();
                 std::cout << "scout sees " << scout_info.size() << " baddies.\n";
             }
         }
@@ -140,6 +142,7 @@ void ScoutManager::sendScouting(scout * s, JobBase job) {
         job.setTargetLocation(StartLocations[ExploredLocations]);
     }
     s->set_job(job);
+    //s->max_saw = 0; // reset max saw because its a new exploring job
     BWAPI::Unit u = s->unit;
     u->move((BWAPI::Position)job.getTargetLocation());
     u->move((BWAPI::Position)HomeLocation, true);
