@@ -9,7 +9,6 @@
 #include "Blackboard.h";
 
 
-
 struct scout {
     BWAPI::Unit unit;
     JobBase job = JobBase(0, ManagerType::ScoutManager, JobType::Scouting, false, Importance::High); // default dummy job
@@ -18,7 +17,7 @@ struct scout {
 
     void set_working(bool b) { working = b; };
     void set_job(JobBase j) { job = j; };
-    bool is_working() { return working; };
+    bool is_working() const { return working; };
 };
 
 class ScoutManager : virtual ManagerBase {
@@ -36,9 +35,10 @@ public:
     void postJob(JobBase job) { queuedJobs.queueTop(job); };
 
     void makeScout(BWAPI::Unit u);
-    //void unmakeScout(scout &s);
+    void unmakeScout(scout s);
     void checkOnScout(scout * s);
     void sendScouting(scout * s, JobBase job);
+    void syncWithBlackboard();
 
 private:
 

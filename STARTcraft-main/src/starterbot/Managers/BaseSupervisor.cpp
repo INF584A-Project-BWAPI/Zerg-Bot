@@ -24,7 +24,7 @@ void BaseSupervisor::onFrame() {
         }
     }
 
-    std::cout << "Number of scout units: " << blackboard.scouts.size() << std::endl;
+    //std::cout << "Number of scout units: " << blackboard.scouts.size() << std::endl;
 
     // Verifies statuses of buildings and assigns new idle workers to this bases workers list
     verifyActiveBuilds();
