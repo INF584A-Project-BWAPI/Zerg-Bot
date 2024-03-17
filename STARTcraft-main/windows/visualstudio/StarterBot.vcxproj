@@ -65,7 +65,6 @@
     <ClInclude Include="..\..\src\starterbot\Managers\GameCommander.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\ManagerBase.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\ScoutManager.h" />
-    <ClInclude Include="..\..\src\starterbot\Managers\Squad.h" />
     <ClInclude Include="..\..\src\starterbot\MapTools.h" />
     <ClInclude Include="..\..\src\starterbot\ReplayParser.h" />
     <ClInclude Include="..\..\src\starterbot\StarterBot.h" />
@@ -115,7 +114,6 @@
     <ClCompile Include="..\..\src\starterbot\Managers\GameCommander.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ManagerBase.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ScoutManager.cpp" />
-    <ClCompile Include="..\..\src\starterbot\Managers\Squad.cpp" />
     <ClCompile Include="..\..\src\starterbot\MapTools.cpp" />
     <ClCompile Include="..\..\src\starterbot\ReplayParser.cpp" />
     <ClCompile Include="..\..\src\starterbot\StarterBot.cpp" />

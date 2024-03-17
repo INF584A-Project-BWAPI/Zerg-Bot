@@ -132,9 +132,6 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.cpp">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\starterbot\Managers\Squad.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -274,9 +271,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.h">
       <Filter>BT\BT_STARCRAFT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\starterbot\Managers\Squad.h">
-      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
