@@ -18,6 +18,12 @@ using namespace std;
 ==============================
 */
 
+
+struct ParsedUnitOrder {
+    BWAPI::UnitType unitType;
+    int count;
+};
+
 enum class ProducerType {
     Base,
     Worker,
@@ -82,6 +88,9 @@ public:
 
     // Debugging
     void print_build_order();
+
+
+    std::vector<ParsedUnitOrder> parseSquadProductionOrders(std::string squadName);
 
 private:
     bool json_loaded;

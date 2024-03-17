@@ -107,106 +107,112 @@
             "children": []
         }
     ],
-  "build_order": [
-    {
-      "name": "pylon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "probe",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "probe",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "gateway",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "probe",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "probe",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "assimilator",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "forge",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "photon_cannon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "photon_cannon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "cybernetics_core",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "zealot",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "zealot",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "zealot",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "zealot",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "zealot",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    //trying extension
-    {
-      "name": "templar_archives",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "zealot",
-      "buildType": "Unit",
-      "producerType": "Base"
-    },
-    {
-      "name": "zealot",
-      "buildType": "Unit",
-      "producerType": "Base"
-    }
-  ],
+    "build_order": [
+        {
+            "name": "pylon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "assimilator",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "forge",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "cybernetics_core",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "robotics_facility",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "robotics_support_bay",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        }
+    ],
     "baseParameters": {
         "numMineralGatherers": 10,
-        "numGasGatherers":  3
-    }
+        "numGasGatherers": 3
+    },
+    "squads": [
+        {
+            "name": "defend",
+            "units": [
+                {
+                    "unitType": "zealot",
+                    "count": 10
+                },
+                {
+                    "unitType": "dragoon",
+                    "count": 5
+                }
+            ]
+        },
+        {
+            "name": "attack",
+            "units": [
+                {
+                    "unitType": "zealot",
+                    "count": 10
+                },
+                {
+                    "unitType": "dragoon",
+                    "count": 10
+                },
+                {
+                    "unitType": "reaver",
+                    "count": 3
+                }
+            ]
+        }
+    ]
 }
