@@ -74,25 +74,17 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
 bool BaseSupervisor::produceUnit(const JobBase& job) {
     const BWAPI::UnitType unitType = job.getUnit();
 
-    // Get the index of the building which we have in this base to produce this unit. If -1 we dont have this building.
-    const std::unordered_set<int> buildingIdx = getProductionBuilding(unitType);
+    // Count the buildings which are required to construct this unit
+    for (auto const& x : unitType.requiredUnits()) {
+        int countConstructed = countConstructedBuildingsofType(x.first);
 
-    if (buildingIdx.empty()) {
-        BWAPI::Broodwar->printf("Could Not Find a Building to Produce %s", unitType.getName().c_str());
-        return false;
-    }
-
-    for (int i : buildingIdx) {
-        for (int j : buildingIdx) {
-            const BWAPI::Unit buildingj = buildings.at(j).unit;
-            const BWAPI::Unit buildingi = buildings.at(i).unit; 
-
-            if (buildingj && buildingi && buildingi == buildingj && i != j) {
-                BWAPI::Broodwar->printf(
-                    "BaseSupervisor | ERROR | We have two buildings of same unit instance");
-            }
+        if (countConstructed < x.second) {
+            return false;
         }
     }
+
+    // Get the index of the building which we have in this base to produce this unit. If -1 we dont have this building.
+    const std::unordered_set<int> buildingIdx = getProductionBuilding(unitType);
 
     const int excess_mineral = BWAPI::Broodwar->self()->minerals() - allocated_minerals;
     const int excess_gas = BWAPI::Broodwar->self()->gas() - allocated_gas;
@@ -173,6 +165,11 @@ void BaseSupervisor::verifyFinishedBuilds() {
                     if (buildingInstance->getType() == BWAPI::UnitTypes::Protoss_Assimilator) {
                         pDataResources->assimilatorAvailable = true;
                         pDataResources->assimilatorUnit = buildingInstance;
+                    }
+
+                    // If the building produces soldiers then set the rally to be at the chokepoint
+                    if (blackboard.barrackTypes.contains(building.unitType)) {
+                        building.unit->setRallyPoint(baseChokepoint);
                     }
 
                     break;
@@ -360,5 +357,17 @@ std::unordered_set<int> BaseSupervisor::getProductionBuilding(BWAPI::UnitType u)
     }
 
     return buildingIndecies;
+}
+
+int BaseSupervisor::countConstructedBuildingsofType(BWAPI::UnitType u) {
+    int count = 0;
+
+    for (Building& building : buildings) {
+        if (building.status == BuildingStatus::Constructed && building.unitType == u) {
+            count++;
+        }
+    }
+
+    return count;
 }
 

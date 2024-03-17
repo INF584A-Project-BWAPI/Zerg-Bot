@@ -51,6 +51,22 @@ public:
         pDataResources->assimilatorAvailable = false;
         pDataResources->nexus = nexus;
 
+        blackboard.baseNexuses.push_back(nexus);
+
+        // Add base chokepoint as a defensive position
+        const BWAPI::Unit mineral = Tools::GetClosestUnitTo(nexus, BWAPI::Broodwar->getMinerals());
+        const BWAPI::Position mineralPosition = mineral->getPosition();
+        const BWAPI::Position nexusPosition = nexus->getPosition();
+
+        const int defencePosX = 3 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
+        const int defencePosY = 3 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
+
+        const BWAPI::Position defencePos(defencePosX, defencePosY);
+        baseChokepoint = defencePos;
+
+
+        BWAPI::Broodwar->drawTextScreen(defencePos, "Base Chokepoint: Defend\n");
+
         // Define behaviour tree for resource gathering
         pBT = new BT_DECORATOR("EntryPoint", nullptr);
 
@@ -102,6 +118,8 @@ private:
     // Fields
     GameFileParser gameParser;
 
+    BWAPI::Position baseChokepoint;
+
     std::unordered_set<BWAPI::Unit> workers;
     std::unordered_set<BWAPI::Unit> gasMiners;
     std::unordered_set<BWAPI::Unit> mineralMiners;
@@ -135,4 +153,5 @@ private:
     // Helper methods
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b); // Returns an int (0 - impossible, 1 - possible) and a position we build it on
     std::unordered_set<int> getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
+    int countConstructedBuildingsofType(BWAPI::UnitType u); // Counts the number of constructed buildings we have which for a given type
 };

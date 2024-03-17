@@ -129,6 +129,16 @@
             "producerType": "Worker"
         },
         {
+            "name": "forge",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
             "name": "cybernetics_core",
             "buildType": "Building",
             "producerType": "Worker"
@@ -139,7 +149,32 @@
             "producerType": "Worker"
         },
         {
-            "name": "gateway",
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "robotics_facility",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "robotics_support_bay",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
             "buildType": "Building",
             "producerType": "Worker"
         }
@@ -150,15 +185,32 @@
     },
     "squads": [
         {
+            "name": "defend",
+            "units": [
+                {
+                    "unitType": "zealot",
+                    "count": 10
+                },
+                {
+                    "unitType": "dragoon",
+                    "count": 5
+                }
+            ]
+        },
+        {
             "name": "attack",
             "units": [
                 {
                     "unitType": "zealot",
-                    "count": 5
+                    "count": 10
                 },
                 {
                     "unitType": "dragoon",
-                    "count": 2
+                    "count": 10
+                },
+                {
+                    "unitType": "reaver",
+                    "count": 3
                 }
             ]
         }
