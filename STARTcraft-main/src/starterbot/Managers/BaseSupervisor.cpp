@@ -24,14 +24,19 @@ void BaseSupervisor::onFrame() {
         }
     }
 
+    std::cout << "Number of scout units: " << blackboard.scouts.size() << std::endl;
+
     // Verifies statuses of buildings and assigns new idle workers to this bases workers list
     verifyActiveBuilds();
     verifyFinishedBuilds();
-    assignIdleWorkes();
+    verifyAliveWorkers();
+
+    assignIdleWorkes(); // Assigns new idle workers to our list of available workers
+    assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
 
     // Updates data in the worker BT and calls the BT with `pBT->Evaluate(pDataResources)`
-    pDataResources->unitsAvailable = workers;
-    pDataResources->currMinerals = BWAPI::Broodwar->self()->minerals();
+    pDataResources->unitsFarmingGas = gasMiners;
+    pDataResources->unitsFarmingMinerals = mineralMiners;
 
     if (pBT != nullptr && pBT->Evaluate(pDataResources) != BT_NODE::RUNNING) {
         delete (BT_DECORATOR*)pBT;
@@ -157,9 +162,50 @@ void BaseSupervisor::verifyFinishedBuilds() {
                 if (building.status == BuildingStatus::UnderConstruction || building.status == BuildingStatus::OrderGiven) {
                     building.status = BuildingStatus::Constructed;
                     building.unit = buildingInstance;
+
+                    // If the building is an assimilator then we need to update pDataResources such that workers can collect gas now
+                    if (buildingInstance->getType() == BWAPI::UnitTypes::Protoss_Assimilator) {
+                        pDataResources->assimilatorAvailable = true;
+                        pDataResources->assimilatorUnit = buildingInstance;
+                    }
                 }
             }
         }
+    }
+}
+
+void BaseSupervisor::verifyAliveWorkers() {
+    // Remove any workers which are no longer alive
+    std::unordered_set<BWAPI::Unit> unitsToRemove;
+
+    for (BWAPI::Unit worker : workers) {
+        if (!worker->exists()) {
+            if (gasMiners.contains(worker)) {
+                gasMiners.erase(worker);
+            }
+
+            if (mineralMiners.contains(worker)) {
+                mineralMiners.erase(worker);
+            }
+
+            unitsToRemove.insert(worker);
+        }
+
+        if (blackboard.scouts.contains(worker)) {
+            if (gasMiners.contains(worker)) {
+                gasMiners.erase(worker);
+            }
+
+            if (mineralMiners.contains(worker)) {
+                mineralMiners.erase(worker);
+            }
+
+            unitsToRemove.insert(worker);
+        }
+    }
+
+    for (BWAPI::Unit worker : unitsToRemove) {
+        workers.erase(worker);
     }
 }
 
@@ -172,8 +218,33 @@ void BaseSupervisor::assignIdleWorkes() {
             for (BWAPI::Unit worker : workersInRadius) {
                 if (!workers.contains(worker)) {
                     workers.insert(worker);
+
+                    if (blackboard.scouts.contains(worker)) {
+                        blackboard.scouts.erase(worker);
+                    }
                 }
             }
+        }
+    }
+}
+
+void BaseSupervisor::assignWorkersToHarvest() {
+    for (BWAPI::Unit worker : workers) {
+        if (gasMiners.size() < gameParser.baseParameters.nGasMinersWanted && pDataResources->assimilatorAvailable) {
+            if ((worker->isIdle() || (!worker->isCarryingMinerals() && worker->isGatheringMinerals())) && !gasMiners.contains(worker)) {
+                if (mineralMiners.contains(worker)) {
+                    mineralMiners.erase(worker);
+                }
+
+                gasMiners.insert(worker);
+                continue;
+            }
+        }
+        else if (mineralMiners.size() < NWANTED_WORKERS_FARMING_MINERALS 
+            && worker->isIdle()
+            && !mineralMiners.contains(worker)) {
+            mineralMiners.insert(worker);
+            continue;
         }
     }
 }
@@ -185,7 +256,8 @@ std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitTy
     BWAPI::TilePosition desiredPos = BWAPI::Broodwar->self()->getStartLocation();
     const BWAPI::UnitType builderType = b.whatBuilds().first;
 
-    BWAPI::Unit builder = Tools::GetUnitOfType(builderType);
+    BWAPI::Unit builder = *workers.begin();
+
     if (!builder) { return std::make_tuple(-1, desiredPos); }
 
     // Ask BWAPI for a building location near the desired position for the type

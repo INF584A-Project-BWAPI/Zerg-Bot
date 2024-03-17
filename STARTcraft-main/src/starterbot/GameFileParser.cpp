@@ -30,8 +30,7 @@ GameFileParser::GameFileParser() {
     unit_type_map["zealot"] = BWAPI::UnitTypes::Protoss_Zealot;
 };
 
-int GameFileParser::parse_game_file(string const path)
-{
+int GameFileParser::parse_game_file(string const path) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Failed to open file." << std::endl;
@@ -46,20 +45,19 @@ int GameFileParser::parse_game_file(string const path)
     json_loaded = true;
 
     parse_build_order();
+    parseBaseParameters();
 
     return 1;
 }
 
-void GameFileParser::print_build_order()
-{
+void GameFileParser::print_build_order() {
     for (const auto& building : buildorder) {
         std::cout << "Unit Type: " << building.getName() << std::endl;
         std::cout << std::endl;
     }
 }
 
-int GameFileParser::parse_build_order()
-{
+int GameFileParser::parse_build_order() {
     if (!json_loaded) {
         std::cerr << "JSON game file was not pre-loaded." << std::endl;
         return 0;
@@ -79,8 +77,7 @@ int GameFileParser::parse_build_order()
     return 1;
 }
 
-BuildType GameFileParser::parse_buildtype_enum(const string& type)
-{
+BuildType GameFileParser::parse_buildtype_enum(const string& type) {
     auto it = buildTypeStrToEnum.find(type);
     if (it != buildTypeStrToEnum.end()) {
         return it->second;
@@ -91,8 +88,7 @@ BuildType GameFileParser::parse_buildtype_enum(const string& type)
     }
 }
 
-ProducerType GameFileParser::parse_producertype_enum(const string& type)
-{
+ProducerType GameFileParser::parse_producertype_enum(const string& type) {
     auto it = producerTypeStrToEnum.find(type);
     if (it != producerTypeStrToEnum.end()) {
         return it->second;
@@ -101,4 +97,9 @@ ProducerType GameFileParser::parse_producertype_enum(const string& type)
         // Handle error case when string doesn't match any enum value
         throw std::invalid_argument("Invalid ProducerType string: " + type);
     }
+} 
+
+void GameFileParser::parseBaseParameters() {
+    baseParameters.nMineralMinersWanted = json_file["baseParameters"]["numMineralGatherers"];
+    baseParameters.nGasMinersWanted = json_file["baseParameters"]["numGasGatherers"];
 }

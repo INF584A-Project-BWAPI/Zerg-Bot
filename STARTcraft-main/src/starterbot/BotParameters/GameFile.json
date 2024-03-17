@@ -139,6 +139,26 @@
             "producerType": "Base"
         },
         {
+            "name": "assimilator",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "forge",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
             "name": "cybernetics_core",
             "buildType": "Building",
             "producerType": "Worker"
@@ -167,11 +187,10 @@
             "name": "zealot",
             "buildType": "Unit",
             "producerType": "Base"
-        },
-        {
-            "name": "assimilator",
-            "buildType": "Building",
-            "producerType": "Worker"
         }
-    ]
+    ],
+    "baseParameters": {
+        "numMineralGatherers": 10,
+        "numGasGatherers":  3
+    }
 }

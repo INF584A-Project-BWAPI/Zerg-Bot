@@ -133,6 +133,7 @@
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.cpp" />
+    <ClCompile Include="..\..\src\starterbot\Blackboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -274,6 +275,8 @@
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\..\src\starterbot\Blackboard.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BT">
@@ -299,5 +302,8 @@
     <None Include="..\..\src\starterbot\BotParameters\GameFile.json">
       <Filter>BotParameters</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="StarterBot.rc" />
   </ItemGroup>
 </Project>
