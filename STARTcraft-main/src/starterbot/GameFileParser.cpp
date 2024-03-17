@@ -28,10 +28,19 @@ GameFileParser::GameFileParser() {
     // Unit mapping
     unit_type_map["probe"] = BWAPI::UnitTypes::Protoss_Probe;
     unit_type_map["zealot"] = BWAPI::UnitTypes::Protoss_Zealot;
+    unit_type_map["dragoon"] = BWAPI::UnitTypes::Protoss_Dragoon;
+    unit_type_map["high_templar"] = BWAPI::UnitTypes::Protoss_High_Templar;
+    unit_type_map["archon"] = BWAPI::UnitTypes::Protoss_Archon;
+    unit_type_map["shuttle"] = BWAPI::UnitTypes::Protoss_Shuttle;
+    unit_type_map["observer"] = BWAPI::UnitTypes::Protoss_Observer;
+    unit_type_map["scout"] = BWAPI::UnitTypes::Protoss_Scout;
+    unit_type_map["carrier"] = BWAPI::UnitTypes::Protoss_Carrier;
+    unit_type_map["interceptor"] = BWAPI::UnitTypes::Protoss_Interceptor;
+    unit_type_map["arbiter"] = BWAPI::UnitTypes::Protoss_Arbiter;
+
 };
 
-int GameFileParser::parse_game_file(string const path)
-{
+int GameFileParser::parse_game_file(string const path) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Failed to open file." << std::endl;
@@ -46,20 +55,40 @@ int GameFileParser::parse_game_file(string const path)
     json_loaded = true;
 
     parse_build_order();
+    parseBaseParameters();
 
     return 1;
 }
 
-void GameFileParser::print_build_order()
-{
+void GameFileParser::print_build_order() {
     for (const auto& building : buildorder) {
         std::cout << "Unit Type: " << building.getName() << std::endl;
         std::cout << std::endl;
     }
 }
 
-int GameFileParser::parse_build_order()
-{
+std::vector<ParsedUnitOrder> GameFileParser::parseSquadProductionOrders(std::string squadName) {
+
+    for (nlohmann::json squad : json_file["squads"]) {
+        if (squad["name"] == squadName) {
+            std::vector<ParsedUnitOrder> unitOrders;
+
+            for (nlohmann::json order : squad["units"]) {
+                ParsedUnitOrder parsedUnitOrder;
+                parsedUnitOrder.count = order["count"];
+                parsedUnitOrder.unitType = unit_type_map[order["unitType"]];
+
+                unitOrders.push_back(parsedUnitOrder);
+            }
+
+            return unitOrders;
+        }
+    }
+
+    return std::vector<ParsedUnitOrder>();
+}
+
+int GameFileParser::parse_build_order() {
     if (!json_loaded) {
         std::cerr << "JSON game file was not pre-loaded." << std::endl;
         return 0;
@@ -79,8 +108,7 @@ int GameFileParser::parse_build_order()
     return 1;
 }
 
-BuildType GameFileParser::parse_buildtype_enum(const string& type)
-{
+BuildType GameFileParser::parse_buildtype_enum(const string& type) {
     auto it = buildTypeStrToEnum.find(type);
     if (it != buildTypeStrToEnum.end()) {
         return it->second;
@@ -91,8 +119,7 @@ BuildType GameFileParser::parse_buildtype_enum(const string& type)
     }
 }
 
-ProducerType GameFileParser::parse_producertype_enum(const string& type)
-{
+ProducerType GameFileParser::parse_producertype_enum(const string& type) {
     auto it = producerTypeStrToEnum.find(type);
     if (it != producerTypeStrToEnum.end()) {
         return it->second;
@@ -101,4 +128,9 @@ ProducerType GameFileParser::parse_producertype_enum(const string& type)
         // Handle error case when string doesn't match any enum value
         throw std::invalid_argument("Invalid ProducerType string: " + type);
     }
+} 
+
+void GameFileParser::parseBaseParameters() {
+    baseParameters.nMineralMinersWanted = json_file["baseParameters"]["numMineralGatherers"];
+    baseParameters.nGasMinersWanted = json_file["baseParameters"]["numGasGatherers"];
 }

@@ -9,7 +9,7 @@
 class ArmyManager : virtual ManagerBase {
 public:
     // Constructor
-    ArmyManager() noexcept : ManagerBase(ManagerType::ScoutManager) {};
+    ArmyManager(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::ScoutManager, blackboard) {};
 
     // Functions
     void onFrame();

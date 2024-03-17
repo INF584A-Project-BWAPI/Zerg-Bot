@@ -11,57 +11,12 @@
 
 StarterBot::StarterBot()
 {
-    pData = new Data();
-    pData->currMinerals = 0;
-    pData->thresholdMinerals = THRESHOLD1_MINERALS;
-    pData->currSupply = 0;
-    pData->thresholdSupply = THRESHOLD1_UNUSED_SUPPLY;
+    // Add barrack types to the blackboard
+    blackboard.barrackTypes.insert(BWAPI::UnitTypes::Protoss_Gateway);
+    blackboard.barrackTypes.insert(BWAPI::UnitTypes::Protoss_Robotics_Facility);
+    blackboard.barrackTypes.insert(BWAPI::UnitTypes::Protoss_Stargate);
 
-    pData->nWantedWorkersTotal = NWANTED_WORKERS_TOTAL;
-    pData->nWantedWorkersFarmingMinerals = NWANTED_WORKERS_FARMING_MINERALS;
-
-    pBtTest = nullptr;
-    /*
-    //Test BT nodes: BT_DECO_COND_GREATER_THAN, BT_DECO_COND_LESSER_THAN, BT_ACTION_LOG
-    pBtTest = new BT_DECORATOR("EntryPoint", nullptr);
-    BT_DECO_REPEATER* pForeverRepeater = new BT_DECO_REPEATER("RepeatForever", pBtTest, 0, true, false, false);
-    //BT_DECO_COND_GREATER_THAN<int>* pGreaterThan = new BT_DECO_COND_GREATER_THAN<int>("MineralsGreaterThanThreshold1", pForeverRepeater, THRESHOLD1_MINERALS, pData->currMinerals, false);
-    //BT_ACTION_LOG* pLog = new BT_ACTION_LOG("LogMSG", pGreaterThan, std::format("current minerals greater than {}", THRESHOLD1_MINERALS));
-    BT_DECO_COND_LESSER_THAN<int>* pLesserThan = new BT_DECO_COND_LESSER_THAN<int>("MineralsLesserThanThreshold1", pForeverRepeater, THRESHOLD1_MINERALS, pData->currMinerals, false);
-    BT_ACTION_LOG* pLog = new BT_ACTION_LOG("LogMSG", pLesserThan, std::format("current minerals lesser than {}", THRESHOLD1_MINERALS));
-    */
-
-    //Test BT nodes: BT_DECO_REPEATER (resetOnRepeat = true), BT_COND_GREATER_THAN, BT_COND_LESSER_THAN, BT_ACTION_LOG
-    pBtTest = new BT_DECORATOR("EntryPoint", nullptr);
-    BT_DECO_REPEATER* pForeverRepeater = new BT_DECO_REPEATER("RepeatForever", pBtTest, 0, true, false, true);
-    BT_SEQUENCER* pSequencer = new BT_SEQUENCER("sequencer",pForeverRepeater, 2);
-    //BT_COND_GREATER_THAN<int> *pGreaterThan = new BT_COND_GREATER_THAN<int>("MineralsGreaterThanThreshold1",pSequencer,100, pData->currMinerals, false);
-    //BT_ACTION_LOG* pLog = new BT_ACTION_LOG("LogMSG", pSequencer, std::format("current minerals greater than {}", 100));
-    BT_COND_LESSER_THAN<int>* pLesserThan = new BT_COND_LESSER_THAN<int>("MineralsLesserThanThreshold1", pSequencer, 100, pData->currMinerals, false);
-    //BT_ACTION_LOG* pLog = new BT_ACTION_LOG("LogMSG", pSequencer, std::format("current minerals lesser than {}", 100));
-
-
-
-    // Starcraft AI BT
-    //pBT = new BT_DECORATOR("EntryPoint", nullptr);
-    
-    //BT_PARALLEL_SEQUENCER* pParallelSeq = new BT_PARALLEL_SEQUENCER("MainParallelSequence", pBT, 10);
-
-    //Farming Minerals forever
-    //BT_DECO_REPEATER* pFarmingMineralsForeverRepeater = new BT_DECO_REPEATER("RepeatForeverFarmingMinerals", pParallelSeq, 0, true, false,false);
-    //BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS* pNotEnoughWorkersFarmingMinerals = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_MINERALS("NotEnoughWorkersFarmingMinerals", pFarmingMineralsForeverRepeater);
-    //BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS* pSendWorkerToMinerals = new BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS("SendWorkerToMinerals", pNotEnoughWorkersFarmingMinerals);
-
-    //Training Workers
-    //BT_DECO_REPEATER* pTrainingWorkersForeverRepeater = new BT_DECO_REPEATER("RepeatForeverTrainingWorkers", pParallelSeq, 0, true, false,false);
-    //BT_DECO_CONDITION_NOT_ENOUGH_WORKERS* pNotEnoughWorkers = new BT_DECO_CONDITION_NOT_ENOUGH_WORKERS("NotEnoughWorkers", pTrainingWorkersForeverRepeater);
-    //BT_ACTION_TRAIN_WORKER* pTrainWorker = new BT_ACTION_TRAIN_WORKER("TrainWorker", pNotEnoughWorkers);
-
-    //Build Additional Supply Provider
-    //BT_DECO_REPEATER* pBuildSupplyProviderForeverRepeater = new BT_DECO_REPEATER("RepeatForeverBuildSupplyProvider", pParallelSeq, 0, true, false,false);
-    //BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY* pNotEnoughSupply = new BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY("NotEnoughSupply", pBuildSupplyProviderForeverRepeater);
-    //BT_ACTION_BUILD_SUPPLY_PROVIDER* pBuildSupplyProvider = new BT_ACTION_BUILD_SUPPLY_PROVIDER("BuildSupplyProvider", pNotEnoughSupply);
-
+    // Add workers to the main base supervisor
     const BWAPI::Unitset myUnits = BWAPI::Broodwar->self()->getUnits();
 
     for (auto& unit : myUnits) {
@@ -83,6 +38,22 @@ StarterBot::StarterBot()
     gameCommander.setBuildOrder(gameParser.buildorder);
 
     gameParser.print_build_order();
+
+    std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders("attack");
+
+    SquadProductionOrder squadProductionOrder;
+    squadProductionOrder.isConstructed = false;
+
+    for (ParsedUnitOrder order : orders) {
+        UnitProductionOrder unitProductionOrder;
+        unitProductionOrder.orderCount = order.count;
+        unitProductionOrder.unitType = order.unitType;
+        unitProductionOrder.jobsCount = 0;
+
+        squadProductionOrder.productionOrder.push_back(unitProductionOrder);
+    }
+
+    blackboard.squadProductionOrders.push_back(squadProductionOrder);
 }
 
 // Called when the bot starts!
@@ -107,44 +78,51 @@ void StarterBot::onFrame()
 {
     // Update our MapTools information
     m_mapTools.onFrame();
-
-    pData->currMinerals = BWAPI::Broodwar->self()->minerals();
-    pData->currSupply = Tools::GetUnusedSupply(true);
-
     gameCommander.onFrame();
     
-    // AI BT
-    //if (pBT != nullptr && pBT->Evaluate(pData) != BT_NODE::RUNNING)
-    //{
-    //    delete (BT_DECORATOR*)pBT;
-    //    pBT = nullptr;
-    //}
 
-    //Test BT
-    /*if (pBtTest != nullptr && pBtTest->Evaluate(pData) != BT_NODE::RUNNING)
-    {
-        delete (BT_DECORATOR*)pBtTest;
-        pBtTest = nullptr;
-    }*/
-
-    buildAdditionalSupply();
-
-    /*
-    // Send our idle workers to mine minerals so they don't just stand there
-    sendIdleWorkersToMinerals();
-
-    // Train more workers so we can gather more income
-    trainAdditionalWorkers();
-
-    // Build more supply if we are going to run out soon
-    buildAdditionalSupply();
-    */
 
     // Draw unit health bars, which brood war unfortunately does not do
     Tools::DrawUnitHealthBars();
 
     // Draw some relevent information to the screen to help us debug the bot
     drawDebugInformation();
+
+    // Verify the production status of squads
+    std::vector<int> ordersToErase;
+
+    for (int i = 0; i < blackboard.squadProductionOrders.size(); i++) {
+        SquadProductionOrder& squadOrder = blackboard.squadProductionOrders[i];
+        if (!squadOrder.isConstructed) {
+            bool isFinished = true;
+
+            for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
+                if (unitOrder.unitInstances.size() < unitOrder.orderCount) {
+                    isFinished = false;
+                    break;
+                }
+            }
+
+            squadOrder.isConstructed = isFinished;
+
+            if (squadOrder.isConstructed) {
+                BWAPI::Unitset squad;
+
+                for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
+                    for (BWAPI::Unit unit : unitOrder.unitInstances) {
+                        squad.insert(unit);
+                    }
+                }
+
+                blackboard.squads.push_back(squad);
+                ordersToErase.push_back(i);
+            }
+        }
+    }
+
+    for (int i : ordersToErase) {
+        blackboard.squadProductionOrders.erase(blackboard.squadProductionOrders.begin() + i);
+    }
 }
 
 // Send our idle workers to mine minerals so they don't just stand there
@@ -191,10 +169,13 @@ void StarterBot::buildAdditionalSupply()
     const int unusedSupply = Tools::GetTotalSupply(true) - BWAPI::Broodwar->self()->supplyUsed();
 
     // If we have a sufficient amount of supply, we don't need to do anything
-    if (unusedSupply > 2) { return; }
+    if (unusedSupply > 2 || alreadySentSupplyJob) {
+        alreadySentSupplyJob = false;
+        return;
+    }
 
     // Otherwise, we are going to build a supply provider
-    BWAPI::Broodwar->printf("Supply is running out (building more): %s", std::to_string(unusedSupply));
+    //BWAPI::Broodwar->printf("Supply is running out (building more): %s", unusedSupply);
 
     const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
 
@@ -204,6 +185,8 @@ void StarterBot::buildAdditionalSupply()
     job.setMineralCost(supplyProviderType.mineralPrice());
 
     gameCommander.postJob(job);
+
+    alreadySentSupplyJob = true;
 }
 
 // Draw some relevent information to the screen to help us debug the bot
@@ -224,7 +207,6 @@ void StarterBot::onEnd(bool isWinner)
 void StarterBot::onUnitDestroy(BWAPI::Unit unit)
 {
 	//if the unit is farming then remove it from data structure
-    if (pData->unitsFarmingMinerals.contains(unit)) pData->unitsFarmingMinerals.erase(unit);
 }
 
 // Called whenever a unit is morphed, with a pointer to the unit
@@ -252,9 +234,24 @@ void StarterBot::onUnitCreate(BWAPI::Unit unit)
 }
 
 // Called whenever a unit finished construction, with a pointer to the unit
-void StarterBot::onUnitComplete(BWAPI::Unit unit)
-{
-	
+void StarterBot::onUnitComplete(BWAPI::Unit unit) {
+    if (unit->exists()) {
+        for (SquadProductionOrder& squadOrder : blackboard.squadProductionOrders) {
+            bool assigned = false;
+
+            if (!squadOrder.isConstructed) {
+                for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
+                    if (unitOrder.unitType == unit->getType()) {
+                        unitOrder.unitInstances.insert(unit);
+                        assigned = true;
+                    }
+                }
+            }
+
+            if (assigned)
+                break;
+        }
+    }
 }
 
 // Called whenever a unit appears, with a pointer to the destroyed unit

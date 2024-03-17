@@ -18,6 +18,12 @@ using namespace std;
 ==============================
 */
 
+
+struct ParsedUnitOrder {
+    BWAPI::UnitType unitType;
+    int count;
+};
+
 enum class ProducerType {
     Base,
     Worker,
@@ -37,6 +43,13 @@ static const std::map<std::string, BuildType> buildTypeStrToEnum = {
     {"Unit", BuildType::Unit},
     {"Building", BuildType::Building},
 };
+
+struct BaseParameters {
+public:
+    int nGasMinersWanted;
+    int nMineralMinersWanted;
+};
+
 
 class BuildingRecipe {
 public:
@@ -65,6 +78,8 @@ class GameFileParser
 {
 public:
     std::vector<BuildingRecipe> buildorder;
+    BaseParameters baseParameters;
+
     nlohmann::json json_file;
 
     GameFileParser();
@@ -74,6 +89,9 @@ public:
     // Debugging
     void print_build_order();
 
+
+    std::vector<ParsedUnitOrder> parseSquadProductionOrders(std::string squadName);
+
 private:
     bool json_loaded;
     std::unordered_map<std::string, BWAPI::UnitType> unit_type_map;
@@ -81,6 +99,8 @@ private:
     int parse_build_order();
     BuildType parse_buildtype_enum(const string& type);
     ProducerType parse_producertype_enum(const string& type);
+
+    void parseBaseParameters();
 };
 
 #endif // GAME_FILE_PARSER_H

@@ -16,5 +16,9 @@ bool BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES::IsThereNotEnoughWor
 {
     DataResources* pData = (DataResources*)data;
 
-    return (int)pData->unitsFarmingMinerals.size() < pData->nWantedWorkersFarmingMinerals;
+    std::cout << "Number of mineral miners: " << pData->unitsFarmingMinerals.size() << std::endl;
+    std::cout << "Number of gas miners: " << pData->unitsFarmingGas.size() << std::endl << std::endl;
+
+    return (int)pData->unitsFarmingMinerals.size() < pData->nWantedWorkersFarmingMinerals
+        && (int)pData->unitsFarmingGas.size() < pData->nWantedWorkersFarmingGas;
 }
