@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION_IDLE.h" />
@@ -69,12 +70,9 @@
     <ClInclude Include="..\..\src\starterbot\ReplayParser.h" />
     <ClInclude Include="..\..\src\starterbot\StarterBot.h" />
     <ClInclude Include="..\..\src\starterbot\Tools.h" />
-    <ClInclude Include="AttackGroundUnitBT.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_IDLE.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_LOG.cpp" />

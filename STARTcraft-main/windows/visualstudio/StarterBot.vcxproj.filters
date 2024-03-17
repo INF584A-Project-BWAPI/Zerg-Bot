@@ -132,6 +132,7 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.cpp">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -272,7 +273,7 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.h">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClInclude>
-    <ClInclude Include="AttackGroundUnitBT.hpp" />
+    <ClInclude Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BT">
@@ -292,9 +293,6 @@
     </Filter>
     <Filter Include="BotParameters">
       <UniqueIdentifier>{a99c619b-cc14-4925-8165-f62b497e1fa8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AttackGroundUnitBT">
-      <UniqueIdentifier>{ac38fc93-d811-4c68-b365-fd8e86dd95df}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
