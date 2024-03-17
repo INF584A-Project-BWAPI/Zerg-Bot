@@ -3,6 +3,9 @@
 #include "Data.h"
 
 void ArmyManager::onFrame() {
+
+    squads = blackboard.squads;
+
     if (!queuedJobs.isEmpty()) {
         // Build queued buildings
         // looks at highest priority item without popping from queue yet
@@ -12,6 +15,45 @@ void ArmyManager::onFrame() {
         std::cout << "We have a Army job: " << job.getUnit() << std::endl;
     }
 
+    //for (BWAPI::Unitset squad: squads){
+        //BWAPI::Broodwar->sendText(squad)
+    //}
+    //if (squads.empty()) {
+        //BWAPI::Broodwar->sendText("SQUADS EMPTY");
+    //}
+
+    for (BWAPI::Unitset enemies: blackboard.scout_info) {
+        for (auto& enemy : enemies) {
+            if (!blackboard.enemyBuilding.contains(enemy) && enemy->getType().isBuilding() && enemy->getType().isResourceDepot()) {
+                blackboard.enemyBuilding.insert(enemy);
+            }
+        }
+    }
+
+    if (!squads.empty()){
+        BWAPI::Unit position;
+        for (BWAPI::Unit enemy : blackboard.enemyBuilding) {
+            if (enemy) {
+                position = enemy;
+                break;
+            }
+        }
+        for (auto& unit : squads[0]) {
+            unit->attack(position);
+        }
+        /*
+        //std::vector<BWAPI::Unit> unitVector;
+        for (BWAPI::Unit enemy : blackboard.enemyBuilding) {
+            BWAPI::Position position = enemy->getPosition();
+            break;
+        }
+        //BWAPI::Unit enemy = *blackboard.enemyBuilding.begin();
+        //BWAPI::Position position = enemy->getPosition();
+        for (auto& unit : squads[0]) {
+                unit->attack(position);
+        }*/
+    }
+    /*
     for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
         if (unit->getType() == BWAPI::UnitTypes::Protoss_Zealot && unit->isIdle() && !zealots.contains(unit)) {
             std::cout << zealots.contains(unit) << std::endl;
@@ -39,6 +81,7 @@ void ArmyManager::onFrame() {
     if (squads.empty()) {
         squads.push_back(zealots);
     }
+    */
 
 
     /*
