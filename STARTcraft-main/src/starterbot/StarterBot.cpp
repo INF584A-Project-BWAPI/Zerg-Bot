@@ -36,24 +36,6 @@ StarterBot::StarterBot()
     // Set early game build order into game commander
     gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
     gameCommander.setBuildOrder(gameParser.buildorder);
-
-    gameParser.print_build_order();
-
-    std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders("attack");
-
-    SquadProductionOrder squadProductionOrder;
-    squadProductionOrder.isConstructed = false;
-
-    for (ParsedUnitOrder order : orders) {
-        UnitProductionOrder unitProductionOrder;
-        unitProductionOrder.orderCount = order.count;
-        unitProductionOrder.unitType = order.unitType;
-        unitProductionOrder.jobsCount = 0;
-
-        squadProductionOrder.productionOrder.push_back(unitProductionOrder);
-    }
-
-    blackboard.squadProductionOrders.push_back(squadProductionOrder);
 }
 
 // Called when the bot starts!
@@ -87,42 +69,6 @@ void StarterBot::onFrame()
 
     // Draw some relevent information to the screen to help us debug the bot
     drawDebugInformation();
-
-    // Verify the production status of squads
-    std::vector<int> ordersToErase;
-
-    for (int i = 0; i < blackboard.squadProductionOrders.size(); i++) {
-        SquadProductionOrder& squadOrder = blackboard.squadProductionOrders[i];
-        if (!squadOrder.isConstructed) {
-            bool isFinished = true;
-
-            for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
-                if (unitOrder.unitInstances.size() < unitOrder.orderCount) {
-                    isFinished = false;
-                    break;
-                }
-            }
-
-            squadOrder.isConstructed = isFinished;
-
-            if (squadOrder.isConstructed) {
-                BWAPI::Unitset squad;
-
-                for (UnitProductionOrder& unitOrder : squadOrder.productionOrder) {
-                    for (BWAPI::Unit unit : unitOrder.unitInstances) {
-                        squad.insert(unit);
-                    }
-                }
-
-                blackboard.squads.push_back(squad);
-                ordersToErase.push_back(i);
-            }
-        }
-    }
-
-    for (int i : ordersToErase) {
-        blackboard.squadProductionOrders.erase(blackboard.squadProductionOrders.begin() + i);
-    }
 }
 
 // Send our idle workers to mine minerals so they don't just stand there
@@ -207,6 +153,11 @@ void StarterBot::onEnd(bool isWinner)
 void StarterBot::onUnitDestroy(BWAPI::Unit unit)
 {
 	//if the unit is farming then remove it from data structure
+    if (BWAPI::Broodwar->self()->isEnemy(unit->getPlayer())) {
+        if (blackboard.enemyUnits.contains(unit)) {
+            blackboard.enemyUnits.erase(unit);
+        }
+    }
 }
 
 // Called whenever a unit is morphed, with a pointer to the unit
