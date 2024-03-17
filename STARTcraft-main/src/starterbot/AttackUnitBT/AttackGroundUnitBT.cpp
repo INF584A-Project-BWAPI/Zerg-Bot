@@ -16,21 +16,22 @@ AttackGroundUnitBT::AttackGroundUnitBT() {
     BT_SELECTOR* defendType = new BT_SELECTOR("defendType", defend, 2);
 
     // children of defendType node
-    BT_SEQUENCER* defendYourself = new BT_SEQUENCER("defendYourself", defendType, 2);
-    BT_SEQUENCER* defendBase = new BT_SEQUENCER("defendBase", defendType, 2);
+    BT_SEQUENCER* defendYourself = new BT_SEQUENCER("defendYourself", defendType, 3);
+    BT_SEQUENCER* defendBase = new BT_SEQUENCER("defendBase", defendType, 3);
 
     // children of defendYourself node
     BT_CONDITION* isEnemyNearby = new BT_CONDITION("isEnemyNearby", defendYourself, [](void* data) {
         AttackGroundUnitBT* instance = static_cast<AttackGroundUnitBT*>(data);
         return false; // TODO: implement the function
         });
-    BT_ACTION_LOG attackNearbyEnemy = BT_ACTION_LOG("attackNearbyEnemy", defendYourself, "Attacks nearby enemy to defend itself.");
+    BT_ACTION_LOG attackNearbyEnemyLog = BT_ACTION_LOG("attackNearbyEnemyLog", defendYourself, "Attacks nearby enemy to defend itself.");
 
     // children of defendBase node
     BT_CONDITION* isEnemyNearby = new BT_CONDITION("noEnemyNearby", defendBase, [](void* data) {
         AttackGroundUnitBT* instance = static_cast<AttackGroundUnitBT*>(data);
         return false; // TODO: implement the function
         });
+    BT_ACTION_LOG stayIdleLog = BT_ACTION_LOG("stayIdleLog", defendBase, "Staying idle in defense mode.");
     BT_ACTION_IDLE* idle = new BT_ACTION_IDLE("idle", defendBase);
     // DEFEND - END _______________________________________________
 
