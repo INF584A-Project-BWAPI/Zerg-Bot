@@ -18,9 +18,6 @@ class StarterBot
 {
 private:
     MapTools m_mapTools;
-	BT_NODE* pBT;
-	BT_NODE* pBtTest;
-	Data *pData;
 	
 	GameFileParser gameParser;
 	Blackboard blackboard;
