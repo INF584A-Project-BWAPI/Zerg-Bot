@@ -8,22 +8,15 @@
 #include "BT_ACTION_ATTACK_ENEMY.h"
 #include "BT_ACTION_STAY_IN_CHOKE_POINT.h"
 #include "BT_ACTION_DEFEND_BASE.h"
-
-enum CommandType {
-    ATTACK,
-    REGROUP,
-    DEFEND
-};
+#include "Blackboard.h"
 
 class AttackGroundUnitBT {
 private:
     BT_SELECTOR* root;
-    CommandType commandType;
 
 public:
     AttackGroundUnitBT();
-    void setCommand(CommandType command);
-    CommandType getCommand();
+    void Evaluate(void* data);
 };
 
 
