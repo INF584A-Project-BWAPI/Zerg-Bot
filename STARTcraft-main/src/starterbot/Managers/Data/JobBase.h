@@ -47,6 +47,7 @@ public:
     // Fields 
     bool blocking;
     Importance importance;
+    BWAPI::TilePosition position;
 
 
     // Setters

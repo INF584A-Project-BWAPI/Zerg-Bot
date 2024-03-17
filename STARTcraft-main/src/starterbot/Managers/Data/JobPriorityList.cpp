@@ -118,3 +118,14 @@ std::string JobPriorityList::getQueueInformation() const
 
     return ss.str();
 }
+
+int JobPriorityList::countUnitTypes(BWAPI::UnitType type) {
+    int count = 0;
+
+    for (JobBase& job : queue) {
+        if (job.getUnit() == type)
+            count++;
+    }
+
+    return count;
+}

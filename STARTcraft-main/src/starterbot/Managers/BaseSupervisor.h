@@ -51,6 +51,22 @@ public:
         pDataResources->assimilatorAvailable = false;
         pDataResources->nexus = nexus;
 
+        blackboard.baseNexuses.push_back(nexus);
+
+        // Add base chokepoint as a defensive position
+        const BWAPI::Unit mineral = Tools::GetClosestUnitTo(nexus, BWAPI::Broodwar->getMinerals());
+        const BWAPI::Position mineralPosition = mineral->getPosition();
+        const BWAPI::Position nexusPosition = nexus->getPosition();
+
+        const int defencePosX = 3 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
+        const int defencePosY = 3 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
+
+        const BWAPI::Position defencePos(defencePosX, defencePosY);
+        baseChokepoint = defencePos;
+
+
+        BWAPI::Broodwar->drawTextScreen(defencePos, "Base Chokepoint: Defend\n");
+
         // Define behaviour tree for resource gathering
         pBT = new BT_DECORATOR("EntryPoint", nullptr);
 
@@ -70,14 +86,26 @@ public:
                 << "BaseSupervisor | Prority HIGH | Got new job: "
                 << job.getUnit().getName().c_str()
                 << std::endl;
-            queuedJobs.queueTop(job);
+
+            if (job.getJobType() == JobType::Building) {
+                queuedBuildJobs.queueTop(job);
+            }
+            else if (job.getJobType() == JobType::UnitProduction) {
+                queuedProductionJobs.queueTop(job);
+            }
         }
         else if (job.importance == Importance::Low) {
             std::cout
                 << "BaseSupervisor | Prority LOW | Got new job: "
                 << job.getUnit().getName().c_str()
                 << std::endl;
-            queuedJobs.queueBottom(job);
+            
+            if (job.getJobType() == JobType::Building) {
+                queuedBuildJobs.queueBottom(job);
+            }
+            else if (job.getJobType() == JobType::UnitProduction) {
+                queuedProductionJobs.queueBottom(job);
+            }
         }
     };
 
@@ -90,6 +118,8 @@ private:
     // Fields
     GameFileParser gameParser;
 
+    BWAPI::Position baseChokepoint;
+
     std::unordered_set<BWAPI::Unit> workers;
     std::unordered_set<BWAPI::Unit> gasMiners;
     std::unordered_set<BWAPI::Unit> mineralMiners;
@@ -97,7 +127,8 @@ private:
     float defence_dps = 0; // Damage Per Second our defence can provide
     std::vector<Building> buildings; // See Buildings.h - used to verify the construction status of buildings
 
-    JobPriorityList queuedJobs;
+    JobPriorityList queuedBuildJobs;
+    JobPriorityList queuedProductionJobs;
 
     // Resource allocation when constructing such that we can produce units and build in parallel
     int allocated_minerals = 0;
@@ -113,11 +144,14 @@ private:
     void verifyActiveBuilds(); // If construction has started we can free up the allocated resources
     void verifyFinishedBuilds(); // Looks at the buildings list and checks if building is finished and thus update status
     void verifyAliveWorkers(); // If a worker has died, then we want to remove it from being accessible.
+    void verifyArePylonsNeeded();
     
     void assignIdleWorkes(); // Any new idle worker spawned by nexus is added to the available workers vector
     void assignWorkersToHarvest(); // Assigns workers to either mineral or gas collection as default behaviour
+    void assignSquadProduction(); // Checks if we can raise a squad and if one is wanted
 
     // Helper methods
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b); // Returns an int (0 - impossible, 1 - possible) and a position we build it on
-    int getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
+    std::unordered_set<int> getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
+    int countConstructedBuildingsofType(BWAPI::UnitType u); // Counts the number of constructed buildings we have which for a given type
 };
