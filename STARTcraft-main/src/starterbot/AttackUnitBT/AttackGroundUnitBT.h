@@ -5,6 +5,9 @@
 #include "BT_CONDITION.h"
 #include "BT_ACTION_LOG.h"
 #include "BT_ACTION_IDLE.h"
+#include "BT_ACTION_ATTACK_ENEMY.h"
+#include "BT_ACTION_STAY_IN_CHOKE_POINT.h"
+#include "BT_ACTION_DEFEND_BASE.h"
 
 enum CommandType {
     ATTACK,
