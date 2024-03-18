@@ -20,7 +20,7 @@ std::string BT_ACTION_ATTACK_ENEMY::GetDescription()
             - destroy the units
             - if no units left, destroy buildings
 */
-BT_NODE::State AttackEnemy(void* data)
+BT_NODE::State BT_ACTION_ATTACK_ENEMY::AttackEnemy(void* data)
 {
     Blackboard* pData = (Blackboard*)data;
 
@@ -45,7 +45,7 @@ BT_NODE::State AttackEnemy(void* data)
     }
 
     // If there is no enemy army unit left, do the same for buildings
-    const BWAPI::Unitset& enemyBuildings = GetEnemyUnitsByType("building");
+    const BWAPI::Unitset& enemyBuildings = BT_ACTION_ATTACK_ENEMY::GetEnemyUnitsByType("building");
 
     for (const BWAPI::Unitset& squad : pData->squads) {
         // Get the closest unit to the squad
@@ -58,7 +58,7 @@ BT_NODE::State AttackEnemy(void* data)
     return BT_NODE::SUCCESS;
 }
 
-BWAPI::Unitset GetEnemyUnitsByType(const char* type)
+BWAPI::Unitset BT_ACTION_ATTACK_ENEMY::GetEnemyUnitsByType(const std::string unitType)
 {
     // Storing enemy units
     const BWAPI::Unitset& enemyUnits = BWAPI::Broodwar->enemy()->getUnits();
@@ -69,20 +69,20 @@ BWAPI::Unitset GetEnemyUnitsByType(const char* type)
     std::copy_if(enemyUnits.begin(), enemyUnits.end(), std::inserter(filteredEnemyUnits, filteredEnemyUnits.end()),
         [&](const BWAPI::Unit& unit) {
 
-            if (type == "army") // Filter the units that is a member of the enemy army
+            if (unitType == "army") // Filter the units that is a member of the enemy army
                 return unit->getType().canAttack();
-            else if (type == "building") // Filter the units that is an enemy building
+            else if (unitType == "building") // Filter the units that is an enemy building
                 return unit->getType().isBuilding();
         });
 
-    return BWAPI::Unitset();
+    return filteredEnemyUnits;
 }
 
 // Returns the closest unit from the input targetList, to the input squad
-BWAPI::Unit GetClosestUnitToSquad(const BWAPI::Unitset& squad, const BWAPI::Unitset& targetList) 
+BWAPI::Unit BT_ACTION_ATTACK_ENEMY::GetClosestUnitToSquad(const BWAPI::Unitset& squad, const BWAPI::Unitset& targetList)
 {       
         BWAPI::Unit target = nullptr;
-        int minDistance;
+        int minDistance = std::numeric_limits<int>::max();
         for (const BWAPI::Unit& unit : targetList) {
             if (!target || squad.getPosition().getDistance(unit->getPosition()) < minDistance) {
                 target = unit;
