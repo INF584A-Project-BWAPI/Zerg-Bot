@@ -11,7 +11,7 @@ AttackGroundUnitBT::AttackGroundUnitBT() {
     // children of standard node
     BT_CONDITION* isStandard = new BT_CONDITION("isStandard", standard, [](void* data) {
         Blackboard* pData = (Blackboard*)data;
-        return pData->gameStatus == GameStatus::Buildup;
+        return pData->gameStatus == GameStatus::Standard;
         });
     // children of defendChokePoint node
     BT_ACTION_LOG stayInChokePointLog = BT_ACTION_LOG("defendChokePoint", standard, "Stays in the choke point and waits for the enemy.");

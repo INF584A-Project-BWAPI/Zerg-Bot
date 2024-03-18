@@ -44,4 +44,7 @@ public:
 
 	// Buildings which produce attackers
 	std::set<BWAPI::UnitType> barrackTypes;
+
+	// Choke point for our squads to wait
+	BWAPI::Position baseChokePoint;
 };

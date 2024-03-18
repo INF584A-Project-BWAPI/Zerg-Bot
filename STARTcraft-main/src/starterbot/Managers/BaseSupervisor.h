@@ -64,6 +64,8 @@ public:
         const BWAPI::Position defencePos(defencePosX, defencePosY);
         baseChokepoint = defencePos;
 
+        // Assigning the baseChokepoint in blackboard
+        blackboard.baseChokePoint = baseChokepoint;
 
         BWAPI::Broodwar->drawTextScreen(defencePos, "Base Chokepoint: Defend\n");
 

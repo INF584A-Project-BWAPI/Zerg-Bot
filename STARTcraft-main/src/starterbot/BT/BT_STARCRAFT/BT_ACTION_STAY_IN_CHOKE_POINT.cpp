@@ -1,6 +1,5 @@
 #include "BT_ACTION_STAY_IN_CHOKE_POINT.h"
-#include "Tools.h"
-#include "Data.h"
+#include "Blackboard.h"
 
 BT_ACTION_STAY_IN_CHOKE_POINT::BT_ACTION_STAY_IN_CHOKE_POINT(std::string name, BT_NODE* parent)
     : BT_ACTION(name, parent) {}
@@ -18,7 +17,12 @@ std::string BT_ACTION_STAY_IN_CHOKE_POINT::GetDescription()
 
 BT_NODE::State BT_ACTION_STAY_IN_CHOKE_POINT::StayInChokePoint(void* data)
 {
-    Data* pData = (Data*)data;
+    Blackboard* pData = (Blackboard*)data;
+
+    // make sure the squads remain around the choke point
+    for (const BWAPI::Unitset& squad : pData->squads) {
+        squad.patrol(pData->baseChokePoint);
+    }
 
     return BT_NODE::SUCCESS;
 }
