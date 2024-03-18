@@ -4,7 +4,7 @@
 #include <BWAPI.h>
 
 enum class GameStatus {
-	Buildup,
+	Standard,
 	Defence,
 	Attack
 };
@@ -19,6 +19,7 @@ struct UnitProductionOrder {
 struct SquadProductionOrder {
 	std::vector<UnitProductionOrder> productionOrder;
 	bool isConstructed;
+	std::string name;
 };
 
 
@@ -28,10 +29,14 @@ public:
 	std::vector<BWAPI::Unit> baseNexuses;
 
 	// What mode the game is under currently, dictated by the gameCommander
-	GameStatus gameStatus;
+	GameStatus gameStatus = GameStatus::Standard;
 
 	std::unordered_set<BWAPI::Unit> scouts;
 	std::vector<BWAPI::Unitset> scout_info;// latest info will be pushed to this vector, all the units the scout sees
+	std::unordered_set<BWAPI::Unit> enemyUnits;
+	
+	int enemyAttackHitpoints = 0;
+	int ourAttackHitpoints = 0;
 
 	BWAPI::Unitset enemyBuilding;
 
@@ -41,4 +46,7 @@ public:
 
 	// Buildings which produce attackers
 	std::set<BWAPI::UnitType> barrackTypes;
+
+	// Choke point for our squads to wait
+	BWAPI::Position baseChokePoint;
 };

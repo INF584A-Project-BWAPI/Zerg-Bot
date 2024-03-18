@@ -132,7 +132,11 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.cpp">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.cpp" />
     <ClCompile Include="..\..\src\starterbot\Blackboard.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_ATTACK_ENEMY.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_STAY_IN_CHOKE_POINT.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_DEFEND_BASE.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -273,8 +277,12 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.h">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\..\src\starterbot\Blackboard.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_ATTACK_ENEMY.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_STAY_IN_CHOKE_POINT.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_DEFEND_BASE.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BT">

@@ -189,11 +189,7 @@
             "units": [
                 {
                     "unitType": "zealot",
-                    "count": 3
-                },
-                {
-                    "unitType": "dragoon",
-                    "count": 3
+                    "count": 2
                 }
             ]
         },

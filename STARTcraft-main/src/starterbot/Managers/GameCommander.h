@@ -11,7 +11,9 @@
 class GameCommander : public ManagerBase {
 public:
     // Constructor
-    GameCommander(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::GameCommander, blackboard) {};
+    GameCommander(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::GameCommander, blackboard) {
+        gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
+    };
 
     // Setters
     void setManagerBases(BasesManager* manager) noexcept { basesManager = manager; };
@@ -40,4 +42,13 @@ private:
     // Functions
     void onFrameChildren();
     void distributeJobs();
+    void evaluateGameStatus();
+
+    void updateOurAttackHitpoints();
+    void updateEnemyAttackHitpoints();
+    
+    void verifySquadStatuses(); // Verify alive squad units and update the unitsets if they are dead.
+    void verifySquadOrderStatus(); // Verifies if a squadron is done producing and we can make it an actual unitset to play with.
+
+    void addSquadOrders(); // Adds squad orders until we attack
 };
