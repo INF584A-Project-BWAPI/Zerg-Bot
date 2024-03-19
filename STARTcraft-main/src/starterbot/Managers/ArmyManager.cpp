@@ -1,6 +1,7 @@
 #include "ArmyManager.h"
 #include "iostream"
 #include "Data.h"
+#include "AttackGroundUnitBT.cpp"
 
 void ArmyManager::onFrame() {
 
@@ -31,6 +32,7 @@ void ArmyManager::onFrame() {
     }
 
     if (!squads.empty()){
+        /*
         BWAPI::Unit position;
         for (BWAPI::Unit enemy : blackboard.enemyBuilding) {
             if (enemy) {
@@ -40,6 +42,10 @@ void ArmyManager::onFrame() {
         }
         for (auto& unit : squads[0]) {
             unit->attack(position);
+        
+        */
+        for (BWAPI::Unitset& squad : squads) {
+
         }
         /*
         //std::vector<BWAPI::Unit> unitVector;

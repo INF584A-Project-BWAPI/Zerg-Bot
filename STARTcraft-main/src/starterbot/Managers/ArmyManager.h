@@ -6,6 +6,7 @@
 #include "ManagerBase.h"
 #include "Data/JobPriorityList.h"
 #include "Blackboard.cpp"
+#include "AttackGroundUnitBT.h"
 
 class ArmyManager : virtual ManagerBase {
 public:

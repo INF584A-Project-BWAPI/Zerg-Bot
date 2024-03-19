@@ -12,6 +12,6 @@ public:
 private:
     State Evaluate(void* data) override;
     std::string GetDescription() override;
-    static BT_NODE::State AttackNearbyEnemy(void* data);
+    static BT_NODE::State TrainWorker(void* data);
 };
 //----------

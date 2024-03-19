@@ -1,5 +1,6 @@
 #pragma once
 #include "BT_ACTION.h"
+#include <BWAPI.h>
 
 class BT_ACTION_DEFEND_BASE : public BT_ACTION
 {

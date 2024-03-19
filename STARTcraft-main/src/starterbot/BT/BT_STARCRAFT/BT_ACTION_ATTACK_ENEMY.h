@@ -1,6 +1,8 @@
 #pragma once
 #include "BT_ACTION.h"
 #include <string>
+#include <BWAPI.h>
+
 class BT_ACTION_ATTACK_ENEMY : public BT_ACTION
 {
 public:

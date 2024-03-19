@@ -1,5 +1,7 @@
 #pragma once
 #include "BT_ACTION.h"
+#include <BWAPI.h>
+
 class BT_ACTION_STAY_IN_CHOKE_POINT : public BT_ACTION
 {
 public:
