@@ -238,3 +238,45 @@ void Tools::DrawHealthBar(BWAPI::Unit unit, double ratio, BWAPI::Color color, in
         BWAPI::Broodwar->drawLineMap(BWAPI::Position(i, hpTop), BWAPI::Position(i, hpBottom), BWAPI::Colors::Black);
     }
 }
+
+BWAPI::Unit Tools::GetNexusAtTilePosition(const BWAPI::TilePosition& tilePos) {
+    for (auto& unit : BWAPI::Broodwar->getAllUnits()) {
+        if (unit->getTilePosition() == tilePos && unit->getType() == BWAPI::UnitTypes::Protoss_Nexus) {
+            return unit; // Return the Nexus found at the specified TilePosition
+        }
+    }
+    return nullptr; // Return nullptr if no Nexus is found at the specified TilePosition
+}
+
+std::vector<BWAPI::Unit> Tools::GetThreeClosestWorkersToTilePosition(const BWAPI::TilePosition& tilePos, int numselect) {
+    std::vector<std::pair<BWAPI::Unit, double>> workerDistances;
+    std::vector<BWAPI::Unit> closestWorkers;
+
+    // Convert the TilePosition to a Position (assuming the center of the tile for more accuracy)
+    BWAPI::Position targetPos = BWAPI::Position(tilePos);// +BWAPI::Position(16, 16); // Each tile is 32x32 pixels
+
+    // Iterate through all of the player's units and find workers
+    for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+        if (unit->getType().isWorker()) {//conditions may apply
+            double distance = unit->getPosition().getDistance(targetPos);
+            workerDistances.push_back(std::make_pair(unit, distance));
+        }
+    }
+
+    // Sort the vector of pairs by the distance
+    std::sort(workerDistances.begin(), workerDistances.end(),
+        [](const std::pair<BWAPI::Unit, double>& a, const std::pair<BWAPI::Unit, double>& b) {
+            return a.second < b.second;
+        });
+
+    // Select up to three closest workers
+    for (int i = 0; i < std::min(numselect, static_cast<int>(workerDistances.size())); ++i) {
+        closestWorkers.push_back(workerDistances[i].first);
+    }
+    //assign the cloest 
+    for (int i = 0; i <  static_cast<int>(workerDistances.size()); ++i) {
+        if(workerDistances[i].second<50)closestWorkers.push_back(workerDistances[i].first);
+    }
+
+    return closestWorkers;
+}

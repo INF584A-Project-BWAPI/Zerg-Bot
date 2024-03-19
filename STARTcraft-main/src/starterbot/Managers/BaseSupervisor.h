@@ -19,7 +19,7 @@
 class BaseSupervisor : virtual ManagerBase {
 public:
     // Constructor
-    BaseSupervisor(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::BaseSupervisor, blackboard) {
+    BaseSupervisor(Blackboard& blackboard, bool notfirst=false) noexcept : ManagerBase(ManagerType::BaseSupervisor, blackboard) {
         /* 
         * When we construct the baseSupervisor we just look for a Nexus we own and
         * add this to the buildings list using the Building.h wrapper such that we
@@ -28,18 +28,7 @@ public:
         * TDOD :: Change this such that it doesn't get some random depot - it was to work when
         *         we extend to new bases.
         */
-
-        const BWAPI::Unit nexus = Tools::GetDepot();
-        const BWAPI::TilePosition p = nexus->getTilePosition();
-        const BWAPI::UnitType unit = nexus->getType();
-
-        Building building(p, unit);
-        building.unit = nexus;
-        //building.
-        building.status = BuildingStatus::Constructed;
-
-        buildings.push_back(building);
-
+        
         /*
         * Here we define the default behavior for workers as a BT, which is to collect
         * resources. Namely minerals and gas (gas if we have an assimilator)
@@ -50,23 +39,37 @@ public:
         pDataResources->nWantedWorkersFarmingMinerals = gameParser.baseParameters.nMineralMinersWanted;
         pDataResources->nWantedWorkersFarmingGas = gameParser.baseParameters.nGasMinersWanted;
         pDataResources->assimilatorAvailable = false;
-        pDataResources->nexus = nexus;
+        if (!notfirst) {
+            const BWAPI::Unit nexus = Tools::GetDepot();
+            const BWAPI::TilePosition p = nexus->getTilePosition();
+            const BWAPI::UnitType unit = nexus->getType();
 
-        blackboard.baseNexuses.push_back(nexus);
+            Building building(p, unit);
+            building.unit = nexus;
+            //building.
+            building.status = BuildingStatus::Constructed;
+
+            buildings.push_back(building);
+            pDataResources->nexus = nexus;
+
+            blackboard.baseNexuses.push_back(nexus);
+            const BWAPI::Unit mineral = Tools::GetClosestUnitTo(nexus, BWAPI::Broodwar->getMinerals());
+            const BWAPI::Position mineralPosition = mineral->getPosition();
+            const BWAPI::Position nexusPosition = nexus->getPosition();
+
+            const int defencePosX = 3 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
+            const int defencePosY = 3 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
+
+            const BWAPI::Position defencePos(defencePosX, defencePosY);
+            baseChokepoint = defencePos;
+
+
+            BWAPI::Broodwar->drawTextScreen(defencePos, "Base Chokepoint: Defend\n");
+        }
+        else { buildnewnexus = false; }
 
         // Add base chokepoint as a defensive position
-        const BWAPI::Unit mineral = Tools::GetClosestUnitTo(nexus, BWAPI::Broodwar->getMinerals());
-        const BWAPI::Position mineralPosition = mineral->getPosition();
-        const BWAPI::Position nexusPosition = nexus->getPosition();
-
-        const int defencePosX = 3 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
-        const int defencePosY = 3 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
-
-        const BWAPI::Position defencePos(defencePosX, defencePosY);
-        baseChokepoint = defencePos;
-
-
-        BWAPI::Broodwar->drawTextScreen(defencePos, "Base Chokepoint: Defend\n");
+        
 
         // Define behaviour tree for resource gathering
         pBT = new BT_DECORATOR("EntryPoint", nullptr);
@@ -118,9 +121,9 @@ public:
     bool containsWorker(BWAPI::Unit Worker) {
         return workers.contains(Worker);
     };
-    bool VerifyNexus(BWAPI::TilePosition* PotLoc) {
+    bool VerifyNexus() {
         //std::cout << "nex num"<<blackboard.baseNexuses.size();
-        PotentialNexus = *PotLoc;
+        //PotentialNexus = *PotLoc;
         const BWAPI::UnitType supplyProviderType = Tools::GetDepot()->getType();
         int desiredMineral = gameParser.baseParameters.nMineralMinersWanted - mineralMiners.size();
         int desiredGas = gameParser.baseParameters.nGasMinersWanted - gasMiners.size();
@@ -139,7 +142,7 @@ public:
         workers.insert(newWorker);
     };
     bool buildnewnexus=false;
-    
+    bool NexusSucess = false;
 
 private:
     // Fields
@@ -220,8 +223,12 @@ private:
     BWAPI::TechTypes::Archon_Warp
     // Add other Protoss techs as needed
     };
-
+    float minDistanceFromOtherBuildings = 15.0;
+    double minDistanceFromEnemies = 1010;
     BWAPI::TilePosition PotentialNexus;
+    bool firstfail =true;
+    std::set<BWAPI::TilePosition> nonNexusPlaces;
+    void newNexusInfo();
     std::unordered_set<int> getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
     int countConstructedBuildingsofType(BWAPI::UnitType u); // Counts the number of constructed buildings we have which for a given type
 };

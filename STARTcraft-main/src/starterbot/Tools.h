@@ -13,7 +13,7 @@ namespace Tools
     BWAPI::Unit GetDepot();
 
     bool BuildBuilding(BWAPI::UnitType type);
-
+    std::vector<BWAPI::Unit> GetThreeClosestWorkersToTilePosition(const BWAPI::TilePosition& tilePos);
     void DrawUnitBoundingBoxes();
     void DrawUnitCommands();
 
@@ -24,4 +24,6 @@ namespace Tools
 
     void DrawUnitHealthBars();
     void DrawHealthBar(BWAPI::Unit unit, double ratio, BWAPI::Color color, int yOffset);
+    BWAPI::Unit GetNexusAtTilePosition(const BWAPI::TilePosition& tilePos);
+    std::vector<BWAPI::Unit> GetThreeClosestWorkersToTilePosition(const BWAPI::TilePosition& tilePos, int numselect);
 }

@@ -23,12 +23,15 @@ void BaseSupervisor::onFrame() {
     researchProtossTechs();
     verifyAliveWorkers();
     verifyArePylonsNeeded();
-    if (buildnewnexus) { std::cout << "verified"; }
+
     //additionalNexus();
     assignIdleWorkes(); // Assigns new idle workers to our list of available workers
+    //if (buildnewnexus) { std::cout << "v workers" << std::endl; }
     assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
+
     assignSquadProduction();
 
+    if (buildnewnexus) newNexusInfo();
     // Updates data in the worker BT and calls the BT with `pBT->Evaluate(pDataResources)`
     pDataResources->unitsFarmingGas = gasMiners;
     pDataResources->unitsFarmingMinerals = mineralMiners;
@@ -94,39 +97,10 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
     const int unit_gas = b.gasPrice();
 
     // If we have the resource required to build building
-    if (b== BWAPI::UnitTypes::Protoss_Nexus) {
-        if (unit_mineral <= excess_mineral && unit_gas <= excess_gass) {
-            const auto startedBuilding = buildBuilding(b); // Try to place building and order unit to build
-            
-            const BWAPI::TilePosition p = std::get<1>(startedBuilding); // Position of the building 
 
-            const int started = std::get<0>(startedBuilding); // If a worker has started going to construction site
-
-            // If worker is moving to construction site, allocate resources such that they are not used and update building status
-            if (started == 1) {
-                BWAPI::Broodwar->printf("Moving to Construct Building %s", b.getName().c_str());
-                
-                queuedBuildJobs.removeTop();
-
-                Building building(p, b);
-                building.status = BuildingStatus::OrderGiven;
-                std::cout << "new building";
-                //buildings.erase();
-                buildings.push_back(building);
-                buildnewnexus = true;
-                allocated_gas += b.gasPrice();
-                allocated_minerals += b.mineralPrice();
-
-                return true;
-            }
-            else {
-                std::cout << "build fail"<<std::endl;
-            }
-        }
-    }
     if (unit_mineral <= excess_mineral && unit_gas <= excess_gass) {
         const auto startedBuilding = buildBuilding(b); // Try to place building and order unit to build
-        const BWAPI::TilePosition p = std::get<1>(startedBuilding); // Position of the building 
+        const BWAPI::TilePosition place = std::get<1>(startedBuilding); // Position of the building 
         
         const int started = std::get<0>(startedBuilding); // If a worker has started going to construction site
 
@@ -135,14 +109,18 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
             BWAPI::Broodwar->printf("Moving to Construct Building %s", b.getName().c_str());
             queuedBuildJobs.removeTop();
 
-            Building building(p, b);
+            Building building(place, b);
             building.status = BuildingStatus::OrderGiven;
-
+            
             buildings.push_back(building);
 
             allocated_gas += b.gasPrice();
             allocated_minerals += b.mineralPrice();
-
+            if (b == BWAPI::UnitTypes::Protoss_Nexus) {
+                PotentialNexus = place;
+                /******************************/
+                buildnewnexus = true;
+            }
             return true;
         }
     }
@@ -188,7 +166,7 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
                     break;
                 }
                 else {
-                    std::cout << "unsucessful training of"<< building->getType().getName().c_str()<< "Started Training" << unitType.getName().c_str()<<std::endl;
+                    //std::cout << "unsucessful training of"<< building->getType().getName().c_str()<< "Started Training" << unitType.getName().c_str()<<std::endl;
                 }
             }
         }
@@ -376,20 +354,48 @@ void BaseSupervisor::verifyArePylonsNeeded() {
 void BaseSupervisor::assignIdleWorkes() {
     // Get all new workers which are idle around our Nexus and add them to our list of available workers, which handles the
     // case where we produce new workers and have to update this list.
-    if(true){
+    {
     for (Building& building : buildings) {
         if (building.unitType == BWAPI::UnitTypes::Protoss_Nexus) {
-            if(buildnewnexus)std::cout << "nex rad";
-            BWAPI::Unitset workersInRadius = building.unit->getUnitsInRadius(1000, BWAPI::Filter::IsWorker && BWAPI::Filter::IsIdle && BWAPI::Filter::IsOwned);
-            for (BWAPI::Unit worker : workersInRadius) {
-                if (!workers.contains(worker)) {
-                    workers.insert(worker);
+            if (buildnewnexus) { 
+                int nearbyWorkers=3;
 
-                    if (blackboard.scouts.contains(worker)) {
-                        blackboard.scouts.erase(worker);
+                // Convert TilePosition to Position (center of the tile)
+                BWAPI::Position centerPos = BWAPI::Position(PotentialNexus) + BWAPI::Position(16, 16); // Each tile is 32x32 pixels
+
+                // Get all units within the specified radius of the center position
+
+                std::vector<BWAPI::Unit> unitsInRadius = Tools::GetThreeClosestWorkersToTilePosition(PotentialNexus, nearbyWorkers);// BWAPI::Broodwar->getUnitsInRadius(centerPos, 900);
+
+                for (auto& unit : unitsInRadius) {
+                    // Check if the unit is a worker
+                    if (unit->getType().isWorker() && unit->getPlayer() == BWAPI::Broodwar->self() && unit->isIdle()) {
+                        std::cout << "u!";
+                        //nearbyWorkers.push_back(unit);
+                        if (!workers.contains(unit)) {
+                            workers.insert(unit);
+
+                            if (blackboard.scouts.contains(unit)) {
+                                blackboard.scouts.erase(unit);
+                            }
+                        }
+                    }
+                }
+
+            }
+            else {
+                BWAPI::Unitset workersInRadius = building.unit->getUnitsInRadius(1000, BWAPI::Filter::IsWorker && BWAPI::Filter::IsIdle && BWAPI::Filter::IsOwned);
+                for (BWAPI::Unit worker : workersInRadius) {
+                    if (!workers.contains(worker)) {
+                        workers.insert(worker);
+
+                        if (blackboard.scouts.contains(worker)) {
+                            blackboard.scouts.erase(worker);
+                        }
                     }
                 }
             }
+            //if (buildnewnexus)std::cout << "nex rad2";
         }
     }}
 }
@@ -447,45 +453,77 @@ std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitTy
     // Ask BWAPI for a building location near the desired position for the type
     constexpr int maxBuildRange = 64;
     const bool buildingOnCreep = b.requiresCreep();
-    //if (b == BWAPI::UnitTypes::Protoss_Nexus) {
-    //    BWAPI::TilePosition homePosition = BWAPI::Broodwar->self()->getStartLocation();
-    ////    double minDistance = std::numeric_limits<double>::max();
-    ////    BWAPI::TilePosition expansionPosition = homePosition;
-    //    BWAPI::TilePosition buildPos;
-    //    for (auto& baseLocation : BWAPI::Broodwar->getStartLocations()) {
-    //        if (baseLocation == homePosition) continue; // Skip the main base location
-    //        desiredPos = baseLocation;
-    //        buildPos = BWAPI::Broodwar->getBuildLocation(b, desiredPos, maxBuildRange, buildingOnCreep);
+    if (b == BWAPI::UnitTypes::Protoss_Nexus) {
+        BWAPI::TilePosition startLocation = BWAPI::Broodwar->self()->getStartLocation();
+        int searchRadius = 2900; // adjustable
 
-    //        const bool orderGiven = builder->build(b, buildPos);
+        for (int x = startLocation.x - searchRadius; x <= startLocation.x + searchRadius; ++x) {
+            for (int y = startLocation.y - searchRadius; y <= startLocation.y + searchRadius; ++y) {
+                BWAPI::TilePosition potentialLocation(x, y);
 
-    //        if (orderGiven) {
-    //            return std::make_tuple(1, buildPos);
-    //        }
-    ////        //maybe not too close?
-    ////        double distance = homePosition.getDistance(baseLocation);
-    ////        if (BWAPI::Broodwar->canBuildHere(baseLocation, BWAPI::UnitTypes::Protoss_Nexus, nullptr, true) and distance>10.0) {
-    ////            //&& isBaseLocationSuitable(baseLocation)
-    ////            minDistance = distance;
-    ////            expansionPosition = baseLocation;
-    ////            break;
-    ////        }
-    //    }
-    ////    bool canPlaceNexus = BWAPI::Broodwar->isBuildable(expansionPosition, true) and BWAPI::Broodwar->canBuildHere(expansionPosition, BWAPI::UnitTypes::Protoss_Nexus, nullptr, true);
-    ////    BWAPI::TilePosition buildnexPos = BWAPI::Broodwar->getBuildLocation(b, expansionPosition, maxBuildRange, buildingOnCreep);
-    ////    if (canPlaceNexus) std::cout << "New Nexus wkr"<<workers.size()<<std::endl;
-    ////    bool orderGivenNexus = builder->build(b, buildnexPos);
-    ////    if (canPlaceNexus) { std::cout << "is?"; buildnewnexus = true; }
-    ////    if (orderGivenNexus) {
-    ////        { std::cout << "is?"; buildnewnexus = true; }
-    ////        return std::make_tuple(1, buildnexPos);
-    ////    }
-    ////    else 
-    //   {
-    //        return std::make_tuple(0, buildPos);
-    //    }
-    //}
-    //
+                // position within map and buildable
+                bool canPlaceNexus = BWAPI::Broodwar->isBuildable(potentialLocation, true) and BWAPI::Broodwar->canBuildHere(potentialLocation, BWAPI::UnitTypes::Protoss_Nexus, nullptr, true);
+
+                if (!canPlaceNexus) continue;
+                if (nonNexusPlaces.contains(potentialLocation)) continue;
+                // make sure it is close enough to the minerals
+                bool closeToMinerals = false;
+                for (const auto& mineral : BWAPI::Broodwar->getMinerals()) {
+                    if (potentialLocation.getDistance(mineral->getTilePosition()) <= 114) { // adjustable
+                        closeToMinerals = true;
+                        break;
+                    }
+                }
+                if (!closeToMinerals) continue;
+
+                // whether away from other buildings
+                bool tooCloseToOtherBuildings = false;
+                for (const auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+                    if (unit->getType().isBuilding() && potentialLocation.getDistance(unit->getTilePosition()) < minDistanceFromOtherBuildings) {
+                        tooCloseToOtherBuildings = true;//minDistanceFromOtherBuildings=8.0
+                        break;
+                    }
+                }
+                if (tooCloseToOtherBuildings) { nonNexusPlaces.insert(potentialLocation); continue; }
+
+                // Check distance from enemies
+                bool tooCloseToEnemies = false;
+                for (const auto& enemyUnit : BWAPI::Broodwar->enemy()->getUnits()) {
+                    // Calculate the distance from the potential Nexus location to this enemy unit
+                    double distanceToEnemy = BWAPI::Position(potentialLocation).getDistance(enemyUnit->getPosition());
+
+                    if (distanceToEnemy < minDistanceFromEnemies) {
+                        tooCloseToEnemies = true;
+                        break; // No need to check other enemy units if one is already too close
+                    }
+                }
+
+                if (tooCloseToEnemies) {
+                    nonNexusPlaces.insert(potentialLocation); // Optional: keep track of locations that are too close to enemies
+                    continue; // Skip this location and check the next one
+                }
+
+
+                // if all satisfies, it is suitable
+
+                ////    BWAPI::TilePosition buildnexPos = BWAPI::Broodwar->getBuildLocation(b, expansionPosition, maxBuildRange, buildingOnCreep);
+                ////    if (canPlaceNexus) std::cout << "New Nexus wkr"<<workers.size()<<std::endl;
+                bool orderGivenNexus = builder->build(b, potentialLocation);
+                ////    if (canPlaceNexus) { std::cout << "is?"; buildnewnexus = true; }
+                if (orderGivenNexus) {
+                        {  buildnewnexus = true; }
+                        return std::make_tuple(1, potentialLocation);
+                    }
+                    else 
+                   {
+                    nonNexusPlaces.insert(potentialLocation);
+                        return std::make_tuple(0, potentialLocation);
+                    }
+            }
+        }
+
+    }
+    
     BWAPI::TilePosition buildPos = BWAPI::Broodwar->getBuildLocation(b, desiredPos, maxBuildRange, buildingOnCreep);
     
     const bool orderGiven = builder->build(b, buildPos);
@@ -524,3 +562,34 @@ int BaseSupervisor::countConstructedBuildingsofType(BWAPI::UnitType u) {
     return count;
 }
 
+void BaseSupervisor::newNexusInfo() {
+    BWAPI::Unit newNexus = nullptr;
+    //for (int x = startLocation.x - 50; x <= startLocation.x + 50; ++x) {
+    //    for (int y = startLocation.y - 50; y <= startLocation.y + 50; ++y) {
+    //    }
+    //}
+    newNexus = Tools::GetNexusAtTilePosition(PotentialNexus); //Tools::GetClosestUnitTo(place, b);
+    if (!newNexus) {
+        if (buildnewnexus) {
+            std::cout << "no new"; if(firstfail)VerifyNexus();
+    } return; }
+
+    //std::cout << "iter"; //building.unit = newNexus;
+    //const BWAPI::Unit nexus = building.unit;// Tools::GetDepot();
+    //const BWAPI::TilePosition p = nexus->getTilePosition();
+    //const BWAPI::UnitType unit = nexus->getType();
+    pDataResources->nexus = newNexus;
+    blackboard.baseNexuses.push_back(newNexus);
+    BWAPI::Unit mineral = Tools::GetClosestUnitTo(newNexus, BWAPI::Broodwar->getMinerals());
+    const BWAPI::Position mineralPosition = mineral->getPosition();
+    const BWAPI::Position nexusPosition = newNexus->getPosition();
+
+    const int defencePosX = 3 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
+    const int defencePosY = 3 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
+
+    const BWAPI::Position defencePos(defencePosX, defencePosY);
+    std::cout << "assign";
+    baseChokepoint = defencePos;
+    NexusSucess = true;
+    BWAPI::Broodwar->drawTextScreen(defencePos, "Base Chokepoint: Defend\n");
+}

@@ -22,11 +22,7 @@ public:
 
     // Functions
     void onFrame();
-    ~BasesManager() {
-        for (BaseSupervisor* child : children) {
-            delete child;
-        }
-    }
+
     void postJob(JobBase job) { queuedJobs.push_back(job); };
     void newNexus();
 private:
