@@ -6,7 +6,7 @@
 #include "../BT/Data.h"
 #include "ManagerBase.h"
 #include "Data/JobPriorityList.h"
-#include "Blackboard.h";
+#include "../Blackboard.h"
 
 
 struct scout {

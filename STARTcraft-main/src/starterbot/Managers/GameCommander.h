@@ -11,7 +11,7 @@
 #include "ManagerBase.h"
 #include "ScoutManager.h"
 #include "ArmyManager.h"
-#include "Blackboard.h"
+#include "../Blackboard.h"
 
 class GameCommander : public ManagerBase {
 public:

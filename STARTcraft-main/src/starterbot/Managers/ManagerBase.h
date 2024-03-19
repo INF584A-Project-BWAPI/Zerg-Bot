@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Data/JobBase.h"
-#include "Blackboard.h"
+#include "../Blackboard.h"
 
 class ManagerBase {
 public:

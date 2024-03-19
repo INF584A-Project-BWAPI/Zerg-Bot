@@ -4,8 +4,7 @@
 #include "../../starterbot/GameFileParser.hpp";
 #include "BasesManager.h"
 #include "GameCommander.h"
-#include <Data.h>
-#include "GameFileParser.hpp"
+
 
 void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
 	for (int i = 0; i < buildOrder.size(); i++) {
@@ -27,21 +26,6 @@ void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
 		postJob(job);
 	}
 
-	//new Base code
-	BWAPI::TilePosition homePosition = BWAPI::Broodwar->self()->getStartLocation();
-	double minDistance = std::numeric_limits<double>::max();
-	BWAPI::TilePosition expansionPosition = homePosition;
-
-	for (auto& baseLocation : BWAPI::Broodwar->getStartLocations()) {
-		if (baseLocation == homePosition) continue; // Skip the main base location
-
-		double distance = homePosition.getDistance(baseLocation);
-		if (distance < minDistance ) {
-			//&& isBaseLocationSuitable(baseLocation)
-			minDistance = distance;
-			expansionPosition = baseLocation;
-		}
-	}
 }
 
 void GameCommander::onFrame() {

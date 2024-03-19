@@ -13,9 +13,7 @@
 #include "Data/JobPriorityList.h"
 #include "../BT/DataResources.h"
 #include "../BT/BT.h";
-#include "DataResources.h"
-#include "BT.h";
-#include "Blackboard.h"
+#include "../Blackboard.h";
 
 
 class BaseSupervisor : virtual ManagerBase {
@@ -37,6 +35,7 @@ public:
 
         Building building(p, unit);
         building.unit = nexus;
+        //building.
         building.status = BuildingStatus::Constructed;
 
         buildings.push_back(building);
@@ -80,7 +79,12 @@ public:
     
     // Called by the parent's on frame call, such that all managers have this onFrame
     void onFrame();
-
+    bool nextnexus_ready() {
+        return pDataResources->assimilatorAvailable;
+    };
+    void setnexus_loc(BWAPI::Position nexusPos) {
+        //const BWAPI::Position nexusPos
+    };
     // Used by parent managers to give this manager a new job
     void postJob(JobBase& job) { 
         if (job.importance == Importance::High) {
@@ -110,11 +114,32 @@ public:
             }
         }
     };
+    void deleteWorker(BWAPI::Unit newWorker) { workers.erase(newWorker); };
+    bool containsWorker(BWAPI::Unit Worker) {
+        return workers.contains(Worker);
+    };
+    bool VerifyNexus(BWAPI::TilePosition* PotLoc) {
+        //std::cout << "nex num"<<blackboard.baseNexuses.size();
+        PotentialNexus = *PotLoc;
+        const BWAPI::UnitType supplyProviderType = Tools::GetDepot()->getType();
+        int desiredMineral = gameParser.baseParameters.nMineralMinersWanted - mineralMiners.size();
+        int desiredGas = gameParser.baseParameters.nGasMinersWanted - gasMiners.size();
+        if (supplyProviderType.gasPrice() < gasMiners.size() or supplyProviderType.mineralPrice() < mineralMiners.size()) return false;
 
+        JobBase job(0, ManagerType::BaseSupervisor, JobType::Building, false, Importance::High);
+        job.setUnitType(supplyProviderType);
+        job.setGasCost(supplyProviderType.gasPrice());
+        job.setMineralCost(supplyProviderType.mineralPrice());
+
+        queuedBuildJobs.queueTop(job);
+        return true;
+    };
     // Add a new worker to the list of workers for this base
     void addWorker(BWAPI::Unit newWorker) {
         workers.insert(newWorker);
     };
+    bool buildnewnexus=false;
+    
 
 private:
     // Fields
@@ -149,14 +174,14 @@ private:
     void upgradeEnhancements();//UpGrades
     void researchProtossTechs();//research
     void verifyArePylonsNeeded();
-    
+    void additionalNexus();
     void assignIdleWorkes(); // Any new idle worker spawned by nexus is added to the available workers vector
     void assignWorkersToHarvest(); // Assigns workers to either mineral or gas collection as default behaviour
     void assignSquadProduction(); // Checks if we can raise a squad and if one is wanted
-
+    
     // Helper methods
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b); // Returns an int (0 - impossible, 1 - possible) and a position we build it on
-    int getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
+    //int getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
     
     std::set<BWAPI::UpgradeType> protossUpgrades = {
     BWAPI::UpgradeTypes::Singularity_Charge, // Dragoon Range Upgrade
@@ -196,7 +221,7 @@ private:
     // Add other Protoss techs as needed
     };
 
-
+    BWAPI::TilePosition PotentialNexus;
     std::unordered_set<int> getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
     int countConstructedBuildingsofType(BWAPI::UnitType u); // Counts the number of constructed buildings we have which for a given type
 };
