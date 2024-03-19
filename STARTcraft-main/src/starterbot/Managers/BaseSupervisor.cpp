@@ -272,11 +272,6 @@ void BaseSupervisor::verifyArePylonsNeeded() {
 void BaseSupervisor::verifyObserverScouts() {
     const BWAPI::UnitType observerType = BWAPI::UnitTypes::Protoss_Observer;
 
-    for (const BWAPI::Unit u : blackboard.scouts) {
-        if (u->getType() == observerType)
-            return;
-    }
-
     for (auto const& x : observerType.requiredUnits()) {
         int countConstructed = countConstructedBuildingsofType(x.first);
 
@@ -284,7 +279,16 @@ void BaseSupervisor::verifyObserverScouts() {
             return;
         }
     }
-    
+
+    if (queuedProductionJobs.presentInTopNPositions(observerType, 1000)) {
+        return;
+    }
+
+    for (BWAPI::Unit const unit : BWAPI::Broodwar->self()->getUnits()) {
+        if (unit->getType() == observerType)
+            return;
+    }
+
     JobBase job(0, ManagerType::BaseSupervisor, JobType::UnitProduction, false, Importance::High);
     job.setUnitType(observerType);
 
@@ -358,7 +362,7 @@ std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitTy
     BWAPI::TilePosition desiredPos = BWAPI::Broodwar->self()->getStartLocation();
     const BWAPI::UnitType builderType = b.whatBuilds().first;
 
-    BWAPI::Unit builder = *workers.begin();
+    BWAPI::Unit builder = findOptimalWorkerToBuild();
 
     if (!builder) { return std::make_tuple(-1, desiredPos); }
 
@@ -409,5 +413,21 @@ int BaseSupervisor::countConstructedBuildingsofType(BWAPI::UnitType u) {
     }
 
     return count;
+}
+
+BWAPI::Unit BaseSupervisor::findOptimalWorkerToBuild() {
+    for (BWAPI::Unit worker : workers) {
+        if (worker->isIdle()) {
+            return worker;
+        }
+    }
+
+    for (BWAPI::Unit worker : workers) {
+        if (!worker->isCarryingGas() || !worker->isCarryingMinerals() || !worker->isMoving()) {
+            return worker;
+        }
+    }
+
+    return *workers.begin();
 }
 

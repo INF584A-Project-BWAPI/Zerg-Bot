@@ -36,27 +36,6 @@ StarterBot::StarterBot()
     // Set early game build order into game commander
     gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
     gameCommander.setBuildOrder(gameParser.buildorder);
-<<<<<<< HEAD
-
-    gameParser.print_build_order();
-
-    std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders("defend");
-
-    SquadProductionOrder squadProductionOrder;
-    squadProductionOrder.isConstructed = false;
-
-    for (ParsedUnitOrder order : orders) {
-        UnitProductionOrder unitProductionOrder;
-        unitProductionOrder.orderCount = order.count;
-        unitProductionOrder.unitType = order.unitType;
-        unitProductionOrder.jobsCount = 0;
-
-        squadProductionOrder.productionOrder.push_back(unitProductionOrder);
-    }
-
-    blackboard.squadProductionOrders.push_back(squadProductionOrder);
-=======
->>>>>>> feat/game_status
 }
 
 // Called when the bot starts!

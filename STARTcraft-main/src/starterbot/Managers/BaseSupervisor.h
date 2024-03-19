@@ -157,4 +157,5 @@ private:
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b); // Returns an int (0 - impossible, 1 - possible) and a position we build it on
     std::unordered_set<int> getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
     int countConstructedBuildingsofType(BWAPI::UnitType u); // Counts the number of constructed buildings we have which for a given type
+    BWAPI::Unit findOptimalWorkerToBuild(); // Finds preferably an idle worker and then finds a worker mining, then finds one building.
 };

@@ -70,7 +70,7 @@ void GameCommander::distributeJobs() {
 }
 
 void GameCommander::evaluateGameStatus() {
-	if (blackboard.ourAttackHitpoints > blackboard.enemyAttackHitpoints) {
+	if (blackboard.ourAttackHitpoints > (blackboard.enemyAttackHitpoints + attack_threshold_delta)) {
 		blackboard.gameStatus = GameStatus::Attack;
 	}
 	else {
@@ -84,15 +84,6 @@ void GameCommander::evaluateGameStatus() {
 		if (blackboard.gameStatus != GameStatus::Defence) {
 			blackboard.gameStatus = GameStatus::Standard;
 		}
-	}
-
-
-	if (blackboard.gameStatus == GameStatus::Defence) {
-		std::cout << "We are under attack! Status: Defence" << std::endl;
-	}
-
-	if (blackboard.gameStatus == GameStatus::Attack) {
-		std::cout << "We can attack now! Status: Attack" << std::endl;
 	}
 }
 
