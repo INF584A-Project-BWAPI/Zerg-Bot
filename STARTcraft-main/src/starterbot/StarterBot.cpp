@@ -39,7 +39,7 @@ StarterBot::StarterBot()
 
     gameParser.print_build_order();
 
-    std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders("attack");
+    std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders("defend");
 
     SquadProductionOrder squadProductionOrder;
     squadProductionOrder.isConstructed = false;

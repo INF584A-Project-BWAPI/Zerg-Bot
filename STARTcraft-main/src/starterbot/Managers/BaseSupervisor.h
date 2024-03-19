@@ -134,6 +134,8 @@ private:
     int allocated_minerals = 0;
     int allocated_gas = 0;
 
+    int maxBuildPlacementTries = 0;
+
     // Worker default BT - collect resources
     BT_NODE* pBT;
     DataResources* pDataResources; // BT data struct - updated with this supervisor's available workers
@@ -144,7 +146,8 @@ private:
     void verifyActiveBuilds(); // If construction has started we can free up the allocated resources
     void verifyFinishedBuilds(); // Looks at the buildings list and checks if building is finished and thus update status
     void verifyAliveWorkers(); // If a worker has died, then we want to remove it from being accessible.
-    void verifyArePylonsNeeded();
+    void verifyArePylonsNeeded(); // Check if we need new pylons to meet production demand
+    void verifyObserverScouts();
     
     void assignIdleWorkes(); // Any new idle worker spawned by nexus is added to the available workers vector
     void assignWorkersToHarvest(); // Assigns workers to either mineral or gas collection as default behaviour

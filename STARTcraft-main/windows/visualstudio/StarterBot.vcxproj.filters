@@ -301,7 +301,4 @@
       <Filter>BotParameters</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="StarterBot.rc" />
-  </ItemGroup>
 </Project>

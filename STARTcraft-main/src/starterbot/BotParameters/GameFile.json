@@ -199,10 +199,6 @@
                 {
                     "unitType": "dragoon",
                     "count": 5
-                },
-                {
-                    "unitType": "observer",
-                    "count": 1
                 }
             ]
         },
