@@ -15,6 +15,7 @@ struct scout {
     //JobBase job = j;
     bool working = false; // is it scouting actively
     int max_saw = 0;
+    int prev_hp = -1;
 
     void set_working(bool b) { working = b; };
     void set_job(JobBase j) { job = j; };

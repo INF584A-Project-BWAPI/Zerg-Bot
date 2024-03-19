@@ -140,8 +140,13 @@ void ScoutManager::checkOnScout(scout * s) {
                 s->max_saw = scout_info.size();
                 std::cout << "scout sees " << scout_info.size() << " baddies.\n";
             }
+            if (u->getHitPoints() < s->prev_hp) {
+                std::cout << "scout is hurt, rushing back home.\n";
+                u->move((BWAPI::Position)HomeLocation);
+            }
         }
     }
+    s->prev_hp = s->unit->getHitPoints();
 }
 
 void ScoutManager::sendScouting(scout * s, JobBase job) {
