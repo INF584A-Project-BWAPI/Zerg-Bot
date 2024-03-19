@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.h" />
     <ClInclude Include="..\..\src\starterbot\Blackboard.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_ACTION.h" />
@@ -45,6 +44,7 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_PARALLEL_SEQUENCER.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_SELECTOR.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_SEQUENCER.h" />
+    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\AttackGroundUnitBT.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_ATTACK_ENEMY.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_DEFEND_BASE.h" />
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_BUILD_SUPPLY_PROVIDER.h" />
@@ -77,7 +77,6 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\starterbot\AttackUnitBT\AttackGroundUnitBT.cpp" />
     <ClCompile Include="..\..\src\starterbot\Blackboard.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_ACTION_IDLE.cpp" />
@@ -102,6 +101,7 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_PARALLEL_SEQUENCER.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_SELECTOR.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_SEQUENCER.cpp" />
+    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\AttackGroundUnitBT.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_ATTACK_ENEMY.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_DEFEND_BASE.cpp" />
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_BUILD_SUPPLY_PROVIDER.cpp" />

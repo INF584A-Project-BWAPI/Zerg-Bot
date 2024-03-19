@@ -15,8 +15,8 @@ private:
     BT_SELECTOR* root;
 
 public:
-    AttackGroundUnitBT();
-    void Evaluate(void* data);
+    AttackGroundUnitBT(void) noexcept;
+    BT_NODE::State Evaluate(void* data);
 };
 
 

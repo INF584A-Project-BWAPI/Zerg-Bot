@@ -1,15 +1,19 @@
 #include "AttackGroundUnitBT.h"
+#include <iostream>
 #pragma once
 
-AttackGroundUnitBT::AttackGroundUnitBT() {
+
+AttackGroundUnitBT::AttackGroundUnitBT() noexcept
+{
     // ROOT
-    root = new BT_SELECTOR("root", nullptr, 2);
+    root = new BT_SELECTOR("root", nullptr, 3);
 
     // STANDARD - START  __________________________________________
     BT_SEQUENCER* standard = new BT_SEQUENCER("defend", root, 3);
 
     // children of standard node
     BT_CONDITION* isStandard = new BT_CONDITION("isStandard", standard, [](void* data) {
+        std::cout << "Inside isStandard condition.\n";
         Blackboard* pData = (Blackboard*)data;
         return pData->gameStatus == GameStatus::Standard;
         });
@@ -23,6 +27,7 @@ AttackGroundUnitBT::AttackGroundUnitBT() {
 
     // children of defend node
     BT_CONDITION* isDefend = new BT_CONDITION("isDefend", defend, [](void* data) {
+        std::cout << "Inside isDefend condition.\n";
         Blackboard* pData = (Blackboard*)data;
         return pData->gameStatus == GameStatus::Defence;
         });
@@ -32,10 +37,11 @@ AttackGroundUnitBT::AttackGroundUnitBT() {
 
 
     // REGROUP - START ____________________________________________
-    BT_SEQUENCER* regroup = new BT_SEQUENCER("regroup", root, 2);
+    // commented for now since we execute the BTs on unitsets anyway
+    // BT_SEQUENCER* regroup = new BT_SEQUENCER("regroup", root, 2);
 
     // children of regroup node
-    // commented for now since we execute the BTs on unitsets anyway
+    
     /*
     BT_CONDITION* isRegroup = new BT_CONDITION("isRegroup", regroup, [](void* data) {
         AttackGroundUnitBT* instance = static_cast<AttackGroundUnitBT*>(data);
@@ -43,14 +49,15 @@ AttackGroundUnitBT::AttackGroundUnitBT() {
         });
      BT_ACTION_LOG goToPosition = BT_ACTION_LOG("goToPosition", regroup, "Goes to the specified position by commander.");
     */
-     // REGROUP - END ______________________________________________
+    // REGROUP - END ______________________________________________
 
 
-    // ATTACK - START _____________________________________________
+   // ATTACK - START _____________________________________________
     BT_SEQUENCER* attack = new BT_SEQUENCER("attack", root, 3);
 
     // children of attack node
     BT_CONDITION* isAttack = new BT_CONDITION("isAttack", attack, [](void* data) {
+        std::cout << "Inside isAttack condition.\n";
         Blackboard* pData = (Blackboard*)data;
         return pData->gameStatus == GameStatus::Attack;
         });
@@ -59,6 +66,6 @@ AttackGroundUnitBT::AttackGroundUnitBT() {
     // ATTACK - END _______________________________________________
 }
 
-void AttackGroundUnitBT::Evaluate(void* data) {
-    root->Evaluate(data);
+BT_NODE::State AttackGroundUnitBT::Evaluate(void* data) {
+    return root->Evaluate(data);
 }
