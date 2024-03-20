@@ -23,7 +23,7 @@ public:
     // Functions
     void onFrame();
     void postJob(JobBase job) { queuedJobs.push_back(job); };
-
+    void newNexus();
 private:
     // Fields
     ManagerBase* parent = nullptr;

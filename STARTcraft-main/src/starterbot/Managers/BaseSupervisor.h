@@ -19,7 +19,7 @@
 class BaseSupervisor : virtual ManagerBase {
 public:
     // Constructor
-    BaseSupervisor(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::BaseSupervisor, blackboard) {
+    BaseSupervisor(Blackboard& blackboard, bool isMainBase = false) noexcept : ManagerBase(ManagerType::BaseSupervisor, blackboard) {
         /* 
         * When we construct the baseSupervisor we just look for a Nexus we own and
         * add this to the buildings list using the Building.h wrapper such that we
@@ -115,6 +115,8 @@ public:
     void addWorker(BWAPI::Unit newWorker) {
         workers.insert(newWorker);
     };
+    bool buildNewNexus = false;
+    bool newNexusIsAssigned = false;
 
 private:
     // Fields
@@ -141,6 +143,49 @@ private:
     // Worker default BT - collect resources
     BT_NODE* pBT;
     DataResources* pDataResources; // BT data struct - updated with this supervisor's available workers
+    //NEW::
+    BWAPI::TilePosition potentialNexus;
+    std::set<BWAPI::UpgradeType> protossUpgrades = {
+        BWAPI::UpgradeTypes::Singularity_Charge, // Dragoon Range Upgrade
+        BWAPI::UpgradeTypes::Leg_Enhancements, // Zealot Speed Upgrade
+        BWAPI::UpgradeTypes::Protoss_Plasma_Shields, // Shield Upgrade
+        BWAPI::UpgradeTypes::Protoss_Ground_Weapons, // Ground Weapons Upgrade
+        BWAPI::UpgradeTypes::Protoss_Ground_Armor, // Ground Armor Upgrade
+        BWAPI::UpgradeTypes::Protoss_Air_Weapons, // Air Weapons Upgrade
+        BWAPI::UpgradeTypes::Protoss_Air_Armor, // Air Armor Upgrade
+        // Add other Protoss upgrades as needed
+        BWAPI::UpgradeTypes::Scarab_Damage,
+        BWAPI::UpgradeTypes::Reaver_Capacity,
+        BWAPI::UpgradeTypes::Gravitic_Drive,
+        BWAPI::UpgradeTypes::Sensor_Array,
+        BWAPI::UpgradeTypes::Gravitic_Boosters,
+        BWAPI::UpgradeTypes::Khaydarin_Amulet,
+        BWAPI::UpgradeTypes::Apial_Sensors,
+        BWAPI::UpgradeTypes::Gravitic_Thrusters,
+        BWAPI::UpgradeTypes::Carrier_Capacity,
+        BWAPI::UpgradeTypes::Khaydarin_Core,
+        BWAPI::UpgradeTypes::Argus_Jewel,
+        BWAPI::UpgradeTypes::Argus_Talisman
+    };
+
+    std::set<BWAPI::TechType> protossTechs = {
+        BWAPI::TechTypes::Psionic_Storm,
+        BWAPI::TechTypes::Hallucination,
+        BWAPI::TechTypes::Recall,
+        BWAPI::TechTypes::Stasis_Field,
+        BWAPI::TechTypes::Disruption_Web,
+        BWAPI::TechTypes::Mind_Control,
+        BWAPI::TechTypes::Maelstrom,
+
+        BWAPI::TechTypes::Feedback,
+        BWAPI::TechTypes::Dark_Archon_Meld,
+        BWAPI::TechTypes::Archon_Warp
+        // Add other Protoss techs as needed
+    };
+
+    // Parameters used to determine location for a new BaseSupervisor
+    float minDistanceFromOtherBuildings = 15.0;
+    double minDistanceFromEnemies = 1010;
 
     // Functions
     bool buildBuilding(const JobBase& job); // Builds a building if possible given a build job
@@ -161,7 +206,9 @@ private:
     std::unordered_set<int> getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
     int countConstructedBuildingsofType(BWAPI::UnitType u); // Counts the number of constructed buildings we have which for a given type
     BWAPI::Unit findOptimalWorkerToBuild(); // Finds preferably an idle worker and then finds a worker mining, then finds one building.
-
+    // Update tech and general enhancements for units
+    void upgradeEnhancements();
+    void researchProtossTechs();
     // Debugging
     void print(std::string order, std::string msg);
 };

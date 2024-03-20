@@ -21,7 +21,7 @@ namespace Tools
 
     int GetUnusedSupply(bool inProgress = false);
     int GetTotalSupply(bool inProgress = false);
-
+    std::vector<BWAPI::Unit> GetClosestWorkersToTilePosition(const BWAPI::TilePosition& tilePos, int numselect);
     void DrawUnitHealthBars();
     void DrawHealthBar(BWAPI::Unit unit, double ratio, BWAPI::Color color, int yOffset);
 }
