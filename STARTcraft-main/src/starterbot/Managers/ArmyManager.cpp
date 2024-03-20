@@ -1,5 +1,5 @@
 #include "ArmyManager.h"
-#include "iostream"
+#include <iostream>
 #include "Data.h"
 #include "AttackGroundUnitBT.h"
 
@@ -44,8 +44,12 @@ void ArmyManager::onFrame() {
             unit->attack(position);
         
         */
-
-        attackGroundUnitBT.Evaluate(&blackboard);
+        attackGroundUnitBT = new AttackGroundUnitBT();
+        if (attackGroundUnitBT->Evaluate(&blackboard) == BT_NODE::SUCCESS) {
+            std::cout << "Executed BT...\n";
+            delete (AttackGroundUnitBT*)attackGroundUnitBT;
+            attackGroundUnitBT = nullptr;
+        }
         
         /*
         //std::vector<BWAPI::Unit> unitVector;

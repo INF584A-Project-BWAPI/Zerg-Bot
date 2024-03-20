@@ -33,10 +33,12 @@ BT_NODE::State BT_ACTION_DEFEND_BASE::DefendBase(void* data)
         // move the squads to buildings under attack by distributing them if multiple buildings are under attack 
         short squadIdx = 0;
         for (const BWAPI::Unitset& squad : pData->squads) {
-            squad.move(buildingsUnderAttack[squadIdx % buildingsUnderAttack.size()]->getPosition());
+            squad.move(buildingsUnderAttack.at(squadIdx % buildingsUnderAttack.size())->getPosition());
             squadIdx++;
         }
     }
+
+    std::cout << "Inside DefendBase function\n";
 
     return BT_NODE::SUCCESS;
 }

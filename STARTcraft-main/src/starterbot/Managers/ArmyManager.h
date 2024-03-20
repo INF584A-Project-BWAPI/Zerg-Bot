@@ -12,7 +12,7 @@ class ArmyManager : virtual ManagerBase {
 public:
     // Constructor
     ArmyManager(Blackboard& blackboard) noexcept : ManagerBase(ManagerType::ScoutManager, blackboard) {
-        attackGroundUnitBT = AttackGroundUnitBT();
+        attackGroundUnitBT = nullptr;
     };
 
     // Functions
@@ -34,7 +34,7 @@ private:
 
     JobPriorityList queuedJobs;
     std::vector<JobBase> activeJobs;
-    AttackGroundUnitBT attackGroundUnitBT;
+    AttackGroundUnitBT* attackGroundUnitBT;
     /*
     // Fields
     BWAPI::Unitset squads; // Change this to be a list of class Squad when you've implemented it
