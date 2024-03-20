@@ -43,7 +43,7 @@ public:
         * Here we define the default behavior for workers as a BT, which is to collect
         * resources. Namely minerals and gas (gas if we have an assimilator)
         */
-        gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
+        gameParser.parse_game_file("GameFile.json");
 
         pDataResources = new DataResources();
         pDataResources->nWantedWorkersFarmingMinerals = gameParser.baseParameters.nMineralMinersWanted;
@@ -58,8 +58,8 @@ public:
         const BWAPI::Position mineralPosition = mineral->getPosition();
         const BWAPI::Position nexusPosition = nexus->getPosition();
 
-        const int defencePosX = (int) 4 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
-        const int defencePosY = (int) 4 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
+        const int defencePosX = (int) 3 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
+        const int defencePosY = (int) 3 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
 
         const BWAPI::Position defencePos(defencePosX, defencePosY);
         baseChokepoint = defencePos;
@@ -148,8 +148,9 @@ private:
     void verifyActiveBuilds(); // If construction has started we can free up the allocated resources
     void verifyFinishedBuilds(); // Looks at the buildings list and checks if building is finished and thus update status
     void verifyAliveWorkers(); // If a worker has died, then we want to remove it from being accessible.
-    void verifyArePylonsNeeded(); // Check if we need new pylons to meet production demand
-    void verifyObserverScouts();
+    void verifyArePylonsNeeded(); // Check if we need new pylons to meet production demand.
+    void verifyObserverScouts(); // Check if we have any Observer units for scouts if not then we need to produce some.
+    void verifyDestroyedBuildings(); // Checks if any buildings we own have been destroyed or not.
     
     void assignIdleWorkes(); // Any new idle worker spawned by nexus is added to the available workers vector
     void assignWorkersToHarvest(); // Assigns workers to either mineral or gas collection as default behaviour
@@ -160,4 +161,7 @@ private:
     std::unordered_set<int> getProductionBuilding(BWAPI::UnitType u);  // Gets the index in 'buildings' which can produce the given unit. (if returns -1 then we can produce unit)
     int countConstructedBuildingsofType(BWAPI::UnitType u); // Counts the number of constructed buildings we have which for a given type
     BWAPI::Unit findOptimalWorkerToBuild(); // Finds preferably an idle worker and then finds a worker mining, then finds one building.
+
+    // Debugging
+    void print(std::string order, std::string msg);
 };

@@ -2,6 +2,12 @@
 
 #include "JobBase.h"
 
+/*
+NOTE: this code is inspired from Dave Curchills implementation here:
+https://github.com/davechurchill/commandcenter/blob/master/src/BuildOrderQueue.h
+*/
+
+
 class JobPriorityList {
 public:
     /*

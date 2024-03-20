@@ -107,88 +107,112 @@
             "children": []
         }
     ],
-  "build_order": [
-    {
-      "name": "pylon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "gateway",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "assimilator",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "gateway",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "forge",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "photon_cannon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "cybernetics_core",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "gateway",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "photon_cannon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "robotics_facility",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "observatory",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "photon_cannon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "robotics_support_bay",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "photon_cannon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    },
-    {
-      "name": "photon_cannon",
-      "buildType": "Building",
-      "producerType": "Worker"
-    }
-  ],
+    "build_order": [
+        {
+            "name": "pylon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "assimilator",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "forge",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "cybernetics_core",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "gateway",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "robotics_facility",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "observatory",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "robotics_support_bay",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "robotics_facility",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "photon_cannon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "stargate",
+            "buildType": "Building",
+            "producerType": "Worker"
+        },
+        {
+            "name": "fleet_beacon",
+            "buildType": "Building",
+            "producerType": "Worker"
+        }
+    ],
     "baseParameters": {
         "numMineralGatherers": 10,
         "numGasGatherers": 3
     },
     "squads": [
+        {
+            "name": "defend_early",
+            "units": [
+                {
+                    "unitType": "zealot",
+                    "count": 2
+                }
+            ]
+        },
         {
             "name": "defend",
             "units": [
@@ -203,17 +227,36 @@
             ]
         },
         {
-            "name": "attack",
+            "name": "attackTanks",
+            "units": [
+                {
+                    "unitType": "reaver",
+                    "count": 3
+                }
+            ]
+        },
+        {
+            "name": "attackRush",
             "units": [
                 {
                     "unitType": "dragoon",
                     "count": 10
+                }
+            ]
+        },
+        {
+            "name": "airAttack",
+            "units": [
+                {
+                    "unitType": "carrier",
+                    "count": 1
                 },
                 {
-                    "unitType": "reaver",
-                    "count": 5
+                    "unitType": "interceptor",
+                    "count": 4
                 }
             ]
         }
+
     ]
 }

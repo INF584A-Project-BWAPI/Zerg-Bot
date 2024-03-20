@@ -38,7 +38,7 @@ BT_NODE::State BT_ACTION_DEFEND_BASE::DefendBase(void* data)
         }
     }
 
-    std::cout << "Inside DefendBase function\n";
+    //std::cout << "Inside DefendBase function\n";
 
     return BT_NODE::SUCCESS;
 }

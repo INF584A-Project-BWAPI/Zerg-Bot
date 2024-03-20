@@ -83,7 +83,6 @@ public:
     nlohmann::json json_file;
 
     GameFileParser();
-
     int parse_game_file(string const path);
 
     // Debugging

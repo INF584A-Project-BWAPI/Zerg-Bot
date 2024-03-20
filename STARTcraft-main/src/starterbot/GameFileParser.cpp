@@ -29,6 +29,7 @@ GameFileParser::GameFileParser() {
     unit_type_map["probe"] = BWAPI::UnitTypes::Protoss_Probe;
     unit_type_map["zealot"] = BWAPI::UnitTypes::Protoss_Zealot;
     unit_type_map["dragoon"] = BWAPI::UnitTypes::Protoss_Dragoon;
+    unit_type_map["reaver"] = BWAPI::UnitTypes::Protoss_Reaver;
     unit_type_map["high_templar"] = BWAPI::UnitTypes::Protoss_High_Templar;
     unit_type_map["archon"] = BWAPI::UnitTypes::Protoss_Archon;
     unit_type_map["shuttle"] = BWAPI::UnitTypes::Protoss_Shuttle;

@@ -18,7 +18,7 @@ AttackGroundUnitBT::AttackGroundUnitBT() noexcept
         return pData->gameStatus == GameStatus::Standard;
         });
     // children of defendChokePoint node
-    BT_ACTION_LOG* stayInChokePointLog = new BT_ACTION_LOG("stayInChokePointLog", standard, "Stays in the choke point and waits for the enemy.");
+    //BT_ACTION_LOG* stayInChokePointLog = new BT_ACTION_LOG("stayInChokePointLog", standard, "Stays in the choke point and waits for the enemy.");
     BT_ACTION_STAY_IN_CHOKE_POINT* stayInChokePoint = new BT_ACTION_STAY_IN_CHOKE_POINT("stayInChokePoint", standard);
     // STANDARD - END  ____________________________________________
         
@@ -31,7 +31,7 @@ AttackGroundUnitBT::AttackGroundUnitBT() noexcept
         Blackboard* pData = (Blackboard*)data;
         return pData->gameStatus == GameStatus::Defence;
         });
-    BT_ACTION_LOG* attackNearbyEnemyLog = new BT_ACTION_LOG("attackNearbyEnemyLog", defend, "Attacks the enemies that are close to the nexus.");
+    //BT_ACTION_LOG* attackNearbyEnemyLog = new BT_ACTION_LOG("attackNearbyEnemyLog", defend, "Attacks the enemies that are close to the nexus.");
     BT_ACTION_DEFEND_BASE* attackNearbyEnemy = new BT_ACTION_DEFEND_BASE("attackNearbyEnemy", defend);
     // DEFEND - END _______________________________________________
 
@@ -44,7 +44,7 @@ AttackGroundUnitBT::AttackGroundUnitBT() noexcept
         Blackboard* pData = (Blackboard*)data;
         return pData->gameStatus == GameStatus::Attack;
         });
-    BT_ACTION_LOG* attackEnemyLog = new BT_ACTION_LOG("attackEnemyLog", attack, "Attacks the enemy, first the units and then the buildings.");
+    //BT_ACTION_LOG* attackEnemyLog = new BT_ACTION_LOG("attackEnemyLog", attack, "Attacks the enemy, first the units and then the buildings.");
     BT_ACTION_ATTACK_ENEMY* attackEnemy = new BT_ACTION_ATTACK_ENEMY("attackEnemy", attack);
     // ATTACK - END _______________________________________________
 }

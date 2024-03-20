@@ -131,7 +131,7 @@
     <ClCompile Include="..\..\src\starterbot\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\starterbot\BotParameters\GameFile.json" />
+    <None Include="..\bin\GameFile.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>StarterBot</ProjectName>

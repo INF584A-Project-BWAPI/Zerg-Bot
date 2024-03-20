@@ -13,7 +13,7 @@ void ArmyManager::onFrame() {
         JobBase job = queuedJobs.getTop();
 
         // Do something
-        std::cout << "We have a Army job: " << job.getUnit() << std::endl;
+        //std::cout << "We have a Army job: " << job.getUnit() << std::endl;
     }
 
     //for (BWAPI::Unitset squad: squads){
@@ -46,7 +46,7 @@ void ArmyManager::onFrame() {
         */
         attackGroundUnitBT = new AttackGroundUnitBT();
         if (attackGroundUnitBT->Evaluate(&blackboard) == BT_NODE::SUCCESS) {
-            std::cout << "Executed BT...\n";
+            //std::cout << "Executed BT...\n";
             delete (AttackGroundUnitBT*)attackGroundUnitBT;
             attackGroundUnitBT = nullptr;
         }
@@ -63,6 +63,10 @@ void ArmyManager::onFrame() {
                 unit->attack(position);
         }*/
     }
+
+
+
+
     /*
     for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
         if (unit->getType() == BWAPI::UnitTypes::Protoss_Zealot && unit->isIdle() && !zealots.contains(unit)) {

@@ -172,13 +172,14 @@ void GameCommander::verifySquadOrderStatus() {
 }
 
 void GameCommander::addSquadOrders() {
-	std::vector<std::string> squadTypes{ "defend", "attack" };
-
-	if (!blackboard.squadProductionOrders.empty()) {
-		return;
-	}
+	std::vector<std::string> squadTypes{ "defend", "defend_early", "attackTanks", "airAttack"};
 
 	for (std::string squadType : squadTypes) {
+		for (SquadProductionOrder order : blackboard.squadProductionOrders) {
+			if (order.name == squadType)
+				return;
+		}
+
 		std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders(squadType);
 
 		SquadProductionOrder squadProductionOrder;
@@ -186,6 +187,13 @@ void GameCommander::addSquadOrders() {
 		squadProductionOrder.name = squadType;
 
 		for (ParsedUnitOrder order : orders) {
+			print("SQUAD ORDER (" 
+				+ squadType 
+				+ ")", "Unit type: " 
+				+ order.unitType.getName()
+				+ ", count: " 
+				+ std::to_string(order.count));
+
 			UnitProductionOrder unitProductionOrder;
 			unitProductionOrder.orderCount = order.count;
 			unitProductionOrder.unitType = order.unitType;
@@ -196,5 +204,9 @@ void GameCommander::addSquadOrders() {
 
 		blackboard.squadProductionOrders.push_back(squadProductionOrder);
 	}
+}
+
+void GameCommander::print(std::string order, std::string msg) {
+	std::cout << "GameCommander | " << order << " | " << msg << std::endl;
 }
 

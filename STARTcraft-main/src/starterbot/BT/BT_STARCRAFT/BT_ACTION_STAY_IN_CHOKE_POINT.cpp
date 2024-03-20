@@ -17,7 +17,7 @@ std::string BT_ACTION_STAY_IN_CHOKE_POINT::GetDescription()
 
 BT_NODE::State BT_ACTION_STAY_IN_CHOKE_POINT::StayInChokePoint(void* data)
 {
-    std::cout << "In StayInChokePoint function\n";
+    //std::cout << "In StayInChokePoint function\n";
     Blackboard* pData = (Blackboard*)data;
 
     // make sure the squads remain around the choke point
