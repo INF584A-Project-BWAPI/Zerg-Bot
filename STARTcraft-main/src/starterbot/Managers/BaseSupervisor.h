@@ -122,12 +122,9 @@ public:
     bool verifyNexus() {
         const BWAPI::UnitType supplyProviderType = Tools::GetDepot()->getType();
 
-        int residualMineral = gameParser.baseParameters.nMineralMinersWanted - mineralMiners.size();
-        int residualGas = gameParser.baseParameters.nGasMinersWanted - gasMiners.size();
+        int residualMineralMiners = gameParser.baseParameters.nMineralMinersWanted - mineralMiners.size();
+        int residualGasMiners = gameParser.baseParameters.nGasMinersWanted - gasMiners.size();
 
-        if (supplyProviderType.gasPrice() < gasMiners.size() 
-            || supplyProviderType.mineralPrice() < mineralMiners.size())
-            return false;
 
         JobBase job(0, ManagerType::BaseSupervisor, JobType::Building, false, Importance::High);
         job.setUnitType(supplyProviderType);
@@ -144,7 +141,7 @@ public:
     };
 
     bool buildNewNexus = false;
-    bool newNexusSucess = false;
+    bool newNexusIsAssigned = false;
 
 private:
     // Fields
@@ -161,10 +158,6 @@ private:
 
     JobPriorityList queuedBuildJobs;
     JobPriorityList queuedProductionJobs;
-
-    // Resource allocation when constructing such that we can produce units and build in parallel
-    int allocated_minerals = 0;
-    int allocated_gas = 0;
 
     // Worker default BT - collect resources
     BT_NODE* pBT;

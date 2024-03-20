@@ -39,4 +39,9 @@ public:
 
 	// Buildings which produce attackers
 	std::set<BWAPI::UnitType> barrackTypes;
+
+	// Resource allocation when constructing such that we can produce units and build in parallel
+	// Is defined here as we can have mutiple BaseSupervisors
+	int allocated_minerals = 0;
+	int allocated_gas = 0;
 };

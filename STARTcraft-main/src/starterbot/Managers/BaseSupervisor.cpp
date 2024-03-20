@@ -90,8 +90,8 @@ void BaseSupervisor::researchProtossTechs() {
 
 bool BaseSupervisor::buildBuilding(const JobBase& job) {
     const BWAPI::UnitType b = job.getUnit();
-    const int excess_mineral = BWAPI::Broodwar->self()->minerals() - allocated_minerals;
-    const int excess_gass = BWAPI::Broodwar->self()->gas() - allocated_gas;
+    const int excess_mineral = BWAPI::Broodwar->self()->minerals() - blackboard.allocated_minerals;
+    const int excess_gass = BWAPI::Broodwar->self()->gas() - blackboard.allocated_gas;
 
     const int unit_mineral = b.mineralPrice();
     const int unit_gas = b.gasPrice();
@@ -113,8 +113,8 @@ bool BaseSupervisor::buildBuilding(const JobBase& job) {
             
             buildings.push_back(building);
 
-            allocated_gas += b.gasPrice();
-            allocated_minerals += b.mineralPrice();
+            blackboard.allocated_gas += b.gasPrice();
+            blackboard.allocated_minerals += b.mineralPrice();
 
             if (b == BWAPI::UnitTypes::Protoss_Nexus) {
                 potentialNexus = place;
@@ -143,12 +143,12 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
     // Get the index of the building which we have in this base to produce this unit. If -1 we dont have this building.
     const std::unordered_set<int> buildingIdx = getProductionBuilding(unitType);
     if (buildingIdx.empty()) { return false; }
-    const int excess_mineral = BWAPI::Broodwar->self()->minerals() - allocated_minerals;
-    const int excess_gas = BWAPI::Broodwar->self()->gas() - allocated_gas;
+    const int excess_mineral = BWAPI::Broodwar->self()->minerals() - blackboard.allocated_minerals;
+    const int excess_gas = BWAPI::Broodwar->self()->gas() - blackboard.allocated_gas;
 
     const int unit_mineral = unitType.mineralPrice();
     const int unit_gas = unitType.gasPrice();
-    if (buildnewnexus) { std::cout << "2build"; }
+
     if (unit_mineral <= excess_mineral && unit_gas <= excess_gas) {
         for (const int i : buildingIdx) {
             const BWAPI::Unit building = buildings.at(i).unit;
@@ -164,9 +164,6 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
 
                     queuedProductionJobs.removeTop();
                     break;
-                }
-                else {
-                    //std::cout << "unsucessful training of"<< building->getType().getName().c_str()<< "Started Training" << unitType.getName().c_str()<<std::endl;
                 }
             }
         }
@@ -190,8 +187,8 @@ void BaseSupervisor::verifyActiveBuilds() {
 
                 if (dx * dx + dy * dy == 0.0) {
                     // If they are the same then we know it is underConstruction and we can unlock the previously allocated resource.
-                    allocated_gas -= building.unitType.gasPrice();
-                    allocated_minerals -= building.unitType.mineralPrice();
+                    blackboard.allocated_gas -= building.unitType.gasPrice();
+                    blackboard.allocated_minerals -= building.unitType.mineralPrice();
 
                     BWAPI::Broodwar->printf("Started Constructing: %s", building.unitType.getName().c_str());
 
@@ -325,7 +322,7 @@ void BaseSupervisor::assignIdleWorkes() {
     // case where we produce new workers and have to update this list.
     for (Building& building : buildings) {
         if (building.unitType == BWAPI::UnitTypes::Protoss_Nexus) {
-            if (buildnewnexus) { 
+            if (buildNewNexus) { 
                 int nearbyWorkers = 3;
 
                 BWAPI::Position centerPos = BWAPI::Position(potentialNexus) + BWAPI::Position(16, 16);
@@ -481,7 +478,7 @@ std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitTy
                 orderGivenNexus = builder->build(b, potentialLocation);
                 //if (canPlaceNexus) { std::cout << "is?"; buildnewnexus = true; }
                 if (orderGivenNexus) {
-                        {  buildnewnexus = true; }
+                        {  buildNewNexus = true; }
                         return std::make_tuple(1, potentialLocation);
                     }
                 else 
@@ -496,7 +493,7 @@ std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitTy
         orderGivenNexus = builder->build(b, potentialLocation);
         //if (canPlaceNexus) { std::cout << "is?"; buildnewnexus = true; }
         if (orderGivenNexus) {
-            {  buildnewnexus = true; }
+            {  buildNewNexus = true; }
             return std::make_tuple(1, potentialLocation);
         }
         else
@@ -552,7 +549,7 @@ void BaseSupervisor::newNexusInfo() {
     if (!newNexus)
         return;
  
-    if (!newNexusSucess) {
+    if (!newNexusIsAssigned) {
         pDataResources->nexus = newNexus;
         blackboard.baseNexuses.push_back(newNexus);
 
@@ -566,6 +563,6 @@ void BaseSupervisor::newNexusInfo() {
         const BWAPI::Position defencePos(defencePosX, defencePosY);
 
         baseChokepoint = defencePos;
-        newNexusSucess = true;
+        newNexusIsAssigned = true;
     }
 }
