@@ -1,7 +1,7 @@
 #include "BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY.h"
 #include <BWAPI.h>
-#include "../../Tools.h"
-#include "../Data.h"
+#include "Tools.h"
+#include "Data.h"
 
 BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY::BT_DECO_CONDITION_NOT_ENOUGH_SUPPLY(std::string name, BT_NODE* parent)
     : BT_DECO_CONDITION(name,parent, IsThereNotEnoughSupply) {}

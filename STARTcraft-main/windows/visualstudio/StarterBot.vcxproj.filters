@@ -132,9 +132,6 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.cpp">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_Upgrade.cpp">
-      <Filter>BT\BT_STARCRAFT</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\starterbot\Blackboard.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -276,9 +273,6 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.h">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\BT_Upgrade.h">
-      <Filter>BT\BT_STARCRAFT</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\..\src\starterbot\Blackboard.h" />
   </ItemGroup>
@@ -306,8 +300,5 @@
     <None Include="..\..\src\starterbot\BotParameters\GameFile.json">
       <Filter>BotParameters</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="StarterBot.rc" />
   </ItemGroup>
 </Project>

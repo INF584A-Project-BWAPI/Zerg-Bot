@@ -1,7 +1,7 @@
 #include "BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES.h"
 
-#include "../../Tools.h"
-#include "../DataResources.h"
+#include "Tools.h"
+#include "DataResources.h"
 #include <set>
 
 BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES::BT_ACTION_SEND_IDLE_WORKER_TO_RESOURCES(std::string name, BT_NODE* parent)

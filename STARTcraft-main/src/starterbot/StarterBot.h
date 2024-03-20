@@ -2,9 +2,9 @@
 
 #include <vector>
 #include "MapTools.h"
-#include "..\starterbot\BT\BT.h"
+#include "BT.h"
 #include <BWAPI.h>
-#include "..\starterbot\BT\Data.h"
+#include "Data.h"
 #include "Tools.h"
 #include "GameFileParser.hpp"
 #include "Managers/BasesManager.h"
@@ -25,7 +25,7 @@ private:
 	// Managers
 	GameCommander gameCommander = GameCommander(blackboard);
 	BasesManager basesManager = BasesManager(blackboard);
-	BaseSupervisor mainBaseSupervisor = BaseSupervisor(blackboard);
+	BaseSupervisor mainBaseSupervisor = BaseSupervisor(blackboard, true);
 	ScoutManager scoutManager = ScoutManager(blackboard);
 	ArmyManager armyManager = ArmyManager(blackboard);
 

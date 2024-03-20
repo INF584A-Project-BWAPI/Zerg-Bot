@@ -3,10 +3,10 @@
 #include "ManagerBase.h"
 #include <optional>
 #include "iostream"
-#include "../BT/Data.h"
+#include "Data.h"
 #include "ManagerBase.h"
 #include "Data/JobPriorityList.h"
-#include "../Blackboard.h"
+#include "Blackboard.h"
 
 
 struct scout {

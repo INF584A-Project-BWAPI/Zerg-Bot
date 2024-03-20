@@ -1,7 +1,7 @@
 #include "BasesManager.h";
 #include "GameCommander.h";
-#include "../BT/Data.h";
-#include "../../starterbot/GameFileParser.hpp";
+#include "Data.h";
+#include "GameFileParser.hpp";
 #include "BasesManager.h"
 #include "GameCommander.h"
 

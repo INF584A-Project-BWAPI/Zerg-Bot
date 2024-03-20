@@ -1,6 +1,6 @@
 #include "BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS.h"
-#include "..\..\Tools.h"
-#include "..\Data.h"
+#include "Tools.h"
+#include "Data.h"
 
 BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS::BT_ACTION_SEND_IDLE_WORKER_TO_MINERALS(std::string name,BT_NODE* parent)
     :  BT_ACTION(name,parent) {}

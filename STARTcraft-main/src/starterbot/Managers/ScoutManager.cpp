@@ -1,7 +1,7 @@
 #include "ScoutManager.h"
 #include "iostream"
-#include "../BT/Data.h"
-#include "../Tools.h"
+#include "Data.h"
+#include "Tools.h"
 
 
 void ScoutManager::onFrame() {

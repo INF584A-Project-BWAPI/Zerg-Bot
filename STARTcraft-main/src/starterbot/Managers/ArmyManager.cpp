@@ -1,6 +1,6 @@
 #include "ArmyManager.h"
 #include "iostream"
-#include "../BT/Data.h"
+#include "Data.h"
 
 void ArmyManager::onFrame() {
     if (!queuedJobs.isEmpty()) {

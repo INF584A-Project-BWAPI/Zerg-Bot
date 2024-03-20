@@ -1,7 +1,7 @@
 #include "BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES.h"
-#include "../DataResources.h"
+#include "DataResources.h"
 #include <BWAPI.h>
-#include "../../Tools.h"
+#include "Tools.h"
 
 BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES::BT_DECO_CONDITION_NOT_ENOUGH_WORKERS_FARMING_RESOURCES(std::string name, BT_NODE* parent)
     : BT_DECO_CONDITION(name, parent, IsThereNotEnoughWorkersFarmingResources) {}
