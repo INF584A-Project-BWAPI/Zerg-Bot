@@ -38,10 +38,15 @@ public:
 	int enemyAttackHitpoints = 0;
 	int ourAttackHitpoints = 0;
 
+	BWAPI::Unitset enemyBuilding;
+
 	// For ArmyManager to order the production of squads
 	std::vector<SquadProductionOrder> squadProductionOrders;
 	std::vector<BWAPI::Unitset> squads;
 
 	// Buildings which produce attackers
 	std::set<BWAPI::UnitType> barrackTypes;
+
+	// Choke point for our squads to wait
+	BWAPI::Position baseChokePoint;
 };

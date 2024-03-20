@@ -29,9 +29,6 @@ private:
     ManagerBase* parent = nullptr;
     std::vector<BaseSupervisor*> children;
 
-    int allocated_minerals = 0;
-    int allocated_gas = 0;
-
     std::vector<JobBase> queuedJobs;
 
     // Functions

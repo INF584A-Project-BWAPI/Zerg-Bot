@@ -34,7 +34,7 @@ StarterBot::StarterBot()
     gameCommander.setManagerArmy(&armyManager);
 
     // Set early game build order into game commander
-    gameParser.parse_game_file("../../src/starterbot/BotParameters/GameFile.json");
+    gameParser.parse_game_file("GameFile.json");
     gameCommander.setBuildOrder(gameParser.buildorder);
 }
 

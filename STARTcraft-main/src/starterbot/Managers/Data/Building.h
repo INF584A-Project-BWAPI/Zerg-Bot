@@ -18,7 +18,7 @@ public:
 	BWAPI::TilePosition position;
 	BWAPI::UnitType unitType;
 	BWAPI::Unit unit; // The actual unit instance, and not the type
-	BuildingStatus status;
+	BuildingStatus status; // Used to check when a building is done constructing and we can finally produce units with it.
 
 	// Functions
 	Building(BWAPI::TilePosition p, BWAPI::UnitType t);

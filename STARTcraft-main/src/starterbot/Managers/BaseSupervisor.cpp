@@ -10,28 +10,32 @@ void BaseSupervisor::onFrame() {
         JobBase& job = queuedBuildJobs.getTop();
         bool const skip = buildBuilding(job);
 
+        // If job is impossible to fulfill outside of resource requirements, queue at bottom
         if (skip) {
             queuedBuildJobs.removeTop();
             queuedBuildJobs.queueBottom(job);
         }
     }
 
+    // Produce queued units
     if (!queuedProductionJobs.isEmpty()) {
         JobBase& job = queuedProductionJobs.getTop();
         bool const skip = produceUnit(job);
 
+        // If job is impossible to fulfill outside of resource requirements, queue at bottom
         if (skip) {
             queuedProductionJobs.removeTop();
             queuedProductionJobs.queueBottom(job);
         }
     }
 
-    // Verifies statuses of buildings and assigns new idle workers to this bases workers list
+    // Verifies statuses of various data structures which the bot relies on - see header for more details
     verifyActiveBuilds();
     verifyFinishedBuilds();
     verifyAliveWorkers();
     verifyArePylonsNeeded();
     verifyObserverScouts();
+    verifyDestroyedBuildings();
 
     assignIdleWorkes(); // Assigns new idle workers to our list of available workers
     assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
@@ -100,6 +104,12 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
             int countConstructed = countConstructedBuildingsofType(x.first);
 
             if (countConstructed < x.second) {
+                print("JOB FAILED - PRODUCTION"
+                    , "We do not have enough of: "
+                    + x.first.getName()
+                    + ", for unit:"
+                    + unitType.getName());
+
                 return true;
             }
         }
@@ -114,10 +124,11 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
                 bool successful = building->train(unitType);
 
                 if (successful) {
-                    BWAPI::Broodwar->printf(
-                        "BaseSupervisor | Building %s | Started Training Unit %s"
-                        , building->getType().getName().c_str()
-                        , unitType.getName().c_str());
+                    print("JOB FUFILLED - PRODUCTION"
+                        , "Producing in building: "
+                        + building->getType().getName()
+                        + ", of unit:"
+                        + unitType.getName());
 
                     queuedProductionJobs.removeTop();
                     return false;
@@ -148,7 +159,6 @@ void BaseSupervisor::verifyActiveBuilds() {
                     allocated_minerals -= building.unitType.mineralPrice();
 
                     BWAPI::Broodwar->printf("Started Constructing: %s", building.unitType.getName().c_str());
-                    //buildings.erase(std::remove(buildings.begin(), buildings.end(), building), buildings.end());
                     building.status = BuildingStatus::UnderConstruction;
 
                     break;
@@ -197,6 +207,7 @@ void BaseSupervisor::verifyAliveWorkers() {
     // Remove any workers which are no longer alive
     std::unordered_set<BWAPI::Unit> unitsToRemove;
 
+    // Perform the necessary accounting when this unit is dead, either it was a mineral worker or gas worker
     for (BWAPI::Unit worker : workers) {
         if (!worker->exists()) {
             if (gasMiners.contains(worker)) {
@@ -225,9 +236,12 @@ void BaseSupervisor::verifyAliveWorkers() {
 
     for (BWAPI::Unit worker : unitsToRemove) {
         workers.erase(worker);
+
+        print("WORKER UNASSIGNED"
+            , "A worker has been unassigned form the base!");
     }
 
-    // Replace this unit so we can meet resource demand 
+    // Replace this unit so we can meet resource demand - posts a new production job
     int desiredMineral = gameParser.baseParameters.nMineralMinersWanted - mineralMiners.size();
     int desiredGas = gameParser.baseParameters.nGasMinersWanted - gasMiners.size();
 
@@ -248,11 +262,10 @@ void BaseSupervisor::verifyAliveWorkers() {
 }
 
 void BaseSupervisor::verifyArePylonsNeeded() {
-
     // Get the amount of supply supply we currently have unused
     const int unusedSupply = Tools::GetTotalSupply(true) - BWAPI::Broodwar->self()->supplyUsed();
     // If we have a sufficient amount of supply, we don't need to do anything
-    if (unusedSupply > 2)
+    if (unusedSupply > 4) // We use 4 such that we wont have issues with more late game units (which require more supply)
         return;
 
     if (queuedBuildJobs.presentInTopNPositions(BWAPI::UnitTypes::Protoss_Pylon, 1000))
@@ -267,11 +280,13 @@ void BaseSupervisor::verifyArePylonsNeeded() {
     job.setMineralCost(supplyProviderType.mineralPrice());
 
     queuedBuildJobs.queueTop(job);
+    queuedBuildJobs.queueTop(job);
 }
 
 void BaseSupervisor::verifyObserverScouts() {
     const BWAPI::UnitType observerType = BWAPI::UnitTypes::Protoss_Observer;
 
+    // Do we have the facilities to construct an observer such that we can scout with it?
     for (auto const& x : observerType.requiredUnits()) {
         int countConstructed = countConstructedBuildingsofType(x.first);
 
@@ -280,10 +295,12 @@ void BaseSupervisor::verifyObserverScouts() {
         }
     }
 
+    // Do we already have a production job waiting for an observer?
     if (queuedProductionJobs.presentInTopNPositions(observerType, 1000)) {
         return;
     }
 
+    // Check if we already have observer units alive - we want 2 max such that we can hotswap them
     for (BWAPI::Unit const unit : BWAPI::Broodwar->self()->getUnits()) {
         if (unit->getType() == observerType)
             return;
@@ -292,7 +309,38 @@ void BaseSupervisor::verifyObserverScouts() {
     JobBase job(0, ManagerType::BaseSupervisor, JobType::UnitProduction, false, Importance::High);
     job.setUnitType(observerType);
 
+    print("NO OBSERVER UNITS"
+        , "We currently have no observers - adding production job");
+
     queuedProductionJobs.queueTop(job);
+}
+
+void BaseSupervisor::verifyDestroyedBuildings() {
+    // Add the position indecies of the buildings which do not exist anymore
+    std::unordered_set<int> buildingsIndxDestroyed;
+
+    for (int i = 0; i < buildings.size(); i ++) {
+        if (buildings[i].status == BuildingStatus::Constructed) {
+            if (!buildings[i].unit->exists()) {
+                buildingsIndxDestroyed.insert(i);
+            }
+        }
+    }
+
+    // Remove these buildings and create new construction jobs such that they are replaced
+    for (int i : buildingsIndxDestroyed) {
+        if (buildings[i].unitType == BWAPI::UnitTypes::Protoss_Assimilator) {
+            pDataResources->assimilatorAvailable = false;
+            pDataResources->assimilatorUnit = nullptr;
+        }
+
+        buildings.erase(buildings.begin() + i);
+
+        print("BUILDING DESTROYED"
+            , "We have lost a building of type: "
+            + buildings[i].unitType.getName()
+            + ", adding this back to the build queue");
+    }
 }
 
 void BaseSupervisor::assignIdleWorkes() {
@@ -311,6 +359,8 @@ void BaseSupervisor::assignIdleWorkes() {
 }
 
 void BaseSupervisor::assignWorkersToHarvest() {
+    // Based on the number of mineral workers and gas workers we want, assign the workers.
+    // Priority is fill gas miners -> fill mineral miners. As there are fewer gas miners needed.
     if (mineralMiners.size() == gameParser.baseParameters.nMineralMinersWanted
         && gasMiners.size() == gameParser.baseParameters.nGasMinersWanted) {
         return;
@@ -338,6 +388,7 @@ void BaseSupervisor::assignWorkersToHarvest() {
 }
 
 void BaseSupervisor::assignSquadProduction() {
+    // Looks at squads which have been ordered to be produced on the blackboard, and creates production jobs for them.
     for (SquadProductionOrder& order : blackboard.squadProductionOrders) {
         if (!order.isConstructed) {
             for (UnitProductionOrder& unitOrder : order.productionOrder) {
@@ -348,7 +399,7 @@ void BaseSupervisor::assignSquadProduction() {
                     JobBase produceAttacker(0, ManagerType::BaseSupervisor, JobType::UnitProduction, false, Importance::High);
                     produceAttacker.setUnitType(unitOrder.unitType);
 
-                    queuedProductionJobs.queueTop(produceAttacker);
+                    queuedProductionJobs.queueBottom(produceAttacker);
                     unitOrder.jobsCount++;
                 }
             }
@@ -356,40 +407,59 @@ void BaseSupervisor::assignSquadProduction() {
     }
 }
 
-// Helper methods
-std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitType b)
-{
-    BWAPI::TilePosition desiredPos = BWAPI::Broodwar->self()->getStartLocation();
-    const BWAPI::UnitType builderType = b.whatBuilds().first;
+// Helper methods ============================================================================
 
-    BWAPI::Unit builder = findOptimalWorkerToBuild();
 
-    if (!builder) { return std::make_tuple(-1, desiredPos); }
+std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitType b) {
+    // We try to build a building around a nexus or a pylon - this can cause framerates to drop sometimes, but this is
+    // a quick fix to decrease the likelihood of buildings being unable to be placed.
 
-    // Ask BWAPI for a building location near the desired position for the type
-    constexpr int maxBuildRange = 128;
-    const bool buildingOnCreep = b.requiresCreep();
-    BWAPI::TilePosition buildPos = BWAPI::Broodwar->getBuildLocation(b, desiredPos, maxBuildRange, buildingOnCreep);
-    
-    bool orderGiven = builder->build(b, buildPos);
-    int tries = 0;
+    for (Building building : buildings) {
+        if (building.status == BuildingStatus::Constructed) {
+            if (building.unitType == BWAPI::UnitTypes::Protoss_Pylon || building.unitType == BWAPI::UnitTypes::Protoss_Nexus) {
+                BWAPI::TilePosition desiredPos = building.unit->getTilePosition();
+                const BWAPI::UnitType builderType = b.whatBuilds().first;
 
-    while (!orderGiven && tries < maxBuildPlacementTries) {
-        buildPos = BWAPI::Broodwar->getBuildLocation(b, desiredPos, maxBuildRange, buildingOnCreep);
-        orderGiven = builder->build(b, buildPos);
-        
-        tries++;
+                BWAPI::Unit builder = findOptimalWorkerToBuild();
+
+                if (!builder) { return std::make_tuple(-1, desiredPos); }
+
+                // Ask BWAPI for a building location near the desired position for the type
+                constexpr int maxBuildRange = 128;
+                const bool buildingOnCreep = b.requiresCreep();
+                BWAPI::TilePosition buildPos = BWAPI::Broodwar->getBuildLocation(b, desiredPos, maxBuildRange, buildingOnCreep);
+
+                bool orderGiven = builder->build(b, buildPos);
+                int tries = 0;
+
+                while (!orderGiven && tries < maxBuildPlacementTries) {
+                    buildPos = BWAPI::Broodwar->getBuildLocation(b, desiredPos, maxBuildRange, buildingOnCreep);
+                    orderGiven = builder->build(b, buildPos);
+
+                    tries++;
+                }
+
+                if (orderGiven) {
+                    print("BUILD ORDER GIVEN"
+                        , "Building of type: "
+                        + b.getName()
+                        + " will now be built soon");
+
+                    return std::make_tuple(1, buildPos);
+                }
+            }
+        }
     }
 
-    if (orderGiven) {
-        return std::make_tuple(1, buildPos);
-    }
-    else {
-        return std::make_tuple(0, buildPos);
-    }
+    print("BUILD ORDER FAILED"
+        , "We could not find a placement for building: "
+        + b.getName());
+
+    return std::make_tuple(0, BWAPI::Broodwar->self()->getStartLocation());
 }
 
 std::unordered_set<int> BaseSupervisor::getProductionBuilding(BWAPI::UnitType u) {
+    // Find the index of the building which can produce this unit type
     std::unordered_set<int> buildingIndecies;
 
     for (int i = 0; i < buildings.size(); i++) {
@@ -404,6 +474,7 @@ std::unordered_set<int> BaseSupervisor::getProductionBuilding(BWAPI::UnitType u)
 }
 
 int BaseSupervisor::countConstructedBuildingsofType(BWAPI::UnitType u) {
+    // Count the number of buildings we have of some given type
     int count = 0;
 
     for (Building& building : buildings) {
@@ -416,14 +487,9 @@ int BaseSupervisor::countConstructedBuildingsofType(BWAPI::UnitType u) {
 }
 
 BWAPI::Unit BaseSupervisor::findOptimalWorkerToBuild() {
+    // We prioritise finding an idle worker to build, if not then we get the first available one
     for (BWAPI::Unit worker : workers) {
         if (worker->isIdle()) {
-            return worker;
-        }
-    }
-
-    for (BWAPI::Unit worker : workers) {
-        if (!worker->isCarryingGas() || !worker->isCarryingMinerals() || !worker->isMoving()) {
             return worker;
         }
     }
@@ -431,3 +497,6 @@ BWAPI::Unit BaseSupervisor::findOptimalWorkerToBuild() {
     return *workers.begin();
 }
 
+void BaseSupervisor::print(std::string order, std::string msg) {
+    std::cout << "BaseSupervisor | " << order << " | " << msg << std::endl;
+}

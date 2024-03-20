@@ -13,5 +13,5 @@ BT_NODE::State BT_ACTION_LOG::Evaluate(void* data)
 
 std::string BT_ACTION_LOG::GetDescription()
 {
-    return std::format("LOG ACTION {}", Msg);
+    return std::format("LOG ACTION {}", Msg); 
 }
