@@ -41,7 +41,7 @@ public:
         pDataResources->assimilatorAvailable = false;
         if (!notfirst) {
             const BWAPI::Unit nexus = Tools::GetDepot();
-            const BWAPI::TilePosition p = nexus->getTilePosition();
+            const BWAPI::TilePosition p = nexus->getTilePosition();// Tools::GetDepot()->getTilePosition()
             const BWAPI::UnitType unit = nexus->getType();
 
             Building building(p, unit);
@@ -141,8 +141,8 @@ public:
     void addWorker(BWAPI::Unit newWorker) {
         workers.insert(newWorker);
     };
-    bool buildnewnexus=false;
-    bool NexusSucess = false;
+    bool buildnewnexus = false;
+    bool NewNexusSucess = false;
 
 private:
     // Fields
