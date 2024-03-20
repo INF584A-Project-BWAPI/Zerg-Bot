@@ -24,6 +24,18 @@ void ScoutManager::onFrame() {
                 break;
             }
         }
+        
+        if (scouts.size() == 0) {
+            std::cout << "Failed to find an observer to become scout, grabbing a worker.\n";
+            for (BWAPI::Unit u : myUnits)
+            {
+                if (u->getType().isWorker())
+                {
+                    ScoutManager::makeScout(u);
+                    break;
+                }
+            }
+        }
 
         for (int n_bases = 0; n_bases < StartLocations.size(); n_bases++) {
             // create a job per base to explore - 1 (homebase)
