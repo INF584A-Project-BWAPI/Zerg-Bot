@@ -58,8 +58,8 @@ public:
         const BWAPI::Position mineralPosition = mineral->getPosition();
         const BWAPI::Position nexusPosition = nexus->getPosition();
 
-        const int defencePosX = 3 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
-        const int defencePosY = 3 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
+        const int defencePosX = (int) 4 * (nexusPosition.x - mineralPosition.x) + mineralPosition.x;
+        const int defencePosY = (int) 4 * (nexusPosition.y - mineralPosition.y) + mineralPosition.y;
 
         const BWAPI::Position defencePos(defencePosX, defencePosY);
         baseChokepoint = defencePos;

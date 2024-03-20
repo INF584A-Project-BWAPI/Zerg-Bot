@@ -95,6 +95,8 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
     const int unit_gas = unitType.gasPrice();
 
     if (unit_mineral <= excess_mineral && unit_gas <= excess_gas) {
+
+
         // Count the buildings which are required to construct this unit
         for (auto const& x : unitType.requiredUnits()) {
             int countConstructed = countConstructedBuildingsofType(x.first);

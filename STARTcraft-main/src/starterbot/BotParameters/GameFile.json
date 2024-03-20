@@ -194,7 +194,11 @@
             "units": [
                 {
                     "unitType": "zealot",
-                    "count": 2
+                    "count": 5
+                },
+                {
+                    "unitType": "dragoon",
+                    "count": 5
                 }
             ]
         },
@@ -202,16 +206,12 @@
             "name": "attack",
             "units": [
                 {
-                    "unitType": "zealot",
-                    "count": 10
-                },
-                {
                     "unitType": "dragoon",
                     "count": 10
                 },
                 {
                     "unitType": "reaver",
-                    "count": 3
+                    "count": 5
                 }
             ]
         }
