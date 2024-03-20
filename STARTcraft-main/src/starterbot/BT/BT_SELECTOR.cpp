@@ -1,16 +1,28 @@
 #include "BT_SELECTOR.h"
+#include <iostream>
 
 BT_SELECTOR::BT_SELECTOR(std::string name, BT_NODE* parent, size_t childrenMaxCount) : BT_NODE(name,parent, childrenMaxCount) {};
 BT_SELECTOR::BT_SELECTOR(std::string name, size_t childrenMaxCount) : BT_NODE(name,childrenMaxCount) {};
 
 BT_NODE::State BT_SELECTOR::Evaluate(void* data) {
     if (!HasBeenEvaluatedAtLeastOnce) Log("1st Evaluate");
+    std::cout << "At " << this->Name << ": " << GetDescription() << "\n";
 
-    if (CurrentChildIndex >= ChildrenCount) return Failure();
+    //if (CurrentChildIndex >= ChildrenCount) return Failure();
+    //BT_NODE::Evaluate(data);
 
-    BT_NODE::Evaluate(data);
+    // my experimentation
+    BT_NODE::State childState;
+    do {
+        std::cout << "Evaluating " << Children[CurrentChildIndex]->Name << "\n";
+        childState = Children[CurrentChildIndex]->Evaluate(data);
+        CurrentChildIndex++;
+    } while (CurrentChildIndex != ChildrenCount && childState != SUCCESS);
 
-    BT_NODE::State  childState = Children[CurrentChildIndex]->Evaluate(data);
+    return ReturnState(childState);
+
+    // original code
+    //BT_NODE::State  childState = Children[CurrentChildIndex]->Evaluate(data);
     if (childState != FAILURE)
         return ReturnState(childState);
 

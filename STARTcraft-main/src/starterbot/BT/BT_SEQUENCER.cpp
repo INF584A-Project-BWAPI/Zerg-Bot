@@ -8,14 +8,27 @@ BT_SEQUENCER::BT_SEQUENCER(std::string name, size_t childrenMaxCount) : BT_NODE(
 
 BT_NODE::State BT_SEQUENCER::Evaluate(void* data) {
     if (!HasBeenEvaluatedAtLeastOnce) Log("1st Evaluate");
+    std::cout << "At " << this->Name << ": " << GetDescription() << "\n";
 
-    if (CurrentChildIndex >= ChildrenCount) return Success();
+    //if (CurrentChildIndex >= ChildrenCount) return Success();
+    //BT_NODE::Evaluate(data);
 
-    BT_NODE::Evaluate(data);
+    // my experimentation
+    BT_NODE::State  childState;
+    do { 
+        std::cout << "Evaluating " << Children[CurrentChildIndex]->Name << "\n";
+        childState = Children[CurrentChildIndex]->Evaluate(data); 
+        CurrentChildIndex++;
+    }
+    while (childState == SUCCESS && CurrentChildIndex != ChildrenCount);
 
-    BT_NODE::State  childState = Children[CurrentChildIndex]->Evaluate(data);
-    if (childState != SUCCESS)
+    return ReturnState(childState);
+    
+    // original code
+    //BT_NODE::State  childState = Children[CurrentChildIndex]->Evaluate(data);
+    if (childState != SUCCESS) {
         return ReturnState(childState);
+    }
 
     CurrentChildIndex++;
     if (CurrentChildIndex == ChildrenCount)
