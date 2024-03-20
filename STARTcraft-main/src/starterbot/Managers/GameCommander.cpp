@@ -70,7 +70,7 @@ void GameCommander::distributeJobs() {
 }
 
 void GameCommander::evaluateGameStatus() {
-	if (blackboard.ourAttackHitpoints > blackboard.enemyAttackHitpoints) {
+	if (blackboard.ourAttackHitpoints > (blackboard.enemyAttackHitpoints + attack_threshold_delta)) {
 		blackboard.gameStatus = GameStatus::Attack;
 	}
 	else {
@@ -84,15 +84,6 @@ void GameCommander::evaluateGameStatus() {
 		if (blackboard.gameStatus != GameStatus::Defence) {
 			blackboard.gameStatus = GameStatus::Standard;
 		}
-	}
-
-
-	if (blackboard.gameStatus == GameStatus::Defence) {
-		std::cout << "We are under attack! Status: Defence" << std::endl;
-	}
-
-	if (blackboard.gameStatus == GameStatus::Attack) {
-		std::cout << "We can attack now! Status: Attack" << std::endl;
 	}
 }
 
@@ -183,17 +174,16 @@ void GameCommander::verifySquadOrderStatus() {
 void GameCommander::addSquadOrders() {
 	std::vector<std::string> squadTypes{ "defend", "attack" };
 
-	for (std::string squadType : squadTypes) {
-		std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders("defend");
+	if (!blackboard.squadProductionOrders.empty()) {
+		return;
+	}
 
-		for (SquadProductionOrder order : blackboard.squadProductionOrders) {
-			if (order.name == squadType)
-				return;
-		}
+	for (std::string squadType : squadTypes) {
+		std::vector<ParsedUnitOrder> orders = gameParser.parseSquadProductionOrders(squadType);
 
 		SquadProductionOrder squadProductionOrder;
 		squadProductionOrder.isConstructed = false;
-		squadProductionOrder.name = "defend";
+		squadProductionOrder.name = squadType;
 
 		for (ParsedUnitOrder order : orders) {
 			UnitProductionOrder unitProductionOrder;

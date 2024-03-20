@@ -37,6 +37,8 @@ private:
     int allocated_minerals = 0;
     int allocated_gas = 0;
 
+    int attack_threshold_delta = 3000;
+
     std::vector<JobBase> queuedJobs;
 
     // Functions

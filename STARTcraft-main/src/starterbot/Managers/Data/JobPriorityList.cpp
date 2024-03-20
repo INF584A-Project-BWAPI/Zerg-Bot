@@ -129,3 +129,19 @@ int JobPriorityList::countUnitTypes(BWAPI::UnitType type) {
 
     return count;
 }
+
+bool JobPriorityList::presentInTopNPositions(BWAPI::UnitType type, int maxPos) {
+    int i = 1;
+
+    for (JobBase& job : queue) {
+        if (i > maxPos)
+            return false;
+
+        if (job.getUnit() == type)
+            return true;
+        
+        i++;
+    }
+
+    return false;
+}

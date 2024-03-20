@@ -32,6 +32,7 @@ public:
     std::string getQueueInformation() const;
 
     int countUnitTypes(BWAPI::UnitType type);
+    bool presentInTopNPositions(BWAPI::UnitType type, int maxPos);
 
 private:
 	std::deque<JobBase> queue;

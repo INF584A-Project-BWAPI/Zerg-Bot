@@ -11,13 +11,14 @@ void ScoutManager::onFrame() {
 
     // if I don't have any scouts, make one
     if (scouts.size() == 0) { // maybe add more conditions to define whether or not it is useful to send the scout
-        std::cout << "Number of places to explore: " << StartLocations.size() - 1<< '\n';
+        //std::cout << "Number of places to explore: " << StartLocations.size() - 1<< '\n';
         const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
         for (BWAPI::Unit u : myUnits)
         {
             // Check the unit type, if it is an idle worker, then we want to make it a scout
             // will need to fix this such that it finds a FREE worker instead of just grabbing the first one
-            if (u->getType().isWorker())
+            //if (u->getType().isWorker())
+            if (u->getType() == BWAPI::UnitTypes::Protoss_Observer)
             {
                 ScoutManager::makeScout(u);
                 break;
@@ -140,8 +141,13 @@ void ScoutManager::checkOnScout(scout * s) {
                 s->max_saw = scout_info.size();
                 std::cout << "scout sees " << scout_info.size() << " baddies.\n";
             }
+            if (u->getHitPoints() < s->prev_hp) {
+                std::cout << "scout is hurt, rushing back home.\n";
+                u->move((BWAPI::Position)HomeLocation);
+            }
         }
     }
+    s->prev_hp = s->unit->getHitPoints();
 }
 
 void ScoutManager::sendScouting(scout * s, JobBase job) {
