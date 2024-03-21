@@ -25,7 +25,7 @@ void ScoutManager::onFrame() {
         }
         
         if (scouts.size() == 0) {
-            print("Failed to find an observer to become scout, grabbing a worker");
+            print("Finding Scouts", "Failed to find an observer to become scout, grabbing a worker");
             for (BWAPI::Unit u : myUnits)
             {
                 if (u->getType().isWorker())
@@ -54,7 +54,7 @@ void ScoutManager::onFrame() {
 
 void ScoutManager::makeScout(BWAPI::Unit u) {
     // make the scout struct and push it to the vector
-    print("Found a worker, making it a scout");
+    print("Finding Scouts", "Found a worker, making it a scout");
     scout sc;
     sc.unit = u;
     scouts.push_back(sc);
@@ -97,7 +97,7 @@ void ScoutManager::syncWithBlackboard() {
             unmakeScout(sc_scout); // unmake the scout
         }
         if (!sc_scout.unit->exists()) { 
-            print("SCOUT IS DEADED");
+            print("Scout Exploration", "SCOUT IS DEADED");
             unmakeScout(sc_scout);
             blackboard.scouts.erase(sc_scout.unit);
         }
@@ -122,7 +122,7 @@ void ScoutManager::checkOnScout(scout * s) {
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
         BWAPI::Unit u = s->unit;
         if (u->isGatheringMinerals() || u->isIdle()) { // isGatheringMinerals() is not a sufficient condition to check idleness
-            print("this unit is idle, I will send it scouting");
+            print("Finding Scout", "This unit is idle, I will send it scouting");
             s->set_working(false);
         }
         if (u->isMoving()) {
@@ -130,16 +130,16 @@ void ScoutManager::checkOnScout(scout * s) {
             if (blackboard.scout_info.empty()) {
                 blackboard.scout_info.push_back(scout_info);
                 s->max_saw = scout_info.size();
-                print("scout sees ", scout_info.size().c_string(), " baddies.");
+                print("Scout Exploration", "scout sees " + scout_info.size().c_string() + " baddies.");
                 return;
             }
             if (scout_info.size() != 0 && scout_info.size() > blackboard.scout_info.back().size()) {
                 blackboard.scout_info.push_back(scout_info);
                 s->max_saw = scout_info.size();
-                print("scout sees ", scout_info.size().c_string(), " baddies.");
+                print("Scout Exploration", "scout sees " + scout_info.size().c_string() + " baddies.");
             }
             if (u->getHitPoints() < s->prev_hp) {
-                print("scout is hurt, rushing back home.");
+                print("Scout Exploration", "scout is hurt, rushing back home.");
                 u->move((BWAPI::Position)HomeLocation);
             }
         }
@@ -149,7 +149,7 @@ void ScoutManager::checkOnScout(scout * s) {
 
 void ScoutManager::sendScouting(scout * s, JobBase job) {
     // assign a unassigned job to a scout, making them move to an unexplored location
-    print("Sending scout to explore");
+    print("Scout Exploration", "Sending scout to explore");
     if (ExploredLocations >= StartLocations.size()) { ExploredLocations = 0; } // if everything has been explored once, explore again
     if (StartLocations[ExploredLocations] == HomeLocation) { ExploredLocations = ExploredLocations % StartLocations.size(); } // don't explore own home
 
