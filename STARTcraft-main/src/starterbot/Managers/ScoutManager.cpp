@@ -130,13 +130,13 @@ void ScoutManager::checkOnScout(scout * s) {
             if (blackboard.scout_info.empty()) {
                 blackboard.scout_info.push_back(scout_info);
                 s->max_saw = scout_info.size();
-                print("Scout Exploration", "scout sees " + scout_info.size().c_string() + " baddies.");
+                print("Scout Exploration", "scout sees multiple baddies.");
                 return;
             }
             if (scout_info.size() != 0 && scout_info.size() > blackboard.scout_info.back().size()) {
                 blackboard.scout_info.push_back(scout_info);
                 s->max_saw = scout_info.size();
-                print("Scout Exploration", "scout sees " + scout_info.size().c_string() + " baddies.");
+                print("Scout Exploration", "scout sees multiple baddies.");
             }
             if (u->getHitPoints() < s->prev_hp) {
                 print("Scout Exploration", "scout is hurt, rushing back home.");
@@ -165,6 +165,6 @@ void ScoutManager::sendScouting(scout * s, JobBase job) {
     ExploredLocations++;
 }
 
-void ScoutManger::print(std::string order, std::string msg) {
+void ScoutManager::print(std::string order, std::string msg) {
     std::cout << "ScoutManager | " << order << " | " << msg << std::endl;
 }
