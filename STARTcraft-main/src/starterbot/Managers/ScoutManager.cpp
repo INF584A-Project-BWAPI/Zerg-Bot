@@ -10,12 +10,11 @@ void ScoutManager::onFrame() {
     syncWithBlackboard();
 
     // if I don't have any scouts, make one
-    if (scouts.size() == 0) { // maybe add more conditions to define whether or not it is useful to send the scout
-        //std::cout << "Number of places to explore: " << StartLocations.size() - 1<< '\n';
+    if (scouts.size() == 0) {
         const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
         for (BWAPI::Unit u : myUnits)
         {
-            // Check the unit type, if it is an idle worker, then we want to make it a scout
+            // Check the unit type, if it is an idle observer, then we want to make it a scout
             // will need to fix this such that it finds a FREE worker instead of just grabbing the first one
             //if (u->getType().isWorker())
             if (u->getType() == BWAPI::UnitTypes::Protoss_Observer)
@@ -26,7 +25,7 @@ void ScoutManager::onFrame() {
         }
         
         if (scouts.size() == 0) {
-            std::cout << "Failed to find an observer to become scout, grabbing a worker.\n";
+            print("Failed to find an observer to become scout, grabbing a worker");
             for (BWAPI::Unit u : myUnits)
             {
                 if (u->getType().isWorker())
@@ -50,22 +49,12 @@ void ScoutManager::onFrame() {
     for (int idx = 0; idx < scouts.size(); ++idx) {
         checkOnScout( & scouts[idx]);
     }
-    //for (scout s : scouts) {
-    //    checkOnScout(s);
-    //}
 
-    // if you still have queued jobs, this means you need more scouts
-    /*if (!queuedJobs.isEmpty()) {
-        const JobBase job = queuedJobs.getTop();
-        std::cout << "We have at least 1 unassigned Scout Job: " << job.getUnit() << std::endl;
-        // find a mining worker -> make them a scout and assign the job to them
-        // or just do nothing, and periodically increase the number of scouts you own
-    }*/
 }
 
 void ScoutManager::makeScout(BWAPI::Unit u) {
     // make the scout struct and push it to the vector
-    std::cout << "found a worker, making it a scout" << '\n';
+    print("Found a worker, making it a scout");
     scout sc;
     sc.unit = u;
     scouts.push_back(sc);
@@ -108,7 +97,7 @@ void ScoutManager::syncWithBlackboard() {
             unmakeScout(sc_scout); // unmake the scout
         }
         if (!sc_scout.unit->exists()) { 
-            std::cout << "SCOUT IS DEADED" << '\n';
+            print("SCOUT IS DEADED");
             unmakeScout(sc_scout);
             blackboard.scouts.erase(sc_scout.unit);
         }
@@ -126,7 +115,6 @@ void ScoutManager::checkOnScout(scout * s) {
             sendScouting(s, job);
             queuedJobs.removeTop(); // why does this crash?
         }
-        //std::cout << "no more scouting jobs left!" << '\n';
     }
     else {
         // if it has a job, is it moving to it?
@@ -134,27 +122,24 @@ void ScoutManager::checkOnScout(scout * s) {
         //    -> if it is mining or idle, that means it finished the job and try to find a job to assign to it, otherwise make "working" = false
         BWAPI::Unit u = s->unit;
         if (u->isGatheringMinerals() || u->isIdle()) { // isGatheringMinerals() is not a sufficient condition to check idleness
-            std::cout << "this unit is idle, I will send it scouting" << '\n';
+            print("this unit is idle, I will send it scouting");
             s->set_working(false);
-            //checkOnScout(s);
         }
         if (u->isMoving()) {
-            //std::cout << "this scout is moving" << '\n';
             BWAPI::Unitset scout_info = u->getUnitsInRadius(9000, BWAPI::Filter::IsEnemy);
-            // amazingly bad implementation, but works
             if (blackboard.scout_info.empty()) {
                 blackboard.scout_info.push_back(scout_info);
                 s->max_saw = scout_info.size();
-                std::cout << "scout sees " << scout_info.size() << " baddies.\n";
+                print("scout sees ", scout_info.size().c_string(), " baddies.");
                 return;
             }
             if (scout_info.size() != 0 && scout_info.size() > blackboard.scout_info.back().size()) {
                 blackboard.scout_info.push_back(scout_info);
                 s->max_saw = scout_info.size();
-                std::cout << "scout sees " << scout_info.size() << " baddies.\n";
+                print("scout sees ", scout_info.size().c_string(), " baddies.");
             }
             if (u->getHitPoints() < s->prev_hp) {
-                std::cout << "scout is hurt, rushing back home.\n";
+                print("scout is hurt, rushing back home.");
                 u->move((BWAPI::Position)HomeLocation);
             }
         }
@@ -164,7 +149,7 @@ void ScoutManager::checkOnScout(scout * s) {
 
 void ScoutManager::sendScouting(scout * s, JobBase job) {
     // assign a unassigned job to a scout, making them move to an unexplored location
-    std::cout << "Sending scout to explore" << '\n';
+    print("Sending scout to explore");
     if (ExploredLocations >= StartLocations.size()) { ExploredLocations = 0; } // if everything has been explored once, explore again
     if (StartLocations[ExploredLocations] == HomeLocation) { ExploredLocations = ExploredLocations % StartLocations.size(); } // don't explore own home
 
@@ -179,7 +164,3 @@ void ScoutManager::sendScouting(scout * s, JobBase job) {
     u->move((BWAPI::Position)HomeLocation, true);
     ExploredLocations++;
 }
-
-/*void ScoutManager::updateScouts()
-{ // iterate over each scout, check if their moving, check what they are seeing, update the BTdata with what they see
-}*/
