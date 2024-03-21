@@ -7,6 +7,7 @@
 #include "Data.h"
 #include "Tools.h"
 #include "GameFileParser.hpp"
+#include "Managers/AuxBaseSupervisor.h"
 #include "Managers/BasesManager.h"
 #include "Managers/GameCommander.h"
 #include "Managers/ScoutManager.h"
@@ -28,7 +29,7 @@ private:
 	BaseSupervisor mainBaseSupervisor = BaseSupervisor(blackboard);
 	ScoutManager scoutManager = ScoutManager(blackboard);
 	ArmyManager armyManager = ArmyManager(blackboard);
-
+	AuxBaseSupervisor auxBaseSupervisor = AuxBaseSupervisor(blackboard);
 	// Fields
 	bool alreadySentSupplyJob = false;
 	

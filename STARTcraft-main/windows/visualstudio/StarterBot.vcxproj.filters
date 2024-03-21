@@ -145,6 +145,9 @@
     <ClCompile Include="..\..\src\starterbot\BT\BT_STARCRAFT\AttackGroundUnitBT.cpp">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\starterbot\Managers\AuxBaseSupervisor.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
@@ -299,6 +302,9 @@
     <ClInclude Include="..\..\src\starterbot\BT\BT_STARCRAFT\AttackGroundUnitBT.h">
       <Filter>BT\BT_STARCRAFT</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\starterbot\Managers\AuxBaseSupervisor.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BT">
@@ -322,6 +328,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\GameFile.json">
+      <Filter>BotParameters</Filter>
+    </None>
+    <None Include="NewNexusFile.json">
       <Filter>BotParameters</Filter>
     </None>
   </ItemGroup>

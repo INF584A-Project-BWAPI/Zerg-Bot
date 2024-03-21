@@ -99,11 +99,11 @@ void ArmyManager::onFrame() {
 
 
     /*
-    if (squads.empty()) { // Controlla se non ci sono squad già create
+    if (squads.empty()) { // Controlla se non ci sono squad gi?create
         createPatrolSquad();
     }
 
-    // Controlla se ci sono unità inattive e le assegna alla squad di pattuglia esistente.
+    // Controlla se ci sono unit?inattive e le assegna alla squad di pattuglia esistente.
     Squad* patrolSquad = nullptr;
     for (Squad& squad : squads) {
         if (squad.getStatus() == SquadStatus::Patrol) {
@@ -115,7 +115,7 @@ void ArmyManager::onFrame() {
     // Se non esiste una squad di pattuglia, ne crea una nuova.
     //if (!patrolSquad) {
     //   createPatrolSquad();
-    //    patrolSquad = &squads.back(); // La nuova squad di pattuglia è l'ultima creata
+    //    patrolSquad = &squads.back(); // La nuova squad di pattuglia ?l'ultima creata
     //}
 
     for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
@@ -128,13 +128,13 @@ void ArmyManager::onFrame() {
 /*void ArmyManager::createPatrolSquad() {
     Squad newSquad(nextSquadId++); // Crea una nuova squad con un ID univoco
     for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
-        // Verifica che l'unità sia inattiva, non sia un edificio, e non sia un lavoratore
+        // Verifica che l'unit?sia inattiva, non sia un edificio, e non sia un lavoratore
         if (unit->isIdle() && !unit->getType().isBuilding() && !unit->getType().isWorker()) {
             newSquad.addUnit(unit);
         }
     }
-    if (!newSquad.getUnits().empty()) { // Aggiungi la squad solo se contiene unità
-        newSquad.updateStatus(SquadStatus::Patrol); // Imposta la squad in modalità pattuglia
+    if (!newSquad.getUnits().empty()) { // Aggiungi la squad solo se contiene unit?
+        newSquad.updateStatus(SquadStatus::Patrol); // Imposta la squad in modalit?pattuglia
         squads.push_back(newSquad); // Aggiungi la squad all'elenco delle squad gestite
     }
 }

@@ -27,7 +27,8 @@ enum class ManagerType {
     ArmyManager,
     ProductionManager,
     BasesManager,
-    BaseSupervisor
+    BaseSupervisor,
+    AuxBaseSupervisor
 };
 
 class JobBase {
