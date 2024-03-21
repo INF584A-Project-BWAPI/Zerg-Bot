@@ -142,6 +142,19 @@ private:
     BT_NODE* pBT;
     DataResources* pDataResources; // BT data struct - updated with this supervisor's available workers
 
+    // Upgrades to aim for
+    std::set<BWAPI::UpgradeType> protossUpgrades = {
+        BWAPI::UpgradeTypes::Singularity_Charge, // Dragoon Range Upgrade
+        BWAPI::UpgradeTypes::Leg_Enhancements, // Zealot Speed Upgrade
+        BWAPI::UpgradeTypes::Protoss_Plasma_Shields, // Shield Upgrade
+        BWAPI::UpgradeTypes::Protoss_Ground_Weapons, // Ground Weapons Upgrade
+        BWAPI::UpgradeTypes::Protoss_Ground_Armor, // Ground Armor Upgrade
+        BWAPI::UpgradeTypes::Protoss_Air_Weapons, // Air Weapons Upgrade
+        BWAPI::UpgradeTypes::Protoss_Air_Armor, // Air Armor Upgrade
+        // Add other Protoss upgrades as needed
+        BWAPI::UpgradeTypes::Reaver_Capacity,
+    };
+
     // Functions
     bool buildBuilding(const JobBase& job); // Builds a building if possible given a build job
     bool produceUnit(const JobBase& job); // Produces a unit if possible given a produce job
@@ -155,6 +168,8 @@ private:
     void assignIdleWorkes(); // Any new idle worker spawned by nexus is added to the available workers vector
     void assignWorkersToHarvest(); // Assigns workers to either mineral or gas collection as default behaviour
     void assignSquadProduction(); // Checks if we can raise a squad and if one is wanted
+
+    void upgradeEnhancements(); // Research unit enhancements if we can afford to
 
     // Helper methods
     std::tuple<int, BWAPI::TilePosition> buildBuilding(BWAPI::UnitType b); // Returns an int (0 - impossible, 1 - possible) and a position we build it on

@@ -447,15 +447,17 @@ std::tuple<int, BWAPI::TilePosition> BaseSupervisor::buildBuilding(BWAPI::UnitTy
 
                     return std::make_tuple(1, buildPos);
                 }
+
+                else {
+                    print("BUILD ORDER FAILED"
+                        , "We could not find a placement for building: "
+                        + b.getName());
+
+                    return std::make_tuple(0, BWAPI::Broodwar->self()->getStartLocation());
+                }
             }
         }
     }
-
-    print("BUILD ORDER FAILED"
-        , "We could not find a placement for building: "
-        + b.getName());
-
-    return std::make_tuple(0, BWAPI::Broodwar->self()->getStartLocation());
 }
 
 std::unordered_set<int> BaseSupervisor::getProductionBuilding(BWAPI::UnitType u) {
@@ -495,6 +497,29 @@ BWAPI::Unit BaseSupervisor::findOptimalWorkerToBuild() {
     }
 
     return *workers.begin();
+}
+
+void BaseSupervisor::upgradeEnhancements() {
+    for (auto upgradeType : protossUpgrades) {
+        // Check if we have the building that can perform the upgrade
+        BWAPI::Unit upgradeBuilding = nullptr;// getBuildingForUpgrade(upgradeType);
+        for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+            // Check if the unit is the correct type of building and if it can perform the desired upgrade
+            if (unit->getType().upgradesWhat().contains(upgradeType) && unit->isCompleted()) {
+                upgradeBuilding = unit;
+            }
+        }
+
+        if (!upgradeBuilding || upgradeBuilding->isUpgrading()) {
+            continue; // Skip if we don't have the building or it's already busy
+        }
+
+        // Check if we can afford the upgrade and if it's not already researched
+        if (BWAPI::Broodwar->canUpgrade(upgradeType, upgradeBuilding) && !BWAPI::Broodwar->self()->getUpgradeLevel(upgradeType)) {
+            upgradeBuilding->upgrade(upgradeType);
+            BWAPI::Broodwar->printf("Upgrading %s", upgradeType.getName().c_str());
+        }
+    }
 }
 
 void BaseSupervisor::print(std::string order, std::string msg) {

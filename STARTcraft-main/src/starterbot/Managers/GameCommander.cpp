@@ -71,17 +71,28 @@ void GameCommander::distributeJobs() {
 
 void GameCommander::evaluateGameStatus() {
 	if (blackboard.ourAttackHitpoints > (blackboard.enemyAttackHitpoints + attack_threshold_delta)) {
+		if (blackboard.gameStatus != GameStatus::Attack) {
+			print("GAME STATUS CHANGED", "We estimate that the enemy can be defeated - attack now!");
+		}
+
 		blackboard.gameStatus = GameStatus::Attack;
 	}
 	else {
 		for (const BWAPI::Unit& unit : BWAPI::Broodwar->self()->getUnits()) {
 			if (unit->getType().isBuilding() && unit->isUnderAttack()) {
+				if (blackboard.gameStatus != GameStatus::Defence) {
+					print("GAME STATUS CHANGED", "A building is under attack - we need to defend!");
+				}
+
 				blackboard.gameStatus = GameStatus::Defence;
 				break;
 			}
 		}
 
 		if (blackboard.gameStatus != GameStatus::Defence) {
+			if (blackboard.gameStatus != GameStatus::Standard) {
+				print("GAME STATUS CHANGED", "Switching back to standard game status!");
+			}
 			blackboard.gameStatus = GameStatus::Standard;
 		}
 	}
@@ -172,7 +183,7 @@ void GameCommander::verifySquadOrderStatus() {
 }
 
 void GameCommander::addSquadOrders() {
-	std::vector<std::string> squadTypes{ "defend", "defend_early", "attackTanks", "airAttack"};
+	std::vector<std::string> squadTypes{ "defend_early", "defend", "attackTanks", "airAttack"};
 
 	for (std::string squadType : squadTypes) {
 		for (SquadProductionOrder order : blackboard.squadProductionOrders) {

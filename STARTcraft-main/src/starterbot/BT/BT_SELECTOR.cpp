@@ -6,7 +6,7 @@ BT_SELECTOR::BT_SELECTOR(std::string name, size_t childrenMaxCount) : BT_NODE(na
 
 BT_NODE::State BT_SELECTOR::Evaluate(void* data) {
     if (!HasBeenEvaluatedAtLeastOnce) Log("1st Evaluate");
-    std::cout << "At " << this->Name << ": " << GetDescription() << "\n";
+    //std::cout << "At " << this->Name << ": " << GetDescription() << "\n";
 
     //if (CurrentChildIndex >= ChildrenCount) return Failure();
     //BT_NODE::Evaluate(data);
@@ -14,7 +14,7 @@ BT_NODE::State BT_SELECTOR::Evaluate(void* data) {
     // my experimentation
     BT_NODE::State childState;
     do {
-        std::cout << "Evaluating " << Children[CurrentChildIndex]->Name << "\n";
+        //std::cout << "Evaluating " << Children[CurrentChildIndex]->Name << "\n";
         childState = Children[CurrentChildIndex]->Evaluate(data);
         CurrentChildIndex++;
     } while (CurrentChildIndex != ChildrenCount && childState != SUCCESS);

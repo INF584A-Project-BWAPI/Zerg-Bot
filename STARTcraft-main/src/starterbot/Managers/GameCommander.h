@@ -19,7 +19,9 @@ public:
     void setManagerBases(BasesManager* manager) noexcept { basesManager = manager; };
     void setManagerScout(ScoutManager* manager) noexcept { scoutManager = manager; };
     void setManagerArmy(ArmyManager* manager) noexcept { armyManager = manager; };
-    void setBuildOrder(std::vector<BuildingRecipe> buildOrder); // Looks at the build order in the json and distributes the necessary jobs
+
+    // Looks at the build order in the json and distributes the necessary jobs
+    void setBuildOrder(std::vector<BuildingRecipe> buildOrder);
 
     // Functions
     void onFrame();
@@ -34,13 +36,14 @@ private:
     ArmyManager* armyManager;
 
     // Fields
-    int attack_threshold_delta = 3000; // Scout might die and will almost alway underestimate enemy strenght, this is to account for that
+    // Scout might die and will almost alway underestimate enemy strenght, this is to account for that
+    int attack_threshold_delta = 1000;
 
     std::vector<JobBase> queuedJobs;
 
     // Functions
     void onFrameChildren();
-    void distributeJobs();
+    void distributeJobs(); // Distributes jobs to the correct child managers
 
     // Based on the data from the blackboard make a decision about if it is time to attack, defend or do nothing.
     void evaluateGameStatus();
