@@ -42,6 +42,9 @@ public:
     void sendScouting(scout * s, JobBase job);
     void syncWithBlackboard();
 
+    // Debugging
+    void print(std::string order, std::string msg);
+
 private:
 
     // Fields
