@@ -164,3 +164,7 @@ void ScoutManager::sendScouting(scout * s, JobBase job) {
     u->move((BWAPI::Position)HomeLocation, true);
     ExploredLocations++;
 }
+
+void ScoutManger::print(std::string order, std::string msg) {
+    std::cout << "ScoutManager | " << order << " | " << msg << std::endl;
+}
