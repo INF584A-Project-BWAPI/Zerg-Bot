@@ -16,10 +16,10 @@ void AuxBaseSupervisor::onFrame() {
         //std::cout << queuedJobs.size();
         //const BWAPI::UnitType supplyProviderType = Tools::GetDepot()->getType();
         const BWAPI::UnitType supplyProviderType =  BWAPI::UnitTypes::Protoss_Nexus;
-        JobBase job(0, ManagerType::AuxBaseSupervisor, JobType::Building, false, Importance::High);
+        JobBase job(0, ManagerType::AuxBaseSupervisor, JobType::Building, false, Importance::Low);
         job.setUnitType(supplyProviderType);
         job.setGasCost(supplyProviderType.gasPrice());
-        job.setMineralCost(supplyProviderType.mineralPrice());
+        job.setMineralCost(supplyProviderType.mineralPrice()); //queuedBuildJobs.queueTop(job);
         bool const skipnexus = buildBuilding(job);
 
         verifyActiveBuilds();
@@ -50,10 +50,10 @@ void AuxBaseSupervisor::onFrame() {
             bool const skip = buildBuilding(job);
 
             // If job is impossible to fulfill outside of resource requirements, queue at bottom
-            //if (skip) {
-            //    queuedBuildJobs.removeTop();
-            //    queuedBuildJobs.queueBottom(job);
-            //}
+            if (skip) {
+                queuedBuildJobs.removeTop();
+                queuedBuildJobs.queueBottom(job);
+            }
         }
 
         // Produce queued units
@@ -62,10 +62,10 @@ void AuxBaseSupervisor::onFrame() {
             bool const skip = produceUnit(job);
 
             // If job is impossible to fulfill outside of resource requirements, queue at bottom
-            //if (skip) {
-            //    queuedProductionJobs.removeTop();
-            //    queuedProductionJobs.queueBottom(job);
-            //}
+            if (skip) {
+                queuedProductionJobs.removeTop();
+                queuedProductionJobs.queueBottom(job);
+            }
         }
 
         // Verifies statuses of various data structures which the bot relies on - see header for more details
@@ -73,9 +73,9 @@ void AuxBaseSupervisor::onFrame() {
         verifyFinishedBuilds();
 
         verifyAliveWorkers();
-        //verifyArePylonsNeeded();
-        //verifyObserverScouts();
-        //verifyDestroyedBuildings();
+        verifyArePylonsNeeded();
+        verifyObserverScouts();
+        verifyDestroyedBuildings();
 
         assignIdleWorkes(); // Assigns new idle workers to our list of available workers
         assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
@@ -374,30 +374,37 @@ void AuxBaseSupervisor::verifyObserverScouts() {
 }
 
 void AuxBaseSupervisor::verifyDestroyedBuildings() {
-    // Add the position indecies of the buildings which do not exist anymore
-    std::unordered_set<int> buildingsIndxDestroyed;
+    // Add the position indices of the buildings which do not exist anymore
+    std::vector<int> buildingsIndxDestroyed;
 
     for (int i = 0; i < buildings.size(); i++) {
         if (buildings[i].status == BuildingStatus::Constructed) {
             if (!buildings[i].unit->exists()) {
-                buildingsIndxDestroyed.insert(i);
+                buildingsIndxDestroyed.push_back(i);
             }
         }
     }
 
+    // Sort indices in descending order
+    std::sort(buildingsIndxDestroyed.rbegin(), buildingsIndxDestroyed.rend());
+
     // Remove these buildings and create new construction jobs such that they are replaced
     for (int i : buildingsIndxDestroyed) {
+        // Since we are erasing in reverse order, we need to ensure the index is still valid
+        if (i >= buildings.size()) continue;
+
         if (buildings[i].unitType == BWAPI::UnitTypes::Protoss_Assimilator) {
             pDataResources->assimilatorAvailable = false;
             pDataResources->assimilatorUnit = nullptr;
         }
 
-        buildings.erase(buildings.begin() + i);
-
         print("BUILDING DESTROYED"
             , "We have lost a building of type: "
             + buildings[i].unitType.getName()
             + ", adding this back to the build queue");
+
+        // Erase in reverse order
+        buildings.erase(buildings.begin() + i);
     }
 }
 

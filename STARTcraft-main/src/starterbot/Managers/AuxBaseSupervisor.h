@@ -183,5 +183,6 @@ private:
     // Update tech and general enhancements for units
     std::set<BWAPI::TilePosition> nonNexusPlaces;
     // Debugging
+    int numNexusDesired = 2; int numNexOrder;
     void print(std::string order, std::string msg);
 };
