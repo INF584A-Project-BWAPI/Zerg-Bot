@@ -18,8 +18,9 @@ StarterBot::StarterBot()
 
     // Add workers to the main base supervisor
     const BWAPI::Unitset myUnits = BWAPI::Broodwar->self()->getUnits();
-
+    bool set_outlier = true; int number_w = 2; int i = 0;
     for (auto& unit : myUnits) {
+        if (i < number_w) { auxBaseSupervisor.addWorker(unit); i += 1; continue; }
         if (unit->getType().isWorker()) {
             mainBaseSupervisor.addWorker(unit);
         }
@@ -32,7 +33,7 @@ StarterBot::StarterBot()
     gameCommander.setManagerBases(&basesManager);
     gameCommander.setManagerScout(&scoutManager);
     gameCommander.setManagerArmy(&armyManager);
-
+    gameCommander.setAuxBase(&auxBaseSupervisor);
     // Set early game build order into game commander
     gameParser.parse_game_file("GameFile.json");
     gameCommander.setBuildOrder(gameParser.buildorder);

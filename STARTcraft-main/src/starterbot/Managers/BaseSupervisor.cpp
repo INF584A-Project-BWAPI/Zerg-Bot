@@ -35,11 +35,14 @@ void BaseSupervisor::onFrame() {
     verifyAliveWorkers();
     verifyArePylonsNeeded();
     verifyObserverScouts();
-    verifyDestroyedBuildings();
+    //verifyDestroyedBuildings();
 
     assignIdleWorkes(); // Assigns new idle workers to our list of available workers
     assignWorkersToHarvest(); // Distributes available workers to either have gas/mineral harvest as default behaviour
     assignSquadProduction();
+    // Update tech and general enhancements for units
+    upgradeEnhancements();
+    researchProtossTechs();
 
     // Updates data in the worker BT and calls the BT with `pBT->Evaluate(pDataResources)`
     pDataResources->unitsFarmingGas = gasMiners;
@@ -104,11 +107,11 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
             int countConstructed = countConstructedBuildingsofType(x.first);
 
             if (countConstructed < x.second) {
-                print("JOB FAILED - PRODUCTION"
-                    , "We do not have enough of: "
-                    + x.first.getName()
-                    + ", for unit:"
-                    + unitType.getName());
+                //print("JOB FAILED - PRODUCTION"
+                //    , "We do not have enough of: "
+                //    + x.first.getName()
+                //    + ", for unit:"
+                //    + unitType.getName());
 
                 return true;
             }
@@ -124,11 +127,11 @@ bool BaseSupervisor::produceUnit(const JobBase& job) {
                 bool successful = building->train(unitType);
 
                 if (successful) {
-                    print("JOB FUFILLED - PRODUCTION"
-                        , "Producing in building: "
-                        + building->getType().getName()
-                        + ", of unit:"
-                        + unitType.getName());
+                    //print("JOB FUFILLED - PRODUCTION"
+                    //    , "Producing in building: "
+                    //    + building->getType().getName()
+                    //    + ", of unit:"
+                    //    + unitType.getName());
 
                     queuedProductionJobs.removeTop();
                     return false;
@@ -270,7 +273,7 @@ void BaseSupervisor::verifyArePylonsNeeded() {
 
     if (queuedBuildJobs.presentInTopNPositions(BWAPI::UnitTypes::Protoss_Pylon, 1000))
         return;
-    
+
     // Otherwise, we are going to build a supply provider
     const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
 
@@ -319,7 +322,7 @@ void BaseSupervisor::verifyDestroyedBuildings() {
     // Add the position indecies of the buildings which do not exist anymore
     std::unordered_set<int> buildingsIndxDestroyed;
 
-    for (int i = 0; i < buildings.size(); i ++) {
+    for (int i = 0; i < buildings.size(); i++) {
         if (buildings[i].status == BuildingStatus::Constructed) {
             if (!buildings[i].unit->exists()) {
                 buildingsIndxDestroyed.insert(i);
@@ -336,10 +339,10 @@ void BaseSupervisor::verifyDestroyedBuildings() {
 
         buildings.erase(buildings.begin() + i);
 
-        print("BUILDING DESTROYED"
-            , "We have lost a building of type: "
-            + buildings[i].unitType.getName()
-            + ", adding this back to the build queue");
+        //print("BUILDING DESTROYED"
+        //    , "We have lost a building of type: "
+        //    + buildings[i].unitType.getName()
+        //    + ", adding this back to the build queue");
     }
 }
 
@@ -490,13 +493,15 @@ int BaseSupervisor::countConstructedBuildingsofType(BWAPI::UnitType u) {
 
 BWAPI::Unit BaseSupervisor::findOptimalWorkerToBuild() {
     // We prioritise finding an idle worker to build, if not then we get the first available one
-    for (BWAPI::Unit worker : workers) {
-        if (worker->isIdle()) {
-            return worker;
+    if (!workers.empty()) {
+        for (BWAPI::Unit worker : workers) {
+            if (worker->isIdle()) {
+                return worker;
+            }
         }
+        return *workers.begin();
     }
-
-    return *workers.begin();
+    return nullptr;
 }
 
 void BaseSupervisor::upgradeEnhancements() {
@@ -524,4 +529,50 @@ void BaseSupervisor::upgradeEnhancements() {
 
 void BaseSupervisor::print(std::string order, std::string msg) {
     std::cout << "BaseSupervisor | " << order << " | " << msg << std::endl;
+}
+//NEW::
+void BaseSupervisor::upgradeEnhancements() {
+    for (auto upgradeType : protossUpgrades) {
+        // Check if we have the building that can perform the upgrade
+        BWAPI::Unit upgradeBuilding = nullptr;// getBuildingForUpgrade(upgradeType);
+        for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+            // Check if the unit is the correct type of building and if it can perform the desired upgrade
+            if (unit->getType().upgradesWhat().contains(upgradeType) && unit->isCompleted()) {
+                upgradeBuilding = unit;
+            }
+        }
+
+        if (!upgradeBuilding || upgradeBuilding->isUpgrading()) {
+            continue; // Skip if we don't have the building or it's already busy
+        }
+
+        // Check if we can afford the upgrade and if it's not already researched
+        if (BWAPI::Broodwar->canUpgrade(upgradeType, upgradeBuilding) && !BWAPI::Broodwar->self()->getUpgradeLevel(upgradeType)) {
+            upgradeBuilding->upgrade(upgradeType);
+            BWAPI::Broodwar->printf("Upgrading %s", upgradeType.getName().c_str());
+        }
+    }
+}
+//NEW:: 
+void BaseSupervisor::researchProtossTechs() {
+    for (auto techType : protossTechs) {
+        // Check if we have the building that can perform the research
+        BWAPI::Unit researchBuilding = nullptr;// getBuildingForTech(techType);
+        for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+            // Check if the unit is the correct type of building and if it can perform the desired research
+            if (unit->getType().researchesWhat().contains(techType) && unit->isCompleted()) {
+                researchBuilding = unit;
+            }
+        }
+
+        if (!researchBuilding || researchBuilding->isResearching()) {
+            continue; // Skip if we don't have the building or it's already busy
+        }
+
+        // Check if we can afford the research and if it's not already researched
+        if (BWAPI::Broodwar->canResearch(techType, researchBuilding) && !BWAPI::Broodwar->self()->hasResearched(techType)) {
+            researchBuilding->research(techType);
+            BWAPI::Broodwar->printf("Researching %s", techType.getName().c_str());
+        }
+    }
 }

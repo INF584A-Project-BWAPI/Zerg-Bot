@@ -4,6 +4,8 @@
 #include "GameFileParser.hpp"
 
 void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
+	
+
 	for (int i = 0; i < buildOrder.size(); i++) {
 		const BuildingRecipe order = buildOrder.at(i);
 		JobType jobType;
@@ -21,6 +23,17 @@ void GameCommander::setBuildOrder(std::vector<BuildingRecipe> buildOrder) {
 
 		postJob(job);
 	}
+	//{
+	//	const BWAPI::UnitType supplyProviderType = Tools::GetDepot()->getType();
+
+
+	//	JobBase job(0, ManagerType::AuxBaseSupervisor, JobType::Building, false, Importance::High);
+	//	job.setUnitType(supplyProviderType);
+	//	job.setGasCost(supplyProviderType.gasPrice());
+	//	job.setMineralCost(supplyProviderType.mineralPrice());
+
+	//	postJob(job);
+	//}
 }
 
 void GameCommander::onFrame() {
@@ -37,11 +50,12 @@ void GameCommander::onFrame() {
 }
 
 void GameCommander::onFrameChildren() {
+	
 	distributeJobs();
-
 	basesManager->onFrame();
 	scoutManager->onFrame();
 	armyManager->onFrame();
+	auxbasessupervisor->onFrame();
 }
 
 void GameCommander::distributeJobs() {
@@ -59,6 +73,9 @@ void GameCommander::distributeJobs() {
 				break;
 			case ManagerType::ArmyManager:
 				armyManager->postJob(job);
+				break;
+			case ManagerType::AuxBaseSupervisor:
+				auxbasessupervisor->postJob(job);
 				break;
 			default:
 				break;

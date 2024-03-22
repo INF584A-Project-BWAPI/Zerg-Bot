@@ -5,6 +5,7 @@
 #include "ManagerBase.h"
 #include "ScoutManager.h"
 #include "ArmyManager.h"
+#include "AuxBaseSupervisor.h"
 #include "GameFileParser.hpp"
 #include "Blackboard.h"
 
@@ -19,9 +20,8 @@ public:
     void setManagerBases(BasesManager* manager) noexcept { basesManager = manager; };
     void setManagerScout(ScoutManager* manager) noexcept { scoutManager = manager; };
     void setManagerArmy(ArmyManager* manager) noexcept { armyManager = manager; };
-
-    // Looks at the build order in the json and distributes the necessary jobs
-    void setBuildOrder(std::vector<BuildingRecipe> buildOrder);
+    void setAuxBase(AuxBaseSupervisor* manager) noexcept { auxbasessupervisor = manager; };
+    void setBuildOrder(std::vector<BuildingRecipe> buildOrder); // Looks at the build order in the json and distributes the necessary jobs
 
     // Functions
     void onFrame();
@@ -34,7 +34,7 @@ private:
     BasesManager* basesManager;
     ScoutManager* scoutManager;
     ArmyManager* armyManager;
-
+    AuxBaseSupervisor* auxbasessupervisor;
     // Fields
     // Scout might die and will almost alway underestimate enemy strenght, this is to account for that
     int attack_threshold_delta = 1000;

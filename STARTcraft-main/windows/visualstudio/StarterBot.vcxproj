@@ -62,6 +62,7 @@
     <ClInclude Include="..\..\src\starterbot\Grid.hpp" />
     <ClInclude Include="..\..\src\starterbot\json.hpp" />
     <ClInclude Include="..\..\src\starterbot\Managers\ArmyManager.h" />
+    <ClInclude Include="..\..\src\starterbot\Managers\AuxBaseSupervisor.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\BasesManager.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\BaseSupervisor.h" />
     <ClInclude Include="..\..\src\starterbot\Managers\Data\Building.h" />
@@ -117,6 +118,7 @@
     <ClCompile Include="..\..\src\starterbot\GameFileParser.cpp" />
     <ClCompile Include="..\..\src\starterbot\main.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\ArmyManager.cpp" />
+    <ClCompile Include="..\..\src\starterbot\Managers\AuxBaseSupervisor.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\BasesManager.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\BaseSupervisor.cpp" />
     <ClCompile Include="..\..\src\starterbot\Managers\Data\Building.cpp" />
@@ -132,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\GameFile.json" />
+    <None Include="NewNexusFile.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>StarterBot</ProjectName>
