@@ -181,28 +181,6 @@ private:
 
     // Debugging
     void print(std::string order, std::string msg);
-    std::set<BWAPI::UpgradeType> protossUpgrades = {
-        BWAPI::UpgradeTypes::Singularity_Charge, // Dragoon Range Upgrade
-        BWAPI::UpgradeTypes::Leg_Enhancements, // Zealot Speed Upgrade
-        BWAPI::UpgradeTypes::Protoss_Plasma_Shields, // Shield Upgrade
-        BWAPI::UpgradeTypes::Protoss_Ground_Weapons, // Ground Weapons Upgrade
-        BWAPI::UpgradeTypes::Protoss_Ground_Armor, // Ground Armor Upgrade
-        BWAPI::UpgradeTypes::Protoss_Air_Weapons, // Air Weapons Upgrade
-        BWAPI::UpgradeTypes::Protoss_Air_Armor, // Air Armor Upgrade
-        // Add other Protoss upgrades as needed
-        BWAPI::UpgradeTypes::Scarab_Damage,
-        BWAPI::UpgradeTypes::Reaver_Capacity,
-        BWAPI::UpgradeTypes::Gravitic_Drive,
-        BWAPI::UpgradeTypes::Sensor_Array,
-        BWAPI::UpgradeTypes::Gravitic_Boosters,
-        BWAPI::UpgradeTypes::Khaydarin_Amulet,
-        BWAPI::UpgradeTypes::Apial_Sensors,
-        BWAPI::UpgradeTypes::Gravitic_Thrusters,
-        BWAPI::UpgradeTypes::Carrier_Capacity,
-        BWAPI::UpgradeTypes::Khaydarin_Core,
-        BWAPI::UpgradeTypes::Argus_Jewel,
-        BWAPI::UpgradeTypes::Argus_Talisman
-    };
 
     std::set<BWAPI::TechType> protossTechs = {
         BWAPI::TechTypes::Psionic_Storm,
@@ -219,7 +197,7 @@ private:
         // Add other Protoss techs as needed
     };
     // Update tech and general enhancements for units
-    void upgradeEnhancements();
+
     void researchProtossTechs();
 
 };
